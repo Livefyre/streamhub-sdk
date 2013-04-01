@@ -1,7 +1,7 @@
 define([
     'streamhub-sdk/stream',
     'streamhub-sdk/event-emitter',
-    'streamhub-sdk/content',
+    'streamhub-sdk/content/content',
     'streamhub-sdk/view',
     'streamhub-sdk/clients/livefyre-stream-client',
     'streamhub-sdk/clients/livefyre-bootstrap-client',
@@ -9,7 +9,7 @@ define([
     'streamhub-sdk/streams/livefyre-stream',
     'streamhub-sdk/streams/livefyre-reverse-stream',
     'streamhub-sdk/views/feed-view',
-    'streamhub-sdk/content-types/livefyre-content'
+    'streamhub-sdk/content/types/livefyre-content'
 ], function(
     Stream,
     EventEmitter,

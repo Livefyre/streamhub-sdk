@@ -25,20 +25,17 @@
                 };
 
                 var specs = [];
-                specs.push('spec/main');
-                specs.push('spec/stream');
-                specs.push('spec/view');
-                specs.push('spec/content');
-                specs.push('spec/event-emitter');
+                specs.push('tests/spec/main');
+                specs.push('tests/spec/stream');
+                specs.push('tests/spec/view');
+                specs.push('tests/spec/content');
+                specs.push('tests/spec/event-emitter');
 
-                specs.push('spec/clients/livefyre-stream-client');
-                specs.push('spec/clients/livefyre-bootstrap-client');
-                specs.push('spec/clients/livefyre-write-client');                
-                specs.push('spec/streams/livefyre-stream');
-                specs.push('spec/streams/livefyre-reverse-stream');
-                specs.push('spec/streams/livefyre-content-stream');
-
-                specs.push('spec/views/content-view');
+                specs.push('tests/spec/clients/livefyre-stream-client');
+                specs.push('tests/spec/clients/livefyre-bootstrap-client');
+                specs.push('tests/spec/clients/livefyre-write-client');                
+                specs.push('tests/spec/streams/livefyre-stream');
+                specs.push('tests/spec/streams/livefyre-reverse-stream');
 
                 $(function(){
                     require(specs, function(){

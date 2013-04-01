@@ -1,5 +1,5 @@
 define(['jquery',
-    'streamhub-sdk/content'
+    'streamhub-sdk/content/content'
 ], function($, Content) {
 
     var LivefyreContent = function(json) {

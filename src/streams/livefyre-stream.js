@@ -2,7 +2,7 @@ define(['jquery',
     'streamhub-sdk/stream',
     'streamhub-sdk/clients/livefyre-stream-client',
     'streamhub-sdk/clients/livefyre-write-client',
-    'streamhub-sdk/content-types/livefyre-content'
+    'streamhub-sdk/content/types/livefyre-content'
 ], function($, Stream, LivefyreStreamClient, LivefyreWriteClient, LivefyreContent) {
 
     /**

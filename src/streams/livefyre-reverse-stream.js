@@ -1,7 +1,7 @@
 define(['jquery',
     'streamhub-sdk/stream',
     'streamhub-sdk/clients/livefyre-bootstrap-client',
-    'streamhub-sdk/content-types/livefyre-content'
+    'streamhub-sdk/content/types/livefyre-content'
 ], function($, Stream, LivefyreBootstrapClient, LivefyreContent) {
 
     /**

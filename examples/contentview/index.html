@@ -2,8 +2,8 @@
 <html>
 <head>
     <link rel="stylesheet" type="text/css" href="../lib/jasmine/lib/jasmine-core/jasmine.css">
-    <link rel="stylesheet" type="text/css" href="../src/css/content.css">
-    <link rel="stylesheet" type="text/css" href="../src/themes/content-plain.css">
+    <link rel="stylesheet" type="text/css" href="../src/content/css/content.css">
+    <link rel="stylesheet" type="text/css" href="../src/content/css/themes/content-plain.css">
 </head>
     <body>
         <div id="feedView"></div>
@@ -26,11 +26,11 @@
         
         <script type="text/javascript">
         require([
-            'streamhub-sdk/content',
-            'streamhub-sdk/content-types/livefyre-tweet',
-            'streamhub-sdk/content-types/livefyre-content',
-            'streamhub-sdk/views/content-view',
-            'streamhub-sdk/views/twitter-content-view'],
+            'streamhub-sdk/content/content',
+            'streamhub-sdk/content/types/livefyre-twitter-content',
+            'streamhub-sdk/content/types/livefyre-content',
+            'streamhub-sdk/content/views/content-view',
+            'streamhub-sdk/content/views/twitter-content-view'],
         function (Content, LivefyreTweet, LivefyreContent, ContentView, TwitterContentView) {
             var mockData = {};
             mockData.livefyreContent = {"source":5,"content":{"replaces":"","parentId":"","bodyHtml":"<p>first</p>","id":"26377292","authorId":"_u1975@livefyre.com","updatedAt":1359696267,"annotations":{"moderator":true},"createdAt":1359696267},"vis":1,"type":0,"event":1359696267541618,"childContent":[],"author":{"displayName":"markdoten","tags":[],"profileUrl":"http://www.t402.livefyre.com/profile/1975/","avatar":"http://d10g4z0y9q0fip.cloudfront.net/a/1/a26fc9513108c64ecdeef1809f2815e8/50.jpg","type":1,"id":"_u1975@livefyre.com"}}
