@@ -12,6 +12,7 @@
     "jasmine-jquery": "*",
     "base64": "~0.1.1",
     "zepto": "git://github.com/genehallman/streamhub-zepto.git",
-    "almond": "~0.2.5"
+    "almond": "~0.2.5",
+    "mustache": "~0.7.2"
   }
 }

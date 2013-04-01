@@ -1,0 +1,27 @@
+<article class="content">
+	<header>
+		{{#author.avatar}}
+		<a class="content-author-avatar"><img src="{{ author.avatar }}" /></a>
+		{{/author.avatar}}
+		<p class="content-byline">
+			{{#author.url}}
+				<a class="content-author-name" href="{{ author.url }}" target="_blank">{{ author.displayName }}</a>
+			{{/author.url}}
+			{{^author.url}}
+				<span class="content-author-name">{{ author.displayName }}</span>
+			{{/author.url}}
+		</p>
+	</header>
+	<div class="content-main">
+		<div class="content-body">
+		{{{ htmlString }}}
+		</div>
+		<div class="content-attachments">
+		{{ #attachments }}
+			<div class="content-attachment">
+				<img src="{{ url }}" />
+			</div>
+		{{ /attachments }}
+		</div>
+	</div>
+</article>

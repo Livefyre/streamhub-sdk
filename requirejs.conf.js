@@ -3,9 +3,10 @@ require.config({
     jquery: '/lib/jquery/jquery',
     text: '/lib/requirejs-text/text',
     base64: '/lib/base64/base64',
+    mustache: '/lib/mustache/mustache',
     jasmine: '/lib/jasmine/lib/jasmine-core/jasmine',
     'jasmine-html': '/lib/jasmine/lib/jasmine-core/jasmine-html',
-    'jasmine-jquery': '/lib/jasmine-jquery/lib/jasmine-jquery',
+    'jasmine-jquery': '/lib/jasmine-jquery/lib/jasmine-jquery'
   },
   packages: [{
      name: "streamhub-sdk",

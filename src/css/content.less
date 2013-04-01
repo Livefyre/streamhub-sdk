@@ -1,0 +1,45 @@
+/**
+ * All Content
+ */
+.content {
+	padding: 5px;
+
+	.content-byline {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+
+	.content-author-avatar {
+		float: left;
+		margin-right: 5px;
+
+		> img {
+			height: 2em;
+		}
+	}
+
+	/**
+	Clearfix the main content. This is necessary if the avatar is taller
+	than the content body */
+	.content-main:after {
+	  content: "";
+	  display: table;
+	  clear: both;
+	}
+
+	.content-actions {
+		list-style-type: none;
+		padding: 0;
+
+		.content-action {
+			display: inline-block;
+		}
+	}
+}
+
+/**
+ * Twitter Content
+ */
+.content-tweet {
+	
+}
