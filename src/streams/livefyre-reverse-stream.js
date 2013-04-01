@@ -1,7 +1,8 @@
 define(['jquery',
     'streamhub-sdk/stream',
-    'streamhub-sdk/clients/livefyre-bootstrap-client' 
-], function($, Stream, LivefyreBootstrapClient) {
+    'streamhub-sdk/clients/livefyre-bootstrap-client',
+    'streamhub-sdk/content-types/livefyre-content'
+], function($, Stream, LivefyreBootstrapClient, LivefyreContent) {
 
     /**
      * Defines a livefyre stream that is readable in reverse time order from a livefyre
@@ -44,8 +45,11 @@ define(['jquery',
             }
             var authors = data.authors;
             for (var i in data.content) {
-                var content = data.content[i];
-                content.author = authors[content.content.authorId];
+                var state = data.content[i];
+                state.author = authors[state.content.authorId];
+                var content = new LivefyreContent(state);
+                // @todo do something like this:
+                //self.contentCache[content.id] = content;
                 self._push(content);
             }
             self._endRead();

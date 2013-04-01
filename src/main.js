@@ -8,7 +8,6 @@ define([
     'streamhub-sdk/clients/livefyre-write-client',
     'streamhub-sdk/streams/livefyre-stream',
     'streamhub-sdk/streams/livefyre-reverse-stream',
-    'streamhub-sdk/streams/livefyre-content-stream',
     'streamhub-sdk/views/feed-view',
     'streamhub-sdk/content-types/livefyre-content'
 ], function(
@@ -21,7 +20,6 @@ define([
     LivefyreWriteClient,
     LivefyreStream,
     LivefyreReverseStream,
-    LivefyreContentStream,
     FeedView,
     LivefyreContent
 ) {
@@ -64,14 +62,12 @@ define([
             var collectionId = data.collectionId;
             var commentId = data.event;
             
-            var mainStream = new LivefyreContentStream($.extend({
+            var mainStream = new LivefyreStream($.extend({
                 collectionId: collectionId,
-                commentId: commentId,
-                upstream: LivefyreStream
+                commentId: commentId
             }, opts));
-            var reverseStream = new LivefyreContentStream($.extend({
-                page: lastPageNum,
-                upstream: LivefyreReverseStream
+            var reverseStream = new LivefyreReverseStream($.extend({
+                page: lastPageNum
             }, opts));
             
             callback(null, { main: mainStream, reverse: reverseStream });

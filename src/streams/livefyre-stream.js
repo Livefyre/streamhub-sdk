@@ -1,8 +1,9 @@
 define(['jquery',
     'streamhub-sdk/stream',
     'streamhub-sdk/clients/livefyre-stream-client',
-    'streamhub-sdk/clients/livefyre-write-client'
-], function($, Stream, LivefyreStreamClient, LivefyreWriteClient) {
+    'streamhub-sdk/clients/livefyre-write-client',
+    'streamhub-sdk/content-types/livefyre-content'
+], function($, Stream, LivefyreStreamClient, LivefyreWriteClient, LivefyreContent) {
 
     /**
      * Defines a livefyre stream that is readable and writable from and to a livefyre conversation.
@@ -46,7 +47,17 @@ define(['jquery',
                         latestEvent = state.event;
                     }
                     state.author = authors[state.content.authorId];
-                    self._push(state);
+
+                    if (state.content && state.content.targetId) {
+                        // @todo Implement and use storage class
+                        /*if (this.contentCache[content.targetId]) {
+                            this.contentCache[content.targetId].update(contentData);
+                        }*/
+                    } else {
+                        var content = new LivefyreContent(state);
+                        //self.contentCache[content.id] = content;
+                        self._push(content);
+                    }
                 }
                 self.commentId = latestEvent;
             }
