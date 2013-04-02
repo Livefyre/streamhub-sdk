@@ -1,11 +1,9 @@
 define(function (require, exports) {
 
-var Mustache = require('mustache'),
-	ContentHtml = require('text!./Content.mustache'),
-	ContentMustache = Mustache.compile(ContentHtml);
+var ContentHtml = require('hgn!./Content');
 
 var ContentTemplate = function ContentTemplate (content) {
-	return ContentMustache(content);
+	return ContentHtml(content);
 };
 
 exports = ContentTemplate;

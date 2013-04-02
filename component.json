@@ -13,6 +13,7 @@
     "base64": "~0.1.1",
     "zepto": "git://github.com/genehallman/streamhub-zepto.git",
     "almond": "~0.2.5",
-    "mustache": "~0.7.2"
+    "hogan": "latest",
+    "requirejs-hogan-plugin": "git://github.com/millermedeiros/requirejs-hogan-plugin.git#~0.2.1"
   }
 }

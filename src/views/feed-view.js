@@ -1,4 +1,5 @@
-define(['jquery', 'streamhub-sdk/view'], function($, View) {
+define(['jquery', 'streamhub-sdk/view', 'streamhub-sdk/content/views/content-view'],
+function($, View, ContentView) {
     
     /**
      * A simple view that displays content items as a feed.
@@ -18,8 +19,13 @@ define(['jquery', 'streamhub-sdk/view'], function($, View) {
     $.extend(FeedView.prototype, View.prototype);
 
     FeedView.prototype._add = function(content, stream) {
-        var contentEl = $(document.createElement('div'));
-        contentEl.html(content.html());
+        var contentEl = document.createElement('div'),
+            contentView = new ContentView({
+                el: contentEl,
+                content: content
+            });
+        console.log(content);
+        contentView.render();
         $(this.el).prepend(contentEl);
     };
 

@@ -2,22 +2,31 @@
  * All Content
  */
 .content {
-  padding: 5px;
+  position: relative;
+  min-height: 58px;
   /**
 	Clearfix the main content. This is necessary if the avatar is taller
 	than the content body */
 
 }
+.content[data-content-has-avatar=true] {
+  margin-left: 58px;
+}
 .content .content-byline {
   margin-top: 0;
   margin-bottom: 0;
 }
-.content .content-author-avatar {
-  float: left;
-  margin-right: 5px;
+.content .content-source-logo {
+  float: right;
 }
-.content .content-author-avatar > img {
-  height: 2em;
+.content .content-author-avatar {
+  position: absolute;
+  top: 5px;
+  left: -53px;
+}
+.content .content-author-avatar img {
+  height: 48px;
+  width: 48px;
 }
 .content .content-main:after {
   content: "";
@@ -26,10 +35,15 @@
 }
 .content .content-actions {
   list-style-type: none;
+  margin: 0;
   padding: 0;
 }
 .content .content-actions .content-action {
   display: inline-block;
+  line-height: 1em;
+}
+.content .content-actions .content-action img {
+  vertical-align: middle;
 }
 /**
  * Twitter Content

@@ -1,14 +1,15 @@
 define(['jquery',
-    'streamhub-sdk/content/content',
+    'streamhub-sdk/content/types/twitter-content',
     'streamhub-sdk/content/types/livefyre-content'
-], function($, Content, LivefyreContent) {
+], function($, TwitterContent, LivefyreContent) {
 
     var LivefyreTweet = function (json) {
         LivefyreContent.call(this, json);
+        TwitterContent.call(this, json);
         this.tweetId = LivefyreTweet.tweetIdFromLivefyreId(this.id);
         this.author.twitterUserId = LivefyreTweet.twitterUserIdFromLivefyreAuthorId(this.author.id);
     };
-    $.extend(LivefyreTweet.prototype, LivefyreContent.prototype);
+    LivefyreTweet.prototype = $.extend({ constructor: LivefyreContent }, LivefyreContent.prototype, TwitterContent.prototype);
 
     LivefyreTweet.tweetIdFromLivefyreId = function (livefyreId) {
         var pattern = /tweet-(\d+)@twitter.com/,
@@ -27,8 +28,6 @@ define(['jquery',
         }
         return match[1];
     };
-
-    Content.register(LivefyreTweet);
      
     return LivefyreTweet;
  });

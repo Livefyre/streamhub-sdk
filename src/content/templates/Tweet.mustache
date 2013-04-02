@@ -1,47 +1,49 @@
-<article class="content content-tweet">
-    <header>
-        {{#author.avatar}}
-        <a class="content-author-avatar"><img src="{{ author.avatar }}" /></a>
-        {{/author.avatar}}
-        <p class="content-byline">
-            <a class="content-author-name" href="https://twitter.com/intent/user?user_id={{ author.twitterUserId }}" target="_blank">{{ author.displayName }}</a>
-        </p>
-        <a href="https://twitter.com/statuses/{{ tweetId }}/" target="_blank">
-            <img class="hub-twitter-logo" src="{{ .tweetIconUrl }}" />
-        </a>
-    </header>
+<header>
+    {{#author.avatar}}
+    <a class="content-author-avatar"><img src="{{ author.avatar }}" /></a>
+    {{/author.avatar}}
+    {{^author.avatar}}
+    <a class="content-author-avatar content-author-avatar-none"></a>
+    {{/author.avatar}}
+    <span class="content-byline">
+        <a class="content-author-name" href="https://twitter.com/intent/user?user_id={{ author.twitterUserId }}" target="_blank">{{ author.displayName }}</a>
+    </span>
+    <a class="content-source-logo" href="https://twitter.com/statuses/{{ tweetId }}/" target="_blank">
+        <img src="{{ __twitterIconUrl }}" />
+    </a>
+</header>
 
-    <div class="content-main">
-        <div class="content-body">
-        {{{ htmlString }}}
-        </div>
-        <div class="content-attachments">
-        {{ #attachments }}
-            <div class="content-attachment">
-                <img src="{{ url }}" />
-            </div>
-        {{ /attachments }}
-        </div>
+<div class="content-main">
+    <div class="content-body">
+    {{{ htmlString }}}
     </div>
+    <div class="content-attachments">
+    {{ #attachments }}
+        {{ #url }}
+        <div class="content-attachment">
+            <img src="{{ url }}" />
+        </div>
+        {{ /url }}
+    {{ /attachments }}
+    </div>
+</div>
 
-    <footer>
-        <ul class="content-actions">
-            <li class="content-action">
-                <a href="https://twitter.com/intent/tweet?in_reply_to={{ tweetId }}" class="reply-action twt-intent" title="Reply">
-                    <i></i><b>Reply</b>
-                </a>
-            </li>
-            <li class="content-action">
-                <a href="https://twitter.com/intent/retweet?tweet_id={{ tweetId }}" class=" retweet-action  twt-intent" title="Retweet">
-                    <i></i><b>Retweet</b>
-                </a>
-            </li>
-            <li class="content-action">
-                <a href="https://twitter.com/intent/favorite?tweet_id={{ tweetId }}" class=" favorite-action  twt-intent" title="Favorite">
-                    <i></i><b>Favorite</b>
-                </a>
-            </li>
-        </ul>
-    </footer>
-
-</article>
+<footer>
+    <ul class="content-actions">
+        <li class="content-action" data-content-action="reply">
+            <a href="https://twitter.com/intent/tweet?in_reply_to={{ tweetId }}" title="Reply">
+                <img src="{{ __replyIconUrl }}" /><span>Reply</span>
+            </a>
+        </li>
+        <li class="content-action" data-content-action="retweet">
+            <a href="https://twitter.com/intent/retweet?tweet_id={{ tweetId }}" title="Retweet">
+                <img src="{{ __retweetIconUrl }}" /><span>Retweet</span>
+            </a>
+        </li>
+        <li class="content-action" data-content-action="favorite">
+            <a href="https://twitter.com/intent/favorite?tweet_id={{ tweetId }}" title="Favorite">
+                <img src="{{ __favoriteIconUrl }}" /><span>Favorite</span>
+            </a>
+        </li>
+    </ul>
+</footer>

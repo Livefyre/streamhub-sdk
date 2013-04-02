@@ -2,19 +2,31 @@
  * All Content
  */
 .content {
-	padding: 5px;
+	position: relative;
+	min-height: 58px;
+
+	&[data-content-has-avatar=true] {
+		margin-left: 58px;
+	}
+	
 
 	.content-byline {
 		margin-top: 0;
 		margin-bottom: 0;
 	}
 
-	.content-author-avatar {
-		float: left;
-		margin-right: 5px;
+	.content-source-logo {
+		float: right;
+	}
 
-		> img {
-			height: 2em;
+	.content-author-avatar {
+		position: absolute;
+		top: 5px;
+		left: -53px;
+
+		img {
+			height: 48px;
+			width: 48px;
 		}
 	}
 
@@ -29,10 +41,16 @@
 
 	.content-actions {
 		list-style-type: none;
+		margin: 0;
 		padding: 0;
 
 		.content-action {
 			display: inline-block;
+			line-height: 1em;
+
+			img {
+				vertical-align: middle;
+			}
 		}
 	}
 }

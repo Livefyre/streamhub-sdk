@@ -28,6 +28,7 @@
                 specs.push('tests/spec/main');
                 specs.push('tests/spec/stream');
                 specs.push('tests/spec/view');
+                specs.push('tests/spec/views/list-view');
                 specs.push('tests/spec/content');
                 specs.push('tests/spec/event-emitter');
 
@@ -37,6 +38,9 @@
                 specs.push('tests/spec/streams/livefyre-stream');
                 specs.push('tests/spec/streams/livefyre-reverse-stream');
 
+                specs.push('tests/spec/content/types/twitter-search-content');
+                specs.push('tests/spec/content/types/twitter-streaming-content');
+                
                 $(function(){
                     require(specs, function(){
                         jasmineEnv.execute();

@@ -4,6 +4,17 @@
     <link rel="stylesheet" type="text/css" href="../lib/jasmine/lib/jasmine-core/jasmine.css">
     <link rel="stylesheet" type="text/css" href="../src/content/css/content.css">
     <link rel="stylesheet" type="text/css" href="../src/content/css/themes/content-plain.css">
+    <style>
+    body {
+        font-family: sans-serif;
+        font-size: 14px;
+        line-height: 18px;
+    }
+    a {
+        text-decoration: none;
+    }
+    </style>
+    <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 </head>
     <body>
         <div id="feedView"></div>
@@ -21,6 +32,12 @@
         <pre>new Content.create('&lt;p&gt;Woah&lt;/p&gt;')</pre>
         <div id="c3"></div>
 
+        <h2>Twitter Search Content</h2>
+        <div id="c5"></div>
+
+        <h2>Twitter Streaming Content</h2>
+        <div id="c6"></div>
+
         <script src="../../lib/requirejs/require.js" type="text/javascript"></script>
         <script src="/requirejs.conf.js" type="text/javascript"></script>
         
@@ -29,13 +46,18 @@
             'streamhub-sdk/content/content',
             'streamhub-sdk/content/types/livefyre-twitter-content',
             'streamhub-sdk/content/types/livefyre-content',
+            'streamhub-sdk/content/types/twitter-search-content',
+            'streamhub-sdk/content/types/twitter-streaming-content',
             'streamhub-sdk/content/views/content-view',
             'streamhub-sdk/content/views/twitter-content-view'],
-        function (Content, LivefyreTweet, LivefyreContent, ContentView, TwitterContentView) {
+        function (Content, LivefyreTweet, LivefyreContent, TwitterSearchContent, TwitterStreamingContent, ContentView, TwitterContentView) {
             var mockData = {};
             mockData.livefyreContent = {"source":5,"content":{"replaces":"","parentId":"","bodyHtml":"<p>first</p>","id":"26377292","authorId":"_u1975@livefyre.com","updatedAt":1359696267,"annotations":{"moderator":true},"createdAt":1359696267},"vis":1,"type":0,"event":1359696267541618,"childContent":[],"author":{"displayName":"markdoten","tags":[],"profileUrl":"http://www.t402.livefyre.com/profile/1975/","avatar":"http://d10g4z0y9q0fip.cloudfront.net/a/1/a26fc9513108c64ecdeef1809f2815e8/50.jpg","type":1,"id":"_u1975@livefyre.com"}}
             mockData.livefyreStreamContent = {"vis": 1, "content": {"replaces": "", "feedEntry": {"transformer": "lfcore.v2.procurement.feed.transformer.instagram", "feedType": 2, "description": "#gayrights #lgbt #equality #marriageequality <img src=\"http://distilleryimage2.instagram.com/18ea2500970c11e294f522000a9f30b8_7.jpg\" />", "pubDate": 1364409052, "channelId": "http://instagram.com/tags/marriageequality/feed/recent.rss", "link": "http://distilleryimage2.instagram.com/18ea2500970c11e294f522000a9f30b8_7.jpg", "id": "bffcb85a-2976-4396-bb60-3cf5b1e2c3a8", "createdAt": 1364409052}, "bodyHtml": "#gayrights #lgbt #equality #marriageequality ", "annotations": {}, "authorId": "7759cd005d95d8cc5bd93718b2ac0064@instagram.com", "parentId": "", "updatedAt": 1364409052, "id": "bffcb85a-2976-4396-bb60-3cf5b1e2c3a8", "createdAt": 1364409052}, "source": 13, "lastVis": 0, "type": 0, "event": 1364409052662964, author: {displayName: "sara",tags: [ ],profileUrl: "https://twitter.com/#!/135sara",avatar: "http://a0.twimg.com/profile_images/1349672055/Baqueira_29-01-2010_13-54-52_normal.jpg",type: 3,id: "123568642@twitter.com"}};
             mockData.livefyreTwitterContent = {"source":1,"content":{"replaces":"","parentId":"","bodyHtml":"Chronicles of Riddick. Every time.","id":"tweet-297510939517939713@twitter.com","authorId":"16275037@twitter.com","updatedAt":1359767110,"annotations":{},"createdAt":1359767110},"vis":1,"type":0,"event":1359767110368889,"childContent":[],"author":{"displayName":"joemfbrown","tags":[],"profileUrl":"http://twitter.com/#!/joemfbrown","avatar":"http://a0.twimg.com/profile_images/2190838404/me_normal.jpg","type":3,"id":"16275037@twitter.com"}};
+            mockData.twitterSearchContent = {      "created_at": "Tue, 02 Apr 2013 03:13:11 +0000",      "entities": {        "hashtags": [                  ],        "urls": [                  ],        "user_mentions": [          {            "screen_name": "OneFMKe",            "name": "OneFM 97.1",            "id": 190200069,            "id_str": "190200069",            "indices": [              3,              11            ]          }        ]      },      "from_user": "SalivaVic",      "from_user_id": 16293574,      "from_user_id_str": "16293574",      "from_user_name": "Saliva Vic ",      "geo": null,      "id": 3.189240398444e+17,      "id_str": "318924039844397056",      "iso_language_code": "en",      "metadata": {        "result_type": "recent"      },      "profile_image_url": "http:\\/\\/a0.twimg.com\\/profile_images\\/2450858508\\/8dwe9qe54q8qzg5vahk0_normal.jpeg",      "profile_image_url_https": "https:\\/\\/si0.twimg.com\\/profile_images\\/2450858508\\/8dwe9qe54q8qzg5vahk0_normal.jpeg",      "source": "&lt;a href=&quot;http:\\/\\/twitter.com\\/&quot;&gt;web&lt;\\/a&gt;",      "text": "RT @OneFMKe: Kuna Watu aina Kadhaa duniani! Those who make things happen-Those who watch things happen-Those who wonder what happened.Wewe Ni type gani.."    };
+            mockData.twitterStreamingContent = {"created_at":"Tue Apr 02 03:32:14 +0000 2013","id":318928836370776064,"id_str":"318928836370776064","text":"RT @ingridargoolo: \"e queria sempre achar explica\u00e7\u00e3o pr\u00f4 que eu sentia.. \"","source":"\u003ca href=\"http:\/\/twitter.com\/download\/iphone\" rel=\"nofollow\"\u003eTwitter for iPhone\u003c\/a\u003e","truncated":false,"in_reply_to_status_id":null,"in_reply_to_status_id_str":null,"in_reply_to_user_id":null,"in_reply_to_user_id_str":null,"in_reply_to_screen_name":null,"user":{"id":270449050,"id_str":"270449050","name":"Paula Zattar","screen_name":"paulazattar","location":"","url":null,"description":"''Sou quebra-cabe\u00e7a de 500 mil pe\u00e7as, quem n\u00e3o tiver capacidade, tenta um jogo mais f\u00e1cil''\r\n\r\nEu supero e agrade\u00e7o.\u201d","protected":false,"followers_count":366,"friends_count":187,"listed_count":1,"created_at":"Tue Mar 22 16:56:09 +0000 2011","favourites_count":6383,"utc_offset":-14400,"time_zone":"Santiago","geo_enabled":true,"verified":false,"statuses_count":25988,"lang":"pt","contributors_enabled":false,"is_translator":false,"profile_background_color":"090A0A","profile_background_image_url":"http:\/\/a0.twimg.com\/profile_background_images\/798594204\/dac21b2c806da700e52f5dfc33a214ed.jpeg","profile_background_image_url_https":"https:\/\/si0.twimg.com\/profile_background_images\/798594204\/dac21b2c806da700e52f5dfc33a214ed.jpeg","profile_background_tile":true,"profile_image_url":"http:\/\/a0.twimg.com\/profile_images\/3298523628\/ad7c25103a5b80adb20f1520c071b248_normal.jpeg","profile_image_url_https":"https:\/\/si0.twimg.com\/profile_images\/3298523628\/ad7c25103a5b80adb20f1520c071b248_normal.jpeg","profile_banner_url":"https:\/\/si0.twimg.com\/profile_banners\/270449050\/1361656440","profile_link_color":"61686B","profile_sidebar_border_color":"FFFFFF","profile_sidebar_fill_color":"9447C4","profile_text_color":"35064F","profile_use_background_image":true,"default_profile":false,"default_profile_image":false,"following":null,"follow_request_sent":null,"notifications":null},"geo":null,"coordinates":null,"place":null,"contributors":null,"retweeted_status":{"created_at":"Tue Apr 02 02:37:35 +0000 2013","id":318915084095193088,"id_str":"318915084095193088","text":"\"e queria sempre achar explica\u00e7\u00e3o pr\u00f4 que eu sentia.. \"","source":"\u003ca href=\"http:\/\/twitter.com\/download\/android\" rel=\"nofollow\"\u003eTwitter for Android\u003c\/a\u003e","truncated":false,"in_reply_to_status_id":null,"in_reply_to_status_id_str":null,"in_reply_to_user_id":null,"in_reply_to_user_id_str":null,"in_reply_to_screen_name":null,"user":{"id":78973374,"id_str":"78973374","name":"guiguiii","screen_name":"ingridargoolo","location":"","url":null,"description":"Quem vive sem loucura, n\u00e3o \u00e9 t\u00e3o s\u00e1bio quanto pensa","protected":false,"followers_count":270,"friends_count":159,"listed_count":0,"created_at":"Thu Oct 01 18:41:00 +0000 2009","favourites_count":693,"utc_offset":-14400,"time_zone":"Santiago","geo_enabled":true,"verified":false,"statuses_count":10067,"lang":"en","contributors_enabled":false,"is_translator":false,"profile_background_color":"AB29AB","profile_background_image_url":"http:\/\/a0.twimg.com\/profile_background_images\/383908281\/O-cachorro-_-a-cara-do-dono.jpg","profile_background_image_url_https":"https:\/\/si0.twimg.com\/profile_background_images\/383908281\/O-cachorro-_-a-cara-do-dono.jpg","profile_background_tile":true,"profile_image_url":"http:\/\/a0.twimg.com\/profile_images\/3411767520\/e015d7491d12375230bd8303c688cbe6_normal.jpeg","profile_image_url_https":"https:\/\/si0.twimg.com\/profile_images\/3411767520\/e015d7491d12375230bd8303c688cbe6_normal.jpeg","profile_banner_url":"https:\/\/si0.twimg.com\/profile_banners\/78973374\/1351261704","profile_link_color":"790391","profile_sidebar_border_color":"FFFFFF","profile_sidebar_fill_color":"7AC3EE","profile_text_color":"B0C9CF","profile_use_background_image":true,"default_profile":false,"default_profile_image":false,"following":null,"follow_request_sent":null,"notifications":null},"geo":null,"coordinates":null,"place":null,"contributors":null,"retweet_count":2,"favorite_count":2,"entities":{"hashtags":[],"urls":[],"user_mentions":[]},"favorited":false,"retweeted":false,"lang":"pt"},"retweet_count":0,"favorite_count":0,"entities":{"hashtags":[],"urls":[],"user_mentions":[{"screen_name":"ingridargoolo","name":"guiguiii","id":78973374,"id_str":"78973374","indices":[3,17]}]},"favorited":false,"retweeted":false,"filter_level":"low"};
+
 
             var c1 = new LivefyreContent(mockData.livefyreContent);
             var c1v = new ContentView({
@@ -52,6 +74,18 @@
             c2v.render();
 
             var c3 = new Content('<p>Woah</p>');
+            c3.attachments = [{
+                "version": "1.0",
+                "type": "photo",
+                "width": 240,
+                "height": 160,
+                "title": "ZB8T0193",
+                "url": "http://farm4.static.flickr.com/3123/2341623661_7c99f48bbf_m.jpg",
+                "author_name": "Bees",
+                "author_url": "http://www.flickr.com/photos/bees/",
+                "provider_name": "Flickr",
+                "provider_url": "http://www.flickr.com/"
+            }]
             var c3v = new ContentView({
                 content: c3,
                 el: document.getElementById('c3')
@@ -59,12 +93,37 @@
             c3v.render();
 
             var c4 = new LivefyreTweet(mockData.livefyreTwitterContent);
+            c4.attachments = [{
+                "version": "1.0",
+                "type": "photo",
+                "width": 240,
+                "height": 160,
+                "title": "ZB8T0193",
+                "url": "http://farm4.static.flickr.com/3123/2341623661_7c99f48bbf_m.jpg",
+                "author_name": "Bees",
+                "author_url": "http://www.flickr.com/photos/bees/",
+                "provider_name": "Flickr",
+                "provider_url": "http://www.flickr.com/"
+            }]
             var c4v = new TwitterContentView({
                 content: c4,
                 el: document.getElementById('c4')
             });
             c4v.render();
 
+            var c5 = new TwitterSearchContent(mockData.twitterSearchContent);
+            var c5v = new TwitterContentView({
+                content: c5,
+                el: document.getElementById('c5')
+            });
+            c5v.render();
+
+            var c6 = new TwitterStreamingContent(mockData.twitterStreamingContent);
+            var c6v = new TwitterContentView({
+                content: c6,
+                el: document.getElementById('c6')
+            });
+            c6v.render();
         });
         </script>
     </body>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="../lib/jasmine/lib/jasmine-core/jasmine.css">
+    <link rel="stylesheet" type="text/css" href="../src/views/css/list-view.css">
+    <link rel="stylesheet" type="text/css" href="../src/content/css/content.css">
+    <link rel="stylesheet" type="text/css" href="../src/content/css/themes/content-plain.css">
+    <style>
+    body {
+        font-family: sans-serif;
+        font-size: 14px;
+        line-height: 18px;
+    }
+    a {
+        text-decoration: none;
+    }
+    #listView {
+        width: 500px;
+        height: 800px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+    .content-list-item {
+        margin: 10px 0;
+        padding: 5px;
+    }
+    </style>
+    <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+</head>
+    <body>
+        
+        <div id="listView"></div>
+
+        <script src="../../lib/requirejs/require.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+        require([
+            'streamhub-sdk',
+            'streamhub-sdk/views/list-view'
+        ],function (Hub, ListView) {
+            var opts = {
+                "network": "labs-t402.fyre.co",
+                "siteId": "303827",
+                "articleId": "labs_demo_fire",
+                "environment": "t402.livefyre.com"
+            };
+            var listView;
+            
+            Hub.createLivefyreStreams(opts, function(err, streams) {
+                listView = new ListView({
+                    streams: streams,
+                    el: document.getElementById("listView")
+                });
+                listView.startStreams("*");
+            });
+        });
+        </script>
+    </body>
+</html>
