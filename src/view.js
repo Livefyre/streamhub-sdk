@@ -12,7 +12,8 @@ define(['jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
      */
     var View = function(opts) {
         EventEmitter.call(this);
-        this.opts = opts || {};
+        opts = opts || {};
+        this.opts = opts;
         this.streams = opts.streams;
         this.el = opts.el;
         this.contentSet = [];
@@ -25,9 +26,11 @@ define(['jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
             self.emit('add', content, this);
         };
 
-        var keys = Object.keys(this.streams);
-        for (var i in keys) {
-            this.streams[keys[i]].on('readable', readableCallback);
+        if ( typeof this.streams === 'object' ) {
+            var keys = Object.keys(this.streams);
+            for (var i in keys) {
+                this.streams[keys[i]].on('readable', readableCallback);
+            }
         }
     };
     $.extend(View.prototype, EventEmitter.prototype);

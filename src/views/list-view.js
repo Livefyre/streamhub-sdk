@@ -9,8 +9,9 @@ function($, View, ContentView) {
      * @constructor
      */
     var ListView = function(opts) {
+        opts = opts || {};
         View.call(this, opts);
-        
+
         this.setElement(opts.el || document.createElement(this.elTag));
         this.contentViews = [];
 
@@ -51,6 +52,7 @@ function($, View, ContentView) {
         this.contentViews.push(newContentView);
         newContentView.render();
         this._insertContentView(newContentView);
+        this.emit('insert', newContentView);
         return newContentView;
     };
 
