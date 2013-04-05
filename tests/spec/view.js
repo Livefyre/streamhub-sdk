@@ -26,9 +26,34 @@ function ($, jasmine, View, Stream) {
                 expect(opts.streams.main.on.callCount).toBe(1);
                 expect(opts.streams.main.on).toHaveBeenCalled();
                 expect(opts.streams.main.on.callCount).toBe(1);
-            });                            
+            });
         });
-        
+
+        describe('.extend()', function () {
+            var MyView,
+                view;
+            beforeEach(function () {
+                MyView = View.extend({
+                    initialize: jasmine.createSpy()
+                });
+                view = new MyView({
+                    streams: {
+                        main: { start: jasmine.createSpy(), on: jasmine.createSpy() }
+                    }
+                });
+            });
+
+            it('can be used to create subclasses', function () {
+                expect(view instanceof View).toBe(true);
+                expect(view instanceof MyView).toBe(true);
+            });
+
+            it('subclasses call .initialize on construction', function () {
+                expect(view.initialize).toHaveBeenCalled();
+            });
+
+        });
+
         describe('after construction', function () {
             beforeEach(function() {
                 opts = {
@@ -40,20 +65,20 @@ function ($, jasmine, View, Stream) {
                 opts.streams.main.start = jasmine.createSpy();
                 opts.streams.reverse.start = jasmine.createSpy();
             
-	            view = new View(opts);
-	        });
-	        
-	        it ("should call start() on main stream when startStreams() is called with no args", function () {
-	            view.startStreams();
-	    
-	            waitsFor(function() {
-	                return opts.streams.main.start.callCount > 0;
-	            });
-	            runs(function() {
-	                expect(opts.streams.main.start).toHaveBeenCalled();
-	                expect(opts.streams.main.start.callCount).toBe(1);
-	            });                            
-	        });
+                view = new View(opts);
+            });
+            
+            it ("should call start() on main stream when startStreams() is called with no args", function () {
+                view.startStreams();
+        
+                waitsFor(function() {
+                    return opts.streams.main.start.callCount > 0;
+                });
+                runs(function() {
+                    expect(opts.streams.main.start).toHaveBeenCalled();
+                    expect(opts.streams.main.start.callCount).toBe(1);
+                });                            
+            });
 
             it ("should call start() on all streams when startStreams() is called with '*'", function () {
                 view.startStreams("*");
