@@ -46,13 +46,13 @@
             };
             var listView;
             
-            Hub.createLivefyreStreams(opts, function(err, streams) {
-                listView = new ListView({
+            var streams = new Hub.Streams.forCollection(opts);
+
+            var listView = new ListView({
                     streams: streams,
                     el: document.getElementById("listView")
                 });
-                listView.startStreams("*");
-            });
+            listView.startStreams("*");
         });
         </script>
     </body>

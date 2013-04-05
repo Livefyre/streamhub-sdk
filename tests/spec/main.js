@@ -22,8 +22,8 @@ function ($, jasmine, Hub, LivefyreBootstrapClient) {
                 fn(null, mockData);
             });
         });
-        
-        it ("should create streams when createLivefyreStreams is called", function () {
+
+        xit ("should create streams when createLivefyreStreams is called", function () {
             Hub.createLivefyreStreams(opts, callback);
     
             waitsFor(function() {

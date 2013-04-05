@@ -9,7 +9,8 @@ define([
     'streamhub-sdk/streams/livefyre-stream',
     'streamhub-sdk/streams/livefyre-reverse-stream',
     'streamhub-sdk/content/types/livefyre-content',
-    'streamhub-sdk/views/list-view'
+    'streamhub-sdk/views/list-view',
+    'streamhub-sdk/streams/livefyre-collection-streams'
 ], function(
     Stream,
     EventEmitter,
@@ -21,59 +22,32 @@ define([
     LivefyreStream,
     LivefyreReverseStream,
     LivefyreContent,
-    ListView
+    ListView,
+    LivefyreCollectionStreams
 ) {
-    
     var Hub = {};
     Hub.Stream = Stream;
     Hub.EventEmitter = EventEmitter;
     Hub.Content = Content;
     Hub.View = View;
-    
+
     Hub.Clients = {};
     Hub.Clients.LivefyreStreamClient = LivefyreStreamClient;
     Hub.Clients.LivefyreBootstrapClient = LivefyreBootstrapClient;
     Hub.Clients.LivefyreWriteClient = LivefyreWriteClient;
-    
+
     Hub.Streams = {};
     Hub.Streams.LivefyreStream = LivefyreStream;
     Hub.Streams.LivefyreReverseStream = LivefyreReverseStream;
-    
+    Hub.Streams.forCollection = function (collectionOpts) {
+        return new LivefyreCollectionStreams(collectionOpts);
+    };
+
     Hub.ContentTypes = {};
     Hub.ContentTypes.LivefyreContent = LivefyreContent;
-    
+
     Hub.Views = {};
     Hub.Views.ListView = ListView;
-    /**
-     * Helper method for easily setting up Livefyre streams
-     * @param opts {Object} A set of options used in the creation of the individual streams
-     * @return 
-     */
-    Hub.createLivefyreStreams = function(opts, callback) {
-        LivefyreBootstrapClient.getContent(opts, function(err, data) {
-            if (err) {
-                return callback(err);
-            }
 
-            var pages = data.archiveInfo.pageInfo;
-            var pageKeys = Object.keys(pages);
-            var lastPageNum = pageKeys[pageKeys.length - 1];
-            var collectionId = data.collectionId;
-            var commentId = data.event;
-            
-            var mainStream = new LivefyreStream($.extend({
-                collectionId: collectionId,
-                commentId: commentId
-            }, opts));
-            var reverseStream = new LivefyreReverseStream($.extend({
-                page: lastPageNum
-            }, opts));
-            
-            callback(null, { main: mainStream, reverse: reverseStream });
-            
-        });
-    
-    };
-    
     return Hub;
 });

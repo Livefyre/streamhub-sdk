@@ -29,11 +29,6 @@ function (jasmine, jasmineJquery, $, ListView, Content, Stream, JasmineSpyStream
                 expect(listView instanceof ListView).toBe(true);
             });
 
-            it ("should call on() on all streams", function () {
-                expect(listView.streams.main.on).toHaveBeenCalled();
-                expect(listView.streams.main.on.callCount).toBe(1);
-            });
-
             it ("has .content-list CSS class", function () {
                 expect(listView.$el).toHaveClass('content-list');
             });

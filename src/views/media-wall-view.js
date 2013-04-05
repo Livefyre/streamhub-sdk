@@ -42,7 +42,7 @@ define([
         
         var contentView = new ContentView({content:content});
         contentView.render();
-        var $contentView = $(contentView.el)
+        var $contentView = $(contentView.el);
 
         $(this.el).prepend($contentView)
             .isotope('appended', $contentView)

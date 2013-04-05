@@ -77,7 +77,7 @@ define(['jasmine'], function(jasmine) {
       this.passed_specs++;
       return;
     }
-    log(spec);
+    this.log(spec);
     var resultText = spec.suite.description + " : " + spec.description;
     this.log(resultText, "red");
 
