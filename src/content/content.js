@@ -1,6 +1,4 @@
-define(['jquery',
-    'streamhub-sdk/event-emitter'
-], function($, EventEmitter) {
+define(['jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
 
     var Content = function(body) {
         EventEmitter.call(this);

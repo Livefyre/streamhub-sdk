@@ -1,6 +1,4 @@
-define(['jquery',
-    'streamhub-sdk/content/content'
-], function($, Content) {
+define(['jquery', 'streamhub-sdk/content/content'], function($, Content) {
 
     var Oembed = function(json) {
         Content.call(this);

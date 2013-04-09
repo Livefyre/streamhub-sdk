@@ -2,7 +2,7 @@ define([
     'jquery',
     'jasmine',
     'jasmine-jquery',
-    '../../mocks/jasmine-spy-stream',
+    'streamhub-sdk-tests/mocks/jasmine-spy-stream',
     'streamhub-sdk',
     'streamhub-sdk/stream',
     'streamhub-sdk/streams',

@@ -1,7 +1,4 @@
-define(function (require, exports) {
-	exports = Streams;
-
-	var EventEmitter = require('streamhub-sdk/event-emitter');
+define(['streamhub-sdk/event-emitter'], function (EventEmitter) {
 
 	/**
 	 * A Collection of Streams 
@@ -69,5 +66,5 @@ define(function (require, exports) {
 		return this;
 	};
 
-	return exports;
+	return Streams;
 });

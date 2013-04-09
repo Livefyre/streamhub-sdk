@@ -15,6 +15,9 @@ require.config({
   packages: [{
      name: "streamhub-sdk",
      location: "src/"
+  },{
+     name: "streamhub-sdk-tests",
+     location: "tests/"
   }],
   shim: {
     jquery: {

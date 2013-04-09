@@ -4,13 +4,7 @@ define([
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/livefyre-content',
     'streamhub-sdk/content/types/twitter-search-content'
-], function (
-    $,
-    Stream,
-    Content,
-    LivefyreContent,
-    TwitterSearchContent
-) {
+], function ($, Stream, Content, LivefyreContent, TwitterSearchContent) {
 
     /**
      * A MockStream of Content

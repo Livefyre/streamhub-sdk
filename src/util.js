@@ -1,5 +1,5 @@
-define(function (require, exports) {
-	var $ = require('jquery');
+define(['jquery'], function ($) {
+    var exports = {};
 
 	exports.extend = function (prototypeExtension, staticExtension) {
 		var Super = this;

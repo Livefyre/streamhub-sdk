@@ -1,6 +1,4 @@
-define([
-    'streamhub-sdk/content/types/twitter-content'
-], function(TwitterContent) {
+define(['streamhub-sdk/content/types/twitter-content'], function(TwitterContent) {
     var TwitterSearchContent = function (json) {
         TwitterContent.call(this);
         this.tweetId = json.id_str;

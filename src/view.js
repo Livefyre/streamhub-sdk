@@ -1,4 +1,5 @@
-define(['jquery', 'streamhub-sdk/event-emitter', 'streamhub-sdk/streams', 'streamhub-sdk/util'], function($, EventEmitter, Streams, Util) {
+define(['jquery', 'streamhub-sdk/event-emitter', 'streamhub-sdk/streams', 'streamhub-sdk/util'],
+function($, EventEmitter, Streams, Util) {
 
     /**
      * Defines a base view object that listens to a set streams, adds objects to an 

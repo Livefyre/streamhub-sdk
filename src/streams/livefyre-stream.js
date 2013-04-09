@@ -1,4 +1,5 @@
-define(['jquery',
+define([
+    'jquery',
     'streamhub-sdk/stream',
     'streamhub-sdk/clients/livefyre-stream-client',
     'streamhub-sdk/clients/livefyre-write-client',
@@ -6,12 +7,12 @@ define(['jquery',
     'streamhub-sdk/content/types/oembed',
     'streamhub-sdk/storage'
 ], function(
-    $, 
-    Stream, 
-    LivefyreStreamClient, 
-    LivefyreWriteClient, 
-    LivefyreContent, 
-    Oembed, 
+    $,
+    Stream,
+    LivefyreStreamClient,
+    LivefyreWriteClient,
+    LivefyreContent,
+    Oembed,
     Storage
 ) {
 

@@ -1,11 +1,10 @@
-define(function (require, exports) {
-    exports = LivefyreCollectionStreams;
-
-    var Streams = require('streamhub-sdk/streams'),
-        LivefyreBootstrapClient = require('streamhub-sdk/clients/livefyre-bootstrap-client'),
-        LivefyreStream = require('streamhub-sdk/streams/livefyre-stream'),
-        LivefyreReverseStream = require('streamhub-sdk/streams/livefyre-reverse-stream');
-
+define([
+    'streamhub-sdk/streams',
+    'streamhub-sdk/clients/livefyre-bootstrap-client',
+    'streamhub-sdk/streams/livefyre-stream',
+    'streamhub-sdk/streams/livefyre-reverse-stream'],
+function (Streams, LivefyreBootstrapClient, LivefyreStream, LivefyreReverseStream) {
+    
     /**
      * A set of Streams bound to a Livefyre Collection
      */
@@ -70,5 +69,5 @@ define(function (require, exports) {
         });
     };
 
-    return exports;
+    return LivefyreCollectionStreams;
 });

@@ -1,4 +1,5 @@
-define(['jquery',
+define([
+    'jquery',
     'streamhub-sdk/content/types/twitter-content',
     'streamhub-sdk/content/types/livefyre-content'
 ], function($, TwitterContent, LivefyreContent) {
