@@ -1,6 +1,11 @@
 define(['jquery', 'base64'], function($) {
+
+    /**
+     * A Client for requesting Livefyre's Quill/Write Service
+     * @exports streamhub-sdk/clients/livefyre-write-client
+     */
     var LivefyreWriteClient = {};
-    
+
     /**
      * Posts a piece of content to a Livefyre collection.
      * @param opts.network {string} The name of the network in the livefyre platform

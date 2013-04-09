@@ -6,6 +6,7 @@ define(['jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
      * read completes.
      * @param opts {Object} A set of options to config the stream with
      * @constructor
+     * @exports streamhub-sdk/stream
      */
     var Stream = function(opts) {
         EventEmitter.call(this);

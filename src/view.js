@@ -1,3 +1,7 @@
+/** 
+ * A module that provides a Base View to render Streams of Content
+ * @module streamhub-sdk/view
+ */
 define(['jquery', 'streamhub-sdk/event-emitter', 'streamhub-sdk/streams', 'streamhub-sdk/util'],
 function($, EventEmitter, Streams, Util) {
 
@@ -6,6 +10,7 @@ function($, EventEmitter, Streams, Util) {
      * internal collection when received from the streams, and then emits an 'add' event.
      * Subclasses are responsible for listening to the "add" events and using them to 
      * display streamed content.
+     * @alias module:streamhub-sdk/view
      * @param opts {Object} A set of options to config the view with
      * @param opts.streams {Object.<string, Stream>} A dictionary of streams to listen to
      * @param opts.el {HTMLElement} The element in which to render the streamed content
@@ -50,7 +55,7 @@ function($, EventEmitter, Streams, Util) {
 
     /**
      * Triggers the view's streams to start.
-     * @param streamNames {[Array.<string>|string]?} A list of (or singular) stream names to call
+     * @param streamNames {?Array.<string>|string} A list of (or singular) stream names to call
      *     .start() on (Defaults to ["main"]). Also accepts "*" for all streams. 
      */
     View.prototype.startStreams = function(streamNames) {

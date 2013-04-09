@@ -1,3 +1,7 @@
+/** 
+ * A module to Stream a Livefyre Collection in reverse chronological order
+ * @module streamhub-sdk/streams/livefyre-reverse-stream
+ */
 define([
     'jquery',
     'streamhub-sdk/stream',
@@ -12,6 +16,7 @@ define([
      * conversation.
      * @param opts {Object} A set of options to config the stream client with
      * @constructor
+     * @alias module:streamhub-sdk/streams/livefyre-reverse-stream
      */
     var LivefyreReverseStream = function(opts) {
         Stream.call(this);
@@ -23,7 +28,7 @@ define([
         this.page = opts.page;
     };
     $.extend(LivefyreReverseStream.prototype, Stream.prototype);
-    
+
     /**
      * Reads data from a Livefyre bootstrap page endpoint.
      * @private

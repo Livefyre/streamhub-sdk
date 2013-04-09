@@ -1,6 +1,13 @@
+/** 
+ * A module to render tiled walls of Content
+ * @module streamhub-sdk/util
+ */
 define(['jquery'], function ($) {
     var exports = {};
 
+    /**
+     * Extend `this` with a provided prototype to return a Subclass
+     */
 	exports.extend = function (prototypeExtension, staticExtension) {
 		var Super = this;
 		var Constructor = function () { return Super.apply(this, arguments); };

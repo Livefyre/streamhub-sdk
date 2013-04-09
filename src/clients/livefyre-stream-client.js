@@ -1,12 +1,16 @@
 define(['jquery'], function($) {
 
+    /**
+     * A Client for requesting Livefyre's Stream Service
+     * @exports streamhub-sdk/clients/livefyre-stream-client
+     */
     var LivefyreStreamClient = {};
-    
+
     /**
      * Fetches content from the livefyre conversation stream with the supplied arguments.
      * @param opts.network {string} The name of the network in the livefyre platform
      * @param opts.collectionId {string} The livefyre collectionId for the conversation stream
-     * @param opts.commentId {string?} The commentId to fetch content from (default "0")
+     * @param opts.commentId {?string} The commentId to fetch content from (default "0")
      * @param callback {function} A callback that is called upon success/failure of the
      * stream request. Callback signature is "function(error, data)".
      */

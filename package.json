@@ -22,9 +22,11 @@
     "hint-jenkins": "./node_modules/jshint/bin/jshint --reporter=jslint src/* > lint.log; echo",
     "test": "node tests/runner.js",
     "test-jenkins": "node tests/runner.js > tests.log",
-    "build-version": "node tools/build_version.js"
+    "build-version": "node tools/build_version.js",
+    "jsdoc": "rm -rf docs/api && ./node_modules/jsdoc/jsdoc -c tools/jsdoc.conf.json -r src/* README.md -d docs/api"
   },
   "devDependencies": {
-    "jshint": "~1.1.0"
+    "jshint": "~1.1.0",
+    "jsdoc": "git://github.com/jsdoc3/jsdoc.git"
   }
 }

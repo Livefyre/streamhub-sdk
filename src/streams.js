@@ -1,7 +1,12 @@
+/** 
+ * A module wrap a Set of named Stream instances
+ * @module streamhub-sdk/streams
+ */
 define(['streamhub-sdk/event-emitter'], function (EventEmitter) {
 
 	/**
 	 * A Collection of Streams 
+	 * @alias module:streamhub-sdk/streams
 	 */
 	function Streams (streamObj) {
 		streamObj = streamObj || {};
@@ -36,7 +41,7 @@ define(['streamhub-sdk/event-emitter'], function (EventEmitter) {
 
 	/**
 	 * Get all the Streams inside this Streams object
-	 * @param name {String?} Get only a stream with this name
+	 * @param name {?String} Get only a stream with this name
 	 */
 	Streams.prototype.get = function (name) {
 		if (name) {

@@ -9,7 +9,7 @@ define(['jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
     /**
      * Gets an object from storage, using sync or async
      * @param key {String} the key lookup
-     * @param callback {function?} optional callback to fire in async mode
+     * @param callback {?function} optional callback to fire in async mode
      * @returns the value at the specified key position
      */
     Storage.get = function(key, callback) {
@@ -25,7 +25,7 @@ define(['jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
      * Sets an object to a key in storage, using sync or async
      * @param key {String} the key to store this under
      * @param key {Object} the value to store
-     * @param callback {function?} optional callback to fire in async mode when complete
+     * @param callback {?function} optional callback to fire in async mode when complete
      */
     Storage.set = function(key, value, callback) {
         var obj = this.cache[key];
