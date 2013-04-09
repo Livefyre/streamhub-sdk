@@ -12,7 +12,7 @@ function ($, jasmine, TwitterContent, TwitterSearchContent, jasmineJquery) {
             expect(tweetContent instanceof TwitterContent).toBe(true);
             expect(tweetContent instanceof TwitterSearchContent).toBe(true);
             expect(tweetContent.tweetId).toBe(mockData.id_str);
-            expect(tweetContent.html()).toBe(mockData.text);
+            expect(tweetContent.body.toBe(mockData.text);
             expect(tweetContent.author.twitterUserId).toBe(mockData.from_user_id_str);
             expect(tweetContent.author.displayName).toBe(mockData.from_user);
             expect(tweetContent.createdAt.getTime()).toBe((new Date(mockData.created_at)).getTime());

@@ -10,7 +10,7 @@ define([
             name: json.from_user_name,
             avatar: json.profile_image_url
         };
-        this.htmlString = json.text;
+        this.body = json.text;
         this.createdAt = new Date(json.created_at);
     };
     TwitterSearchContent.prototype = new TwitterContent();

@@ -2,17 +2,13 @@ define(['jquery',
     'streamhub-sdk/event-emitter'
 ], function($, EventEmitter) {
 
-    var Content = function(contentJson) {
+    var Content = function(body) {
         EventEmitter.call(this);
-        this.htmlString = contentJson;
+        this.body = body;
         this.attachments = [];
         this.replies = [];
     };
     $.extend(Content.prototype, EventEmitter.prototype);
-
-    Content.prototype.html = function() {
-        return this.htmlString;
-    };
 
     Content.prototype.addAttachment = function(obj) {
         this.attachments.push(obj);

@@ -4,7 +4,7 @@ define(['jquery',
 
     var LivefyreContent = function(json) {
         Content.call(this);
-        this.htmlString = json.content.bodyHtml;
+        this.body = json.content.bodyHtml;
         this.source = LivefyreContent._sources[json.source];
         this.id = json.content.id;
         this.author = json.author;

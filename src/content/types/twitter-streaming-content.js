@@ -11,7 +11,7 @@ define([
             name: json.user.name,
             avatar: json.user.profile_image_url
         };
-        this.htmlString = json.text;
+        this.body = json.text;
         this.createdAt = new Date(json.created_at);
     };
     TwitterStreamingContent.prototype = new TwitterContent();
