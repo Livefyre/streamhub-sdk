@@ -5,7 +5,6 @@
 define([
     'jquery',
     'streamhub-sdk/event-emitter',
-    'streamhub-sdk/streams',
     'streamhub-sdk/util',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/livefyre-content',
@@ -21,7 +20,6 @@ define([
 ], function(
     $,
     EventEmitter,
-    Streams,
     Util,
     Content,
     LivefyreContent,
