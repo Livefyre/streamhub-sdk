@@ -31,8 +31,8 @@ function (StreamManager, LivefyreBootstrapClient, LivefyreStream, LivefyreRevers
                 page: lastPageNum
             }, opts));
 
-            var StreamManager = new StreamManager({ 'main', mainStream, 'reverse', reverseStream });
-            callback(null, StreamManager);
+            var streamManager = new StreamManager({ 'main': mainStream, 'reverse': reverseStream });
+            callback(null, streamManager);
         });
     };
 

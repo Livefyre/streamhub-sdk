@@ -8,10 +8,11 @@ define([
     'streamhub-sdk/clients/livefyre-write-client',
     'streamhub-sdk/streams/livefyre-stream',
     'streamhub-sdk/streams/livefyre-reverse-stream',
+    'streamhub-sdk/stream-manager',
+    'streamhub-sdk/stream-helpers/livefyre-helper',
     'streamhub-sdk/content/types/livefyre-content',
     'streamhub-sdk/views/list-view',
     'streamhub-sdk/views/media-wall-view',
-    'streamhub-sdk/streams/livefyre-collection-streams',
     'text!streamhub-sdk/version.txt'
 ], function(
     Stream,
@@ -23,10 +24,11 @@ define([
     LivefyreWriteClient,
     LivefyreStream,
     LivefyreReverseStream,
+    StreamManager,
+    LivefyreStreamHelper,
     LivefyreContent,
     ListView,
     MediaWallView,
-    LivefyreCollectionStreams,
     VersionInfo
 ) {
     var Hub = {};
@@ -43,9 +45,8 @@ define([
     Hub.Streams = {};
     Hub.Streams.LivefyreStream = LivefyreStream;
     Hub.Streams.LivefyreReverseStream = LivefyreReverseStream;
-    Hub.Streams.forCollection = function (collectionOpts) {
-        return new LivefyreCollectionStreams(collectionOpts);
-    };
+
+    Hub.StreamManager = StreamManager;
 
     Hub.ContentTypes = {};
     Hub.ContentTypes.LivefyreContent = LivefyreContent;
