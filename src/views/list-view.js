@@ -9,7 +9,6 @@ function($, View, ContentView) {
      * A simple View that displays Content in a list (`<ul>` by default).
      * @alias module:streamhub-sdk/views/list-view
      * @param opts {Object} A set of options to config the view with
-     * @param opts.streams {Object.<string, Stream>} A dictionary of streams to listen to
      * @param opts.el {HTMLElement} The element in which to render the streamed content
      * @constructor
      */

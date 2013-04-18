@@ -28,12 +28,12 @@
                 "articleId": "labs_demo_fire",
                 "environment": "t402.livefyre.com"
             };
-            
-            var streams = new Hub.Streams.forCollection(opts);
 
-            var listView = window.view = new ListView({
-                streams: streams.start(),
-                el: document.getElementById("listView")
+            Hub.StreamManager.create.livefyreStreams(opts, function (err, streamManager) {
+                var listView = window.view = new ListView({
+                    el: document.getElementById("listView")
+                });
+                streamManager.bindView(listView).start();
             });
         });
         </script>

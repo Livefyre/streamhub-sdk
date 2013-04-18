@@ -13,7 +13,6 @@ define([
      * A view that displays Content in a media wall.
      * @alias module:streamhub-sdk/views/media-wall-view
      * @param opts {Object} A set of options to config the view with
-     * @param opts.streams {Object.<string, Stream>} A dictionary of streams to listen to
      * @param opts.el {HTMLElement} The element in which to render the streamed content
      * @constructor
      */
