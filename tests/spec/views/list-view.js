@@ -15,8 +15,6 @@ function (jasmine, jasmineJquery, $, ListView, Content, ContentView, Stream, Jas
             $el;
 
         beforeEach(function () {
-            spyOn(ListView.prototype, 'setElement').andCallThrough();
-
             listView = new ListView({
                 streams: {
                     main: new JasmineSpyStream()
@@ -28,28 +26,6 @@ function (jasmine, jasmineJquery, $, ListView, Content, ContentView, Stream, Jas
 
             it ("is instanceof ListView", function () {
                 expect(listView instanceof ListView).toBe(true);
-            });
-
-            it ("has .content-list CSS class", function () {
-                expect(listView.$el).toHaveClass('content-list');
-            });
-
-            it ("uses <ul> as the default .el HTML tag", function () {
-                expect(listView.$el).toBe('ul');
-            });
-
-            // @todo move to base View ?
-
-            it ("calls .setElement", function () {
-                expect(listView.setElement).toHaveBeenCalled();
-            });
-
-            it ("has a .el with class of this.elClass", function () {
-                expect(listView.$el).toHaveClass(listView.elClass);
-            });
-
-            it ("uses a .el with an HTML tag of this.elTag", function () {
-                expect(listView.$el).toBe(listView.elTag);
             });
 
             describe("with opts.el", function () {
@@ -71,9 +47,6 @@ function (jasmine, jasmineJquery, $, ListView, Content, ContentView, Stream, Jas
                     expect(listView.el).toBe(el);
                 });
 
-                it ("should have .$el set to $(opts.el)", function () {
-                    expect(listView.$el).toBe($el);
-                });
             });
         });
 
@@ -119,7 +92,7 @@ function (jasmine, jasmineJquery, $, ListView, Content, ContentView, Stream, Jas
 
             describe("and a ContentView is inserted", function () {
                 it("the new ContentView is in the DOM", function () {
-                    expect(listView.$el).toContain(newContentView.$el);
+                    expect($(listView.el)).toContain($(newContentView.el));
                 });
             });
         });

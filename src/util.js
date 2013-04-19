@@ -61,9 +61,24 @@ define(['jquery'], function ($) {
     exports.innerHeight = function(el) {
         return parseInt(el.css('height'), 10);
     };
+
+    /**
+     * Return the hostname of the correct StreamHub Service to use
+     * given client opts. If network is 'livefyre.com', the correct host to request
+     * is actually dependent on the environment.
+     * @param opts {Object} The same `opts` passed to LivefyreBootstrapClient
+     */
+    exports.streamhubHostFromOpts = function (opts) {
+        var network = opts.network;
+        var environment = opts.environment || 'livefyre.com';
+        return (network === 'livefyre.com') ? environment : network;
+    }
     
     exports.formatDate = function(stamp) {
-        return new Date(stamp*1000).toLocaleString().replace(/(.*)...(..) (.*):.* (.*)/, "$1/$2 &bull; $3 $4");
+        return new Date(stamp*1000).toLocaleString().replace(
+            /(.*)...(..) (.*):.* (.*)/,
+            "$1/$2 &bull; $3 $4"
+        );
     };
 
 	return exports;

@@ -36,6 +36,7 @@ define([
         this.network = opts.network;
         this.collectionId = opts.collectionId;
         this.commentId = opts.commentId;
+        this.environment = opts.environment;
     };
     $.extend(LivefyreStream.prototype, Stream.prototype);
     
@@ -49,11 +50,12 @@ define([
         var opts = {
             network: this.network,
             collectionId: this.collectionId,
-            commentId: this.commentId
+            commentId: this.commentId,
+            environment: this.environment
         };
         
         LivefyreStreamClient.getContent(opts, function(err, data) {
-            if (err && err != "Timeout") {
+            if (!data || err && err != "Timeout") {
                 self.emit('error', err);
                 self._endRead();
                 return;

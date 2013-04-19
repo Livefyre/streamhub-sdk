@@ -29,12 +29,12 @@
                 "environment": "t402.livefyre.com"
             };
             
-            var streams = new Hub.Streams.forCollection(opts);
-
             var listView = window.view = new ListView({
-                streams: streams.start(),
                 el: document.getElementById("listView")
             });
+
+            var livefyreStreams = Hub.StreamManager.create.livefyreStreams(opts)
+            livefyreStreams.bindView(listView).start();
         });
         </script>
     </body>

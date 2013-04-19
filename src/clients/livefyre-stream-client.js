@@ -1,4 +1,4 @@
-define(['jquery'], function($) {
+define(['jquery', 'streamhub-sdk/util'], function($, util) {
 
     /**
      * A Client for requesting Livefyre's Stream Service
@@ -17,10 +17,10 @@ define(['jquery'], function($) {
     LivefyreStreamClient.getContent = function(opts, callback) {
         opts = opts || {};
         callback = callback || function() {};
-
+        
         var url = [
             "http://stream1.",
-            opts.network,
+            util.streamhubHostFromOpts(opts),
             "/v3.0/collection/",
             opts.collectionId,
             "/",

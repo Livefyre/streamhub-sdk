@@ -58,9 +58,11 @@
             };
             
             var view = window.gene = new MediaWallView({
-                streams: new Hub.Streams.forCollection(opts).start(),
                 el: document.getElementById("view")
             });
+
+            var livefyreStreams = Hub.StreamManager.create.livefyreStreams(opts)
+            livefyreStreams.bindView(view).start();
         });
         </script>
     </body>

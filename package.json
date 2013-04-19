@@ -24,6 +24,7 @@
     "test": "node tests/runner.js",
     "test-jenkins": "node tests/runner.js > tests.log",
     "build-version": "node tools/build_version.js",
+    "lessc": "./node_modules/less/bin/lessc src/content/css/content.{less,css}",
     "jsdoc": "rm -rf docs/api && ./node_modules/jsdoc/jsdoc -c tools/jsdoc.conf.json -r src/* README.md -d docs/api"
   },
   "devDependencies": {

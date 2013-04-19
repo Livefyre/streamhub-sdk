@@ -1,4 +1,4 @@
-define(['jquery', 'base64'], function($) {
+define(['streamhub-sdk/util', 'jquery', 'base64'], function(util, $) {
 
     /**
      * A Client for requesting Livefyre's Bootstrap Service
@@ -22,7 +22,8 @@ define(['jquery', 'base64'], function($) {
         callback = callback || function() {};
 
         var url = [
-            bootstrapHostFromOpts(opts),
+            'http://bootstrap.',
+            util.streamhubHostFromOpts(opts),
             "/bs3/",
             opts.environment ? opts.environment + "/" : "",
             opts.network,
@@ -49,22 +50,6 @@ define(['jquery', 'base64'], function($) {
             }
         });
     };
-
-    /**
-     * Return the hostname of the correct Bootstrap Service to use
-     * given client opts. If network is 'livefyre.com', the correct host to request
-     * is actually dependent on the environment.
-     * @param opts {Object} The same `opts` passed to LivefyreBootstrapClient
-     */
-    function bootstrapHostFromOpts (opts) {
-        var network = opts.network;
-        var environment = opts.environment || 'livefyre.com';
-        var bootstrapHost = [
-            'http://bootstrap.',
-            (network === 'livefyre.com') ? environment : network
-        ].join("");
-        return bootstrapHost;
-    }
 
     return LivefyreBootstrapClient;
 

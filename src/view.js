@@ -5,7 +5,6 @@
 define([
     'jquery',
     'streamhub-sdk/event-emitter',
-    'streamhub-sdk/streams',
     'streamhub-sdk/util',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/livefyre-content',
@@ -21,7 +20,6 @@ define([
 ], function(
     $,
     EventEmitter,
-    Streams,
     Util,
     Content,
     LivefyreContent,
@@ -37,10 +35,9 @@ define([
 ) {
 
     /**
-     * Defines a base view object that listens to a set streams, adds objects to an 
-     * internal collection when received from the streams, and then emits an 'add' event.
-     * Subclasses are responsible for listening to the "add" events and using them to 
-     * display streamed content.
+     * Defines a base view object that can be bound to any number of stream-managers. Content is
+     * passed into a view via "add" event on "this". Subclasses are responsible for listening to
+     * the "add" events and using them to display streamed content.
      * @alias module:streamhub-sdk/view
      * @param opts {Object} A set of options to config the view with
      * @param opts.streams {Object.<string, Stream>} A dictionary of streams to listen to
@@ -52,22 +49,8 @@ define([
         opts = opts || {};
         this.opts = opts;
 
-        var streams = opts.streams;
-        if (!(streams instanceof Streams)) {
-            streams = new Streams(streams);
-        }
-        this.streams = streams;
-
         this.el = opts.el;
         this.contentRegistry = View.DEFAULT_REGISTRY;
-
-        var self = this;
-
-        streams.on('readable', function (stream) {
-            var content = stream.read();
-            self.emit('add', content, stream, self);
-        });
-
         this.initialize.apply(this, arguments);
     };
     $.extend(View.prototype, EventEmitter.prototype);
