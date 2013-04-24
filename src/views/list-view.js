@@ -16,6 +16,8 @@ function($, View, ContentView) {
         opts = opts || {};
         View.call(this, opts);
 
+        $(this.el).addClass('streamhub-list-view');
+
         this.contentViews = [];
 
         var self = this;

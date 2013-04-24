@@ -21,6 +21,7 @@ define([
         var self = this;
         
         this.el = opts.el || document.createElement('div');
+        $(this.el).addClass('streamhub-media-wall-view');
         this.sortOrder = opts.sortOrder || (function(obj) {
             return obj.createdAt * 1000 || 0;
         });
