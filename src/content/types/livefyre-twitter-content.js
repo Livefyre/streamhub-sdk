@@ -4,17 +4,17 @@ define([
     'streamhub-sdk/content/types/livefyre-content'
 ], function($, TwitterContent, LivefyreContent) {
 
-    var LivefyreTweet = function (json) {
+    var LivefyreTwitterContent = function (json) {
         LivefyreContent.call(this, json);
         TwitterContent.call(this, json);
-        this.tweetId = LivefyreTweet.tweetIdFromLivefyreId(this.id);
+        this.tweetId = LivefyreTwitterContent.tweetIdFromLivefyreId(this.id);
         if (this.author) {
-            this.author.twitterUserId = LivefyreTweet.twitterUserIdFromLivefyreAuthorId(this.author.id);
+            this.author.twitterUserId = LivefyreTwitterContent.twitterUserIdFromLivefyreAuthorId(this.author.id);
         }
     };
-    LivefyreTweet.prototype = $.extend({ constructor: LivefyreContent }, LivefyreContent.prototype, TwitterContent.prototype);
+    LivefyreTwitterContent.prototype = $.extend(new LivefyreContent(), TwitterContent.prototype);
 
-    LivefyreTweet.tweetIdFromLivefyreId = function (livefyreId) {
+    LivefyreTwitterContent.tweetIdFromLivefyreId = function (livefyreId) {
         if (!livefyreId) {
             return;
         }
@@ -26,7 +26,7 @@ define([
         return match[1];
     };
 
-    LivefyreTweet.twitterUserIdFromLivefyreAuthorId = function (authorId) {
+    LivefyreTwitterContent.twitterUserIdFromLivefyreAuthorId = function (authorId) {
         if (!authorId) {
             return;
         }
@@ -38,5 +38,5 @@ define([
         return match[1];
     };
      
-    return LivefyreTweet;
+    return LivefyreTwitterContent;
  });

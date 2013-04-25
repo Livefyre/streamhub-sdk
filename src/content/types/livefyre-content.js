@@ -2,6 +2,9 @@ define(['jquery', 'streamhub-sdk/content/content'], function($, Content) {
 
     var LivefyreContent = function(json) {
         Content.call(this);
+        if ( ! json) {
+            return this;
+        }
         this.body = json.content.bodyHtml;
         this.source = json.sourceName;
         this.id = json.content.id;
