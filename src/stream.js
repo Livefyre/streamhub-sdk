@@ -56,19 +56,23 @@ define(['jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
     /**
      * Overridable write method for stream implementations. In this base class, the default
      * implementation will emit a "not implemented" error.
+     * @param content {string} The content body
      * @param opts {Object} Options for the implemented subclass's _write
+     * @param callback {Function} The callback to invoke once write completes
      * @private
      */
-    Stream.prototype._write = function(opts) {
+    Stream.prototype._write = function(content, opts, callback) {
         this.emit('error', new Error('not implemented'));
     };
     
     /**
      * Writes the supplied options to the stream by passing them to the implementing stream's
      * _write method;
+     * @param content {string} The content body
      * @param opts {Object} Options to pass to the implemented subclass's _write
-     */    
-    Stream.prototype.write = function(opts) {
+     * @param callback {Function} The callback to invoke once write completes
+     */
+    Stream.prototype.write = function(content, opts, callback) {
         this._write.apply(this, arguments);
     };
 
