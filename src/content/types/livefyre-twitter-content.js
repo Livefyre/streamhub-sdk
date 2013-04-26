@@ -4,6 +4,12 @@ define([
     'streamhub-sdk/content/types/livefyre-content'
 ], function($, TwitterContent, LivefyreContent) {
 
+    /**
+     * A tweet constructed from a StreamHub state response from a twitter source
+     * @param json {Object} A state response from a StreamHub API
+     * @param json.id {String} A Livefyre Message ID for this Content
+     * @param [json.author.id] {String} A Livefyre Author ID for the tweeter
+     */
     var LivefyreTwitterContent = function (json) {
         LivefyreContent.call(this, json);
         TwitterContent.call(this, json);
@@ -14,10 +20,13 @@ define([
     };
     LivefyreTwitterContent.prototype = $.extend(new LivefyreContent(), TwitterContent.prototype);
 
+    /**
+     * Transform a Livefyre Message ID to a Twitter tweet id
+     * @param livefyreId {String} A Livefyre Message ID
+     * @throws {Error} If livefyreId cannot be parsed
+     * @return {String} A tweet ID
+     */
     LivefyreTwitterContent.tweetIdFromLivefyreId = function (livefyreId) {
-        if (!livefyreId) {
-            return;
-        }
         var pattern = /tweet-(\d+)@twitter.com/,
             match = livefyreId.match(pattern);
         if ( ! match) {
@@ -26,10 +35,13 @@ define([
         return match[1];
     };
 
+    /**
+     * Transform a Livefyre authorId to a Twitter user id
+     * @param authorId {String} A Livefyre authorId
+     * @throws {Error} If authorId cannot be parsed
+     * @return {String} A Twitter user id if parseable
+     */
     LivefyreTwitterContent.twitterUserIdFromLivefyreAuthorId = function (authorId) {
-        if (!authorId) {
-            return;
-        }
         var pattern = /([^@]+)@twitter.com/,
             match = authorId.match(pattern);
         if ( ! match) {
@@ -37,6 +49,6 @@ define([
         }
         return match[1];
     };
-     
+
     return LivefyreTwitterContent;
  });

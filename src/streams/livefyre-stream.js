@@ -11,7 +11,7 @@ define([
     'streamhub-sdk/content/types/livefyre-content',
     'streamhub-sdk/content/types/livefyre-twitter-content',
     'streamhub-sdk/content/types/livefyre-facebook-content',
-    'streamhub-sdk/content/types/oembed',
+    'streamhub-sdk/content/types/livefyre-oembed',
     'streamhub-sdk/storage'
 ], function(
     $,
@@ -22,7 +22,7 @@ define([
     LivefyreContent,
     LivefyreTwitterContent,
     LivefyreFacebookContent,
-    Oembed,
+    LivefyreOembed,
     Storage
 ) {
 
@@ -96,7 +96,7 @@ define([
             if (state.content.targetId && Storage.get(state.content.targetId)) {
                 parentContent = Storage.get(state.content.targetId);
             
-                if (content instanceof Oembed) { // oembed
+                if (content instanceof LivefyreOembed) { // oembed
                     parentContent.addAttachment(content);
                 } else {
                     parentContent.addReply(content);
@@ -165,33 +165,15 @@ define([
             callback.call(self, null, content);
         });
     };
-    
-    LivefyreStream.SOURCES = [
-        "livefyre", 
-        "twitter",
-        "twitter",
-        "facebook",
-        "livefyre",
-        "livefyre",
-        "facebook",
-        "twitter",
-        "livefyre",
-        "unknown",
-        "unknown",
-        "unknown",
-        "unknown",
-        "feed",
-        "facebook"
-    ];
 
     LivefyreStream.createContent = function(state) {
-        state.sourceName = LivefyreStream.SOURCES[state.source];
-        
+        var sourceName = LivefyreContent.SOURCES[state.source];
+
         if (state.type === 3) {
-            return new Oembed(state);
-        } else if (state.sourceName === 'twitter') {
+            return new LivefyreOembed(state);
+        } else if (sourceName === 'twitter') {
             return new LivefyreTwitterContent(state);
-        } else if (state.sourceName === 'facebook') {
+        } else if (sourceName === 'facebook') {
             return new LivefyreFacebookContent(state);
         } else {
             return new LivefyreContent(state);
