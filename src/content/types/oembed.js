@@ -25,6 +25,24 @@ define(['jquery', 'streamhub-sdk/content/content'], function($, Content) {
     $.extend(Oembed.prototype, Content.prototype);
 
     Oembed.types = ['photo', 'video', 'link', 'rich'];
+    Oembed.properties = ['type', 'version', 'title', 'author_name', 'author_url',
+        'provider_name', 'provider_url', 'cache_age', 'thumbnail_url', 'thumbnail_width',
+        'thumbnail_height', 'url', 'width', 'height', 'html'];
+
+    /**
+     * Get a raw JSON Object that is valid oEmbed v1.0
+     * It will not be an instance of Oembed
+     */
+    Oembed.prototype.toJSON = function () {
+        var self = this,
+            oembedJson = {};
+        $.each(Oembed.properties, function (index, property) {
+            if (typeof self[property] !== 'undefined') {
+                oembedJson[property] = self[property];
+            }
+        });
+        return oembedJson;
+    };
 
     return Oembed;
  });

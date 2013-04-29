@@ -30,6 +30,14 @@ function ($, jasmine, jasmineJquery, Oembed) {
 				var oembed = new Oembed({ type: 'none' });
 		    }).toThrow();
 		});
+		it(".toJSON returns a valid oEmbed JSON Object", function () {
+			var oembed = new Oembed(mockOembed);
+			oembed.omg = 'bbq';
+			var oembedJson = oembed.toJSON();
+			for (var property in oembedJson) {
+				expect(Oembed.properties.indexOf(property)).toBeGreaterThan(-1);
+			}
+		});
 	});
 
 });

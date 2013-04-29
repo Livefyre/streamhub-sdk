@@ -27,9 +27,10 @@
     }
     </style>
     <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+    <script type="text/javascript" src="//api.filepicker.io/v1/filepicker.js"></script>
 </head>
     <body>
-        
+        <a class="file-picker">Pick File</a>
         <form class="content-form">
             <input type="text" name="content-body" />
         </form>
@@ -67,8 +68,14 @@
             });
             tweetStreams.bind(tweetListView).start();            
         });
-        require(['jquery', 'streamhub-sdk', 'streamhub-sdk/content/types/twitter-content', 'streamhub-sdk/storage'], 
-        function ($, Hub, TwitterContent, Storage) {
+        require([
+            'jquery',
+            'streamhub-sdk',
+            'streamhub-sdk/content/content',
+            'streamhub-sdk/content/types/twitter-content',
+            'streamhub-sdk/content/types/oembed',
+            'streamhub-sdk/storage'], 
+        function ($, Hub, Content, TwitterContent, Oembed, Storage) {
             var $contentForm = $('.content-form');
             $contentForm.submit(onContentFormSubmit);
             function onContentFormSubmit (e) {
@@ -128,7 +135,32 @@
                         $tweetViewEl.removeClass('content-loading');
                     })
                 })
-            })
+            });
+
+            $(function ($) {
+                filepicker.setKey('AYNlO8P2PT6qnCfo9eCw2z');
+                var $filePicker = $('.file-picker');
+                $filePicker.on('click', function (e) {
+                    filepicker.pick({mimetype: 'image/*'}, function (fpFile) {
+                        var content = contentFromFPFile(fpFile);
+
+                        streams.get('main').write(content, { lftoken: lftoken }, function (err, writtenContent) {
+                            console.log("Filepicked Content written", writtenContent);
+                        });
+
+                    });
+                });
+
+                function contentFromFPFile (fpFile) {
+                    var content = new Content(fpFile.url);
+                    content.addAttachment(new Oembed({
+                        version: '1.0',
+                        type: 'photo',
+                        url: fpFile.url
+                    }));
+                    return content;
+                }
+            });
         });
         </script>
     </body>

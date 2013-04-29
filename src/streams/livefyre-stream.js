@@ -129,7 +129,8 @@ define([
     LivefyreStream.prototype._write = function(content, opts, callback) {        
         var params,
             self = this,
-            post = LivefyreWriteClient.postContent;
+            post = LivefyreWriteClient.postContent,
+            attachments;
 
         if ( ! opts || ! opts.lftoken) {
             throw new Error("LivefyreStream::write must be passed opts.lftoken");
@@ -145,6 +146,13 @@ define([
             lftoken: opts.lftoken,
             body: content.body
         };
+
+        if (content.attachments && content.attachments.length) {
+            params.media = [];
+            $(content.attachments).each(function (index, attachment) {
+                params.media.push(attachment.toJSON());
+            });
+        }
 
         // Use postTweet method if writing a .tweetId
         if (content.tweetId) {

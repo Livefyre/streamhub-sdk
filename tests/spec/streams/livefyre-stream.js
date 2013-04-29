@@ -3,11 +3,13 @@ define([
     'jasmine',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/twitter-content',
+    'streamhub-sdk/content/types/oembed',
+    'streamhub-sdk/content/types/livefyre-oembed',
     'streamhub-sdk/streams/livefyre-stream',
     'streamhub-sdk/clients/livefyre-stream-client',
     'streamhub-sdk/clients/livefyre-write-client',
     'jasmine-jquery'],
-function ($, jasmine, Content, TwitterContent, LivefyreStream, LivefyreStreamClient,
+function ($, jasmine, Content, TwitterContent, Oembed, LivefyreOembed, LivefyreStream, LivefyreStreamClient,
 LivefyreWriteClient) {
     describe('A LivefyreStream', function () {
 
@@ -120,6 +122,45 @@ LivefyreWriteClient) {
                 expect(stream._write).toHaveBeenCalled();
                 expect(LivefyreWriteClient.postContent).toHaveBeenCalled();
                 expect(onWriteSpy).not.toHaveBeenCalled();
+            });
+
+            it("can write a Content with Oembed attachments", function () {
+                var content = new Content('Woah!'),
+                    mockOembed = {
+                        "version": "1.0",
+                        "type": "photo",
+                        "width": 240,
+                        "height": 160,
+                        "title": "ZB8T0193",
+                        "url": "http://farm4.static.flickr.com/3123/2341623661_7c99f48bbf_m.jpg",
+                        "author_name": "Bees",
+                        "author_url": "http://www.flickr.com/photos/bees/",
+                        "provider_name": "Flickr",
+                        "provider_url": "http://www.flickr.com/"
+                    },
+                    oembed = new Oembed(mockOembed);
+                content.addAttachment(oembed);
+                stream.write(content, { lftoken: 'token' }, onWriteSpy);
+                expect(stream._write).toHaveBeenCalled();
+                expect(LivefyreWriteClient.postContent).toHaveBeenCalled();
+                expect(LivefyreWriteClient.postContent.mostRecentCall.args[0].media[0].url).toBe(mockOembed.url);
+                expect(onWriteSpy).toHaveBeenCalled();
+                expect(onWriteSpy.mostRecentCall.args[0]).toBe(null);
+                expect(onWriteSpy.mostRecentCall.args[1]).toBe(content);
+            });
+
+            it("can write a Content with LivefyreOembed attachments", function () {
+                var content = new Content('Woah!'),
+                    mockLivefyreOembedData = {"content": {"targetId": "tweet-327531558825230338@twitter.com", "authorId": "-", "link": "http://twitter.com/ReedEsposito/status/327531558825230338/photo/1", "position": 5, "oembed": {"provider_url": "http://twitter.com", "version": "1.0", "title": "Twitter / ReedEsposito: I love my friends and photoshop ...", "url": "https://pbs.twimg.com/media/BIugN6kCAAAxHDN.gif:large", "author_name": "ReedEsposito", "height": 281, "width": 500, "html": "", "thumbnail_width": 150, "provider_name": "Twitter", "thumbnail_url": "https://pbs.twimg.com/media/BIugN6kCAAAxHDN.gif:thumb", "type": "photo", "thumbnail_height": 150, "author_url": "http://twitter.com/ReedEsposito"}, "id": "oem-5-tweet-327531558825230338@twitter.com"}, "vis": 1, "type": 3, "event": 1366924601375801, "source": 1},
+                    oembed = new LivefyreOembed(mockLivefyreOembedData);
+                content.addAttachment(oembed);
+                stream.write(content, { lftoken: 'token' }, onWriteSpy);
+                expect(stream._write).toHaveBeenCalled();
+                expect(LivefyreWriteClient.postContent).toHaveBeenCalled();
+                expect(LivefyreWriteClient.postContent.mostRecentCall.args[0].media[0].url).toBe(mockLivefyreOembedData.content.oembed.url);
+                expect(onWriteSpy).toHaveBeenCalled();
+                expect(onWriteSpy.mostRecentCall.args[0]).toBe(null);
+                expect(onWriteSpy.mostRecentCall.args[1]).toBe(content);
             });
 
             it("can write a TwitterContent instance", function () {

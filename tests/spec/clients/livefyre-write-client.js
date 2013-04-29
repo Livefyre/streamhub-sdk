@@ -40,5 +40,29 @@ function ($, jasmine, LivefyreWriteClient) {
                 expect(callback.mostRecentCall.args[1]).toBe(mockData);
             });                            
         });
+
+        it ("should post media attachments", function () {
+            opts.media = [{
+                version: "1.0",
+                type: "photo",
+                url: "http://distilleryimage10.instagram.com/386628d690c511e2bf9022000a1fb723_6.jpg"
+            },{
+                version: "1.0",
+                type: "photo",
+                url: "http://d.pr/i/CBpa+"
+            }];
+            LivefyreWriteClient.postContent(opts, callback);
+            waitsFor(function() {
+                return callback.callCount > 0;
+            });
+            runs(function() {
+                expect($.ajax.mostRecentCall.args[0].data.media).toBe(JSON.stringify(opts.media));
+                expect(callback).toHaveBeenCalled();
+                expect(callback.callCount).toBe(1);
+                expect(callback.mostRecentCall.args[0]).toBeNull();
+                expect(callback.mostRecentCall.args[1]).toBeDefined();
+                expect(callback.mostRecentCall.args[1]).toBe(mockData);
+            });                            
+        });
     }); 
 });
