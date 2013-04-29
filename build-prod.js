@@ -28,6 +28,10 @@
     excludeHogan: true
   },
   optimize: "uglify2",
+  wrap: {
+    startFile: 'tools/wrap/start.frag.js',
+    endFile: 'tools/wrap/end.frag.js'
+  },
   uglify2: {
     compress: {
       unsafe: true
