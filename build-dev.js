@@ -23,6 +23,7 @@
   pragmasOnSave: {
     excludeHogan: true
   },
+  namespace: 'Livefyre',
   out: "streamhub-sdk.built.js",
   optimize: "uglify2",
   uglify2: {

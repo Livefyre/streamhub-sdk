@@ -24,14 +24,11 @@
 
   //todo: make this streamhub-sdk-$SDK_VERSION+build.$BUILD_NUMBER.min.js
   out: "streamhub-sdk.min.js",
+  namespace: 'Livefyre',
   pragmasOnSave: {
     excludeHogan: true
   },
   optimize: "uglify2",
-  wrap: {
-    startFile: 'tools/wrap/start.frag.js',
-    endFile: 'tools/wrap/end.frag.js'
-  },
   uglify2: {
     compress: {
       unsafe: true
