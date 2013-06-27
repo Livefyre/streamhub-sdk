@@ -11,7 +11,9 @@
         {{^author.url}}
             <span class="content-author-name">{{ author.displayName }}</span>
         {{/author.url}}
-        <div class="content-created-at">{{{formattedCreatedAt}}}</div>
+        {{#formattedCreatedAt}}
+            <div class="content-created-at">{{{formattedCreatedAt}}}</div>
+        {{/formattedCreatedAt}}
     </div>
 	<div class="content-body">
     	{{{ body }}}

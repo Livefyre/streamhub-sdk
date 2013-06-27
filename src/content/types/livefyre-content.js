@@ -17,8 +17,8 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content'], function($, Co
         this.source = LivefyreContent.SOURCES[json.source];
         this.id = json.content.id;
         this.author = json.author;
-        this.createdAt = json.content.createdAt;
-        this.updatedAt = json.content.updatedAt;
+        this.createdAt = new Date(1000 * json.content.createdAt);
+        this.updatedAt = new Date(1000 * json.content.updatedAt);
         this.visibility = json.vis;
         this.meta = json;
     };

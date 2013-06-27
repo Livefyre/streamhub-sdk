@@ -33,6 +33,12 @@ function ($, jasmine, LivefyreContent) {
             it("should have a content .body", function () {
                 expect(content.body).toBe(mock.content.bodyHtml);
             });
+            it("should have .createdAt as a Date object", function () {
+                expect(content.createdAt instanceof Date).toBe(true);
+            });
+            it("should have .updatedAt as a Date object", function () {
+                expect(content.updatedAt instanceof Date).toBe(true);
+            });
         }
 
         it("should not allow duplicate attachments to be added", function () {
@@ -41,7 +47,7 @@ function ($, jasmine, LivefyreContent) {
             content.on('attachment', spy);
             content.addAttachment({id: '12345'});
             content.addAttachment({id: '12345'});
-            
+
             expect(spy.callCount).toBe(1);
             expect(content.attachments.length).toBe(1);
         });
@@ -51,7 +57,7 @@ function ($, jasmine, LivefyreContent) {
             content.on('reply', spy);
             content.addReply({id: '12345'});
             content.addReply({id: '12345'});
-            
+
             expect(spy.callCount).toBe(1);
             expect(content.replies.length).toBe(1);
         });

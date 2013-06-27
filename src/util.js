@@ -63,8 +63,13 @@ define(['streamhub-sdk/jquery'], function ($) {
         return parseInt(el.css('height'), 10);
     };
 
-    exports.formatDate = function(stamp) {
-        return new Date(stamp*1000).toLocaleString().replace(
+    /**
+     * Format a date object to be displayed to humans
+     * @param date {Date} A JavaScript Date object
+     * @return {string} A formatted timestamp like "5/27//06 • 3:26 AM"
+     */
+    exports.formatDate = function(date) {
+        return date.toLocaleString().replace(
             /(.*)...(..) (.*):.* (.*)/,
             "$1/$2 &bull; $3 $4"
         );

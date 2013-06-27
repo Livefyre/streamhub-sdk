@@ -31,6 +31,7 @@
 
                 var specs = [];
                 specs.push('tests/spec/main');
+                specs.push('tests/spec/util');
                 specs.push('tests/spec/stream');
                 specs.push('tests/spec/view');
                 specs.push('tests/spec/event-emitter');
@@ -51,6 +52,8 @@
                 specs.push('tests/spec/content/types/livefyre-content');
                 specs.push('tests/spec/content/types/oembed');
                 specs.push('tests/spec/content/types/livefyre-oembed');
+
+                specs.push('tests/spec/content/views/content-view');
                 
                 $(function(){
                     require(specs, function(){

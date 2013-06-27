@@ -1,6 +1,6 @@
 define(['streamhub-sdk/jquery', 'streamhub-sdk/view', 'streamhub-sdk/content/views/content-view'],
 function($, View, ContentView) {
-    
+
     /**
      * A simple View that displays Content in a list (`<ul>` by default).
      * @param opts {Object} A set of options to config the view with
@@ -20,12 +20,29 @@ function($, View, ContentView) {
     };
     $.extend(ListView.prototype, View.prototype);
 
+
+    /**
+     * Comparator function to determine ordering of ContentViews.
+     * ContentView elements indexes in this.el will be ordered by this
+     * By default, order on contentView.content.createdAt or contentView.createdAt
+     *     in descending order (new first)
+     * @param a {ContentView}
+     * @param b {ContentView}
+     * @return {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
+     */
+    ListView.prototype.comparator = function (a, b) {
+        var aDate = a.content.createdAt || a.createdAt,
+            bDate = b.content.createdAt || b.createdAt;
+        return bDate - aDate;
+    };
+
+
     /**
      * Add a piece of Content to the ListView
      *     .createContentView(content)
      *     add newContentView to this.contentViews[]
      *     render the newContentView
-     *     insert the newContentView into this.el
+     *     insert the newContentView into this.el according to this.comparator
      * @param content {Content} A Content model to add to the ListView
      * @return the newly created ContentView
      */
@@ -37,14 +54,39 @@ function($, View, ContentView) {
         }
 
         contentView = this.createContentView(content);
-        this.contentViews.push(contentView);
         contentView.render();
 
-        // @todo implement more excellent logic for sorting
-        $(contentView.el).prependTo(this.el);
+        // Add to DOM
+        this._insert(contentView);
 
         return contentView;
     };
+
+    /**
+     * @private
+     * Insert a contentView into the ListView's .el
+     * Get insertion index based on this.comparator
+     */
+    ListView.prototype._insert = function (contentView) {
+        var newContentViewIndex,
+            $previousEl;
+
+        // Push and sort. #TODO Insert in sorted order
+        this.contentViews.push(contentView);
+        this.contentViews.sort(this.comparator);
+
+        newContentViewIndex = this.contentViews.indexOf(contentView);
+
+        if (newContentViewIndex === 0) {
+            // Beginning!
+            contentView.$el.prependTo(this.el);
+        } else {
+            // Find it's previous contentView and insert new contentView after
+            $previousEl = this.contentViews[newContentViewIndex - 1].$el;
+            contentView.$el.insertAfter($previousEl);
+        }
+    };
+
 
     /**
      * Given a new Content instance, return an existing contentView that

@@ -50,6 +50,88 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
             });
         });
 
+        describe("when the default comparator is pased ContentViews a, b", function () {
+            var baseDate = new Date(),
+                earlierDate = new Date(),
+                laterDate = new Date();
+
+            earlierDate.setFullYear(2012);
+            baseDate.setFullYear(2013);
+            laterDate.setFullYear(2014);
+            
+            describe("and a, b both have .content.createdAt", function () {
+                var earlyContent = new Content({ body: 'early' }),
+                    lateContent = new Content({ body: 'later' }),
+                    earlyContentView = new ContentView({ content: earlyContent }),
+                    lateContentView = new ContentView({ content: lateContent });
+
+                earlyContent.createdAt = earlierDate;
+                lateContent.createdAt = laterDate;
+
+                it("returns < 0 if a.content was created after b.content", function () {
+                    expect(listView.comparator(lateContentView, earlyContentView)).toBeLessThan(0);
+                });
+                it("returns > 0 if a.content was created before b.content", function () {
+                    expect(listView.comparator(earlyContentView, lateContentView)).toBeGreaterThan(0);
+                }); 
+                it("returns 0 if a.content was created at the same time as b.content", function () {
+                    expect(listView.comparator(earlyContentView, earlyContentView)).toBe(0);
+                }); 
+            });
+
+            describe("and neither a nor b have .content.createdAt", function () {
+                var a = new ContentView({ content: new Content('early') }),
+                    b = new ContentView({ content: new Content('late') });
+                it("returns < 0 if a was created after b", function () {
+                    a.createdAt = laterDate;
+                    b.createdAt = earlierDate;
+                    expect(listView.comparator(a, b)).toBeLessThan(0);
+                });
+                it("returns > 0 if a was created before b", function () {
+                    a.createdAt = earlierDate;
+                    b.createdAt = laterDate;
+                    expect(listView.comparator(a, b)).toBeGreaterThan(0);
+                });
+            });
+
+            describe("and a.content has no .createdAt and b.content does", function () {
+                var b = new ContentView({ content: new Content('b') });
+                b.content.createdAt = baseDate;
+
+                var a = new ContentView({ content: new Content('a') });
+
+                // Comparing custom content to bootstrap Content, custom first
+                it("returns < 0 if a.createdAt is after b.content.createdAt", function () {
+                    a.createdAt = laterDate;
+                    expect(listView.comparator(a, b)).toBeLessThan(0);
+                });
+                // Comparing custom content to new streaming content, new content first
+                it("returns > 0 if a.createdAt is before b.content.createdAt", function () {
+                    a.createdAt = earlierDate;
+                    expect(listView.comparator(a, b)).toBeGreaterThan(0);
+                })
+            });
+
+            describe("and b.content has no .createdAt and a.content does", function () {
+                var a = new ContentView({ content: new Content('a') });
+                a.content.createdAt = baseDate;
+
+                var b = new ContentView({ content: new Content('b') });
+
+                // Comparing new stream content to custom content, stream first
+                it("returns < 0 if a.content.createdAt is after b.createdAt", function () {
+                    b.createdAt = earlierDate;
+                    expect(listView.comparator(a, b)).toBeLessThan(0);
+                });
+                // Comparing old bootstrap content to custom content, custom first
+                it("returns > 0 if a.content.createdAt is before b.createdAt", function () {
+                    b.createdAt = laterDate;
+                    expect(listView.comparator(a, b)).toBeGreaterThan(0);
+                })
+            });
+            
+        });
+
         describe("when adding Content", function () {
             var content,
                 newContentView;
