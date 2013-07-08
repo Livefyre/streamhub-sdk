@@ -11,10 +11,17 @@ define([
      * @constructor
      */ 
     var LivefyreFacebookContent = function (json) {
-        LivefyreContent.call(this, json); 
-        var bodyEl = $(this.body);
-        bodyEl.find('.fyre-image, .fyre-link').remove();
-        this.body = bodyEl.html();
+        LivefyreContent.call(this, json);
+
+        // There may be times when Facebook content is just a string with no HTML.
+        // Sizzle may throw an error, so wrap any parsing to avoid these errors.
+        try {
+            var bodyEl = $(this.body);
+            bodyEl.find('.fyre-image, .fyre-link').remove();
+            this.body = bodyEl.html();
+        } catch(e) {
+            // Pass
+        }
     };
     $.extend(LivefyreFacebookContent.prototype, LivefyreContent.prototype);
     
