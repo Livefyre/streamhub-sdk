@@ -41,5 +41,32 @@ function ($, jasmine, LivefyreReverseStream, LivefyreBootstrapClient) {
                 expect(stream._push.callCount).toBe(48);
             });                            
         });
-    }); 
+
+        it ("should not emit content from states that are not visible", function () {
+            var nonVisState = {
+                erefs: ["PF48kezy4YAeCjXtsYv379JcxaqFjgt1J0n89+ixAF26p+hMnmyimWdVuE6oofxWzXmoQYdFsBZ3+1IpUXEh+C5tPkcyZbDTRzYgPgU1ZN/0OdbNJpw="],
+                source: 1,
+                content: {
+                    replaces: "",
+                    id: "tweet-351026197783785472@twitter.com",
+                    createdAt: 1372526142,
+                    parentId: ""
+                },
+                vis: 2,
+                type: 0,
+                event: 1372526143230762,
+                childContent: []
+            };
+
+            mockData.content = [nonVisState];
+            stream._read();
+
+            waitsFor(function() {
+                return stream._endRead.callCount > 0;
+            });
+            runs(function() {
+                expect(stream._push.callCount).toBe(0);
+            });
+        });
+    });
 });

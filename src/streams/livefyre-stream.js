@@ -86,7 +86,8 @@ define([
     LivefyreStream.prototype._handleState = function (state, authors) {
         var self = this,
             content,
-            thisContentBeingWritten;
+            thisContentBeingWritten,
+            allChildren;
         if (state.content && state.content.authorId) {
             state.author = authors[state.content.authorId];
             content = LivefyreStream.createContent(state);
@@ -103,7 +104,7 @@ define([
                     parentContent.addAttachment(content);
                 } else {
                    // put this oembed/reply in storage for later if we receive the parent
-                   var allChildren = Storage.get('children_' + state.content.targetId) || [];
+                   allChildren = Storage.get('children_' + state.content.targetId) || [];
                    allChildren.push(content);
                    Storage.set('children_' + state.content.targetId, allChildren); 
                 }
@@ -113,7 +114,7 @@ define([
                     parentContent.addReply(content);
                 } else {
                    // put this oembed/reply in storage for later if we receive the parent
-                   var allChildren = Storage.get('children_' + state.content.parentId) || [];
+                   allChildren = Storage.get('children_' + state.content.parentId) || [];
                    allChildren.push(content);
                    Storage.set('children_' + state.content.parentId, allChildren);
                 }

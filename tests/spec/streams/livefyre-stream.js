@@ -90,6 +90,36 @@ LivefyreWriteClient, Storage) {
             });
         });
 
+        it ("should not emit content from states that are not visible", function () {
+            // For now we just make sure not to emit content for non vis=1 states
+            // Later, we should test that Content in storage is updated when it has been deleted
+            var nonVisState = {
+                erefs: ["PF48kezy4YAeCjXtsYv379JcxaqFjgt1J0n89+ixAF26p+hMnmyimWdVuE6oofxWzXmoQYdFsBZ3+1IpUXEh+C5tPkcyZbDTRzYgPgU1ZN/0OdbNJpw="],
+                source: 1,
+                content: {
+                    replaces: "",
+                    id: "tweet-351026197783785472@twitter.com",
+                    createdAt: 1372526142,
+                    parentId: ""
+                },
+                vis: 2,
+                type: 0,
+                event: 1372526143230762,
+                childContent: []
+            };
+            mockData.states = {};
+            mockData.states[nonVisState.content.id] = nonVisState;
+            stream._read();
+            finished = true;
+
+            waitsFor(function() {
+                return stream._endRead.callCount > 0;
+            });
+            runs(function() {
+                expect(stream._push.callCount).toBe(0);
+            });
+        });
+
         describe(".write()", function () {
             var mockWriteResponse = {"status": "ok", "code": 200, "data": {"messages": [{"content": {"replaces": null, "bodyHtml": "<p>oh hi there 2</p>", "annotations": {"moderator": true}, "source": 0, "authorId": "system@labs-t402.fyre.co", "parentId": null, "mentions": [], "shareLink": "http://t402.livefyre.com/.fyreit/w9lbch.4", "id": "26394571", "createdAt": 1363808885}, "vis": 1, "type": 0, "event": null, "source": 0}], "authors": {"system@labs-t402.fyre.co": {"displayName": "system", "tags": [], "profileUrl": "", "avatar": "http://gravatar.com/avatar/e23293c6dfc25b86762b045336233add/?s=50&d=http://d10g4z0y9q0fip.cloudfront.net/a/anon/50.jpg", "type": 1, "id": "system@labs-t402.fyre.co"}}}},
                 mockWriteTweetResponse = {"status": "ok", "code": 200, "data": {"messages": [{"content": {"replaces": "", "bodyHtml": "MAITRE GIMS : \" Les feat dans SUBLIMINAL ces du tres lourd j'veut pas trop m'avanc\u00e9 mais sa seras du tres lourd \"feat avec EMINEM &amp; 50 CENT?", "annotations": {}, "authorId": "471544268@twitter.com", "parentId": "", "updatedAt": 1366839025, "mentions": [], "shareLink": "http://fyre.it/QE0B9G.4", "id": "tweet-308280235000995842@twitter.com", "createdAt": 1366839025}, "vis": 1, "source": 0, "replies": [], "type": 0, "event": null}], "authors": {"471544268@twitter.com": {"displayName": "twinsley yonkou VX", "tags": [], "profileUrl": "https://twitter.com/#!/TismeyJr", "avatar": "http://a0.twimg.com/profile_images/3339939516/bde222e341d477729170a326ca31204e_normal.jpeg", "type": 3, "id": "471544268@twitter.com"}}}},

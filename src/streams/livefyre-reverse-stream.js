@@ -71,7 +71,13 @@ define([
             for (var i in data.content) {
                 var state = data.content[i];
                 state.author = authors[state.content.authorId];
-                
+
+                // Ignore non-publicly-visible messages
+                // vis 1 means public content
+                if (state.vis !== 1) {
+                    continue;
+                }
+
                 var content = LivefyreStream.createContent(state);
 
                 if (content && content.id) {
