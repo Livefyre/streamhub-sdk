@@ -43,11 +43,38 @@ define([
         opts = opts || {};
         this.opts = opts;
 
-        this.el = opts.el;
+        this.setElement(opts.el || document.createElement(this.elTag));
         this.contentRegistry = opts.contentRegistry || View.DEFAULT_REGISTRY.slice(0);
         this.initialize.apply(this, arguments);
     };
     $.extend(View.prototype, EventEmitter.prototype);
+
+    /** The HTMLElement tag to use if this View creates its own element */
+    View.prototype.elTag = 'div';
+
+    /**
+     * Set the element for the view to render in.
+     * You will probably want to call .render() after this, but not always.
+     * @param element {HTMLElement} The element to render this View in
+     * @return this
+     * @param
+     */
+    View.prototype.setElement = function (element) {
+        this.el = element;
+        this.$el = $(element);
+        return this;
+    };
+
+    /**
+     * If a template is set, render it in this.el
+     * Subclasses will want to setElement on child views after rendering,
+     *     then call .render() on those subelements
+     */
+    View.prototype.render = function () {
+        if (typeof this.template === 'function') {
+            this.el.innerHTML = this.template(this);
+        }
+    };
 
     /**
      * The default registry for Content -> ContentView rendering.

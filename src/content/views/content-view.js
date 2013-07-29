@@ -28,6 +28,8 @@ define([
                 self.render();
             });
         }
+
+        this.template = opts.template || this.template;
         
         this.setElement(opts.el || document.createElement(this.elTag));
     };

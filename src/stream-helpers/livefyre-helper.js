@@ -30,14 +30,10 @@ function ($, StreamManager, LivefyreBootstrapClient, LivefyreStream, LivefyreRev
             if (err) {
                 return callback(err);
             }
-
-            var pages = data.archiveInfo.pageInfo;
-            var pageKeys = Object.keys(pages);
-            pageKeys.sort();
-            var lastPageNum = pageKeys[pageKeys.length - 1];
-            var collectionId = data.collectionId;
-            var commentId = data.event;
-            var followers = ((data.meta || {}).headDocument || {}).followers || [];
+            var followers = ((data || {}).headDocument || {}).followers || [];
+            var collectionSettings = data.collectionSettings;
+            var collectionId = collectionSettings.collectionId;
+            var commentId = collectionSettings.event;
 
             var mainStream = new LivefyreStream($.extend({
                 collectionId: collectionId,
@@ -46,8 +42,8 @@ function ($, StreamManager, LivefyreBootstrapClient, LivefyreStream, LivefyreRev
             }, opts));
             
             var reverseStream = new LivefyreReverseStream($.extend({
-                page: lastPageNum,
-                followers: followers
+                followers: followers,
+                initData: data
             }, opts));
 
             streamManager.set({ 'main': mainStream, 'reverse': reverseStream });

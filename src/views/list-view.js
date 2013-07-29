@@ -62,6 +62,24 @@ function($, View, ContentView) {
         return contentView;
     };
 
+
+    /**
+     * Remove a piece of Content from this ListView
+     * @param content {Content|ContentView} The ContentView or Content to be removed
+     * @returns {boolean} true if Content was removed, else false
+     */
+    ListView.prototype.remove = function (content) {
+        var contentView = content instanceof ContentView ? content : this.getContentView(content);
+        if (! contentView) {
+            return false;
+        }
+        contentView.$el.remove();
+        // Remove from this.contentViews[]
+        this.contentViews.splice(this.contentViews.indexOf(contentView), 1);
+        return true;
+    };
+
+
     /**
      * @private
      * Insert a contentView into the ListView's .el
@@ -72,7 +90,9 @@ function($, View, ContentView) {
             $previousEl;
 
         // Push and sort. #TODO Insert in sorted order
-        this.contentViews.push(contentView);
+        if (this.contentViews.indexOf(contentView) === -1) {
+            this.contentViews.push(contentView);
+        }
         this.contentViews.sort(this.comparator);
 
         newContentViewIndex = this.contentViews.indexOf(contentView);
@@ -90,7 +110,7 @@ function($, View, ContentView) {
 
     /**
      * Given a new Content instance, return an existing contentView that
-     * should be used to update the content (based on content.id).
+     * should be used to update the content (based on identity or content.id).
      * @param newContent {Content} The piece of content to find the view for.
      * @returns {ContentView | null} The contentView for the content, or null.
      */
@@ -98,7 +118,7 @@ function($, View, ContentView) {
         var existingContentView;
         for (var i=0; i < this.contentViews.length; i++) {
             var contentView = this.contentViews[i];
-            if (newContent.id && contentView.content.id === newContent.id) {
+            if ((newContent === contentView.content) || (newContent.id && contentView.content.id === newContent.id)) {
                 return contentView;
             }
         }

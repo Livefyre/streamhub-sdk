@@ -23,7 +23,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content'], function($, Co
         this.parentId = json.content.parentId;
         this.meta = json;
     };
-    $.extend(LivefyreContent.prototype, Content.prototype);
+    LivefyreContent.prototype = new Content();
 
     /**
      * Attach an Oembed to the Content while first checking for an existing attachment.

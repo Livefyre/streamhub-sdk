@@ -21,7 +21,6 @@ define([
     LivefyreOembed,
     Storage
 ) {
-
     /**
      * Defines a livefyre stream that is readable and writable from and to a livefyre conversation.
      * @param opts {Object} A set of options to config the stream client with
@@ -240,7 +239,7 @@ define([
             return new LivefyreTwitterContent(state);
         } else if (sourceName === 'facebook') {
             return new LivefyreFacebookContent(state);
-        } else {
+        } else if (sourceName === 'livefyre') {
             return new LivefyreContent(state);
         }
     };
