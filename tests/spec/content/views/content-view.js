@@ -1,10 +1,11 @@
 define([
     'jquery',
     'jasmine',
+    'jasmine-jquery',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/livefyre-content',
     'streamhub-sdk/content/views/content-view'],
-function ($, jasmine, Content, LivefyreContent, ContentView) {
+function ($, jasmine, jasmineJquery, Content, LivefyreContent, ContentView) {
     describe('Default ContentView', function () {
         describe('when constructed', function () {
             var contentView = new ContentView({ content: new Content('blah') });
@@ -28,6 +29,46 @@ function ($, jasmine, Content, LivefyreContent, ContentView) {
                 expect(contentView.$el.find('.content-created-at').length).toBe(0);
             });
         });
-        
+        describe('when Content has no image attachment(s)', function() {
+            var content = new Content('what'),
+                contentView = new ContentView({ content: content });
+            contentView.render();
+            it('does not have .content-with-image', function() {
+                expect(contentView.el).not.toHaveClass('content-with-image');
+            });
+        });
+        describe('when Content has image attachment', function() {
+            describe('when image attachment loads', function() {
+                var attachment = {
+                        provider_name: "Twimg",
+                        provider_url: "http://pbs.twimg.com",
+                        type: "photo",
+                        url: "http://pbs.twimg.com/media/BQGNgs9CEAEhmEF.jpg"
+                    },
+                    content = new Content({ body: 'what', attachments: [attachment] }),
+                    contentView = new ContentView({ content: content });
+                contentView.render();
+                it('has .content-with-image', function() {
+                    expect(contentView.el).toHaveClass('content-with-image');
+                });
+            });
+            describe('when image attachment does not load', function() {
+                var attachment = {
+                        provider_name: "bad provider",
+                        provider_url: "http://badbadprovider.com",
+                        type: "photo",
+                        url: "a broken url"
+                    },
+                    content = new Content({ body: 'what', attachments: [attachment] }),
+                    contentView = new ContentView({ content: content });
+                contentView.render();
+                it('does not have .content-with-image', function() {
+                    expect(contentView.el).not.toHaveClass('content-with-image');
+                });
+                it('.content-attachments does not have child nodes', function() {
+                    expect(contentView.$el.find('.content-attachments')).toBeEmpty();
+                });
+            });
+        });
     });
 });

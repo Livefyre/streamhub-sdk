@@ -18,6 +18,18 @@ function (ContentView, FacebookContentTemplate, $) {
     
     FacebookContentView.prototype.elClass += ' content-facebook ';
     FacebookContentView.prototype.template = FacebookContentTemplate;
+
+    /**
+     * Gets the template rendering context. By default, returns "this.content".
+     * @return {Content} The content object this view was instantiated with.
+     */  
+    FacebookContentView.prototype.getTemplateContext = function () {
+        var context = ContentView.prototype.getTemplateContext.call(this);
+        if (context.attachments.length) {
+            context.permalink = context.attachments[0].url;
+        }
+        return context;
+    };
     
     return FacebookContentView;
 });

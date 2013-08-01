@@ -36,6 +36,7 @@ define([
     
     ContentView.prototype.elTag = 'article';
     ContentView.prototype.elClass = 'content';
+    ContentView.prototype.tooltipElSelector = '.hub-tooltip-link';
     ContentView.prototype.template = ContentTemplate;
     
      /**
@@ -49,6 +50,7 @@ define([
         if (this.content && this.content.id) {
             this.$el.attr('data-content-id', this.content.id);
         }
+        this.attachHandlers();
         return this;
     };
     
@@ -61,22 +63,61 @@ define([
             context.formattedCreatedAt = Util.formatDate(this.content.createdAt);
         }
         this.el.innerHTML = this.template(context);
-
+        if (this.content.attachments && this.content.attachments.length > 0) {
+            this.$el.addClass('content-with-attachments');
+        }
         // handle oembed loading gracefully
         var self = this;
         var newImg = $(this.el).find('.content-attachments img').last();
         newImg.hide();
         newImg.on('load', function() {
             newImg.fadeIn();
-            $(self.el).trigger('imageLoaded');
+            self.$el.trigger('imageLoaded');
+            self.$el.addClass('content-with-image');
         });
         newImg.on('error', function() {
             self.content.attachments.pop();
-            newImg.remove();
-            // todo: (gene) review this line...
-            self.render();
+            self.$el.find('.content-attachments').empty();
+            self.$el.removeClass('content-with-image');
         });
 
+        return this;
+    };
+
+    ContentView.prototype.attachHandlers = function () {
+        var self = this;
+        this.$el.on('mouseenter', this.tooltipElSelector, function (e) {
+            var title = $(this).attr('title');
+            var position = $(this).position();
+            var positionWidth = $(this).width();
+
+            var $currentTooltip = $("<div class=\"hub-current-tooltip content-action-tooltip\"><div class=\"content-action-tooltip-bubble\">" + title + "</div><div class=\"content-action-tooltip-tail\"></div></div>");
+            $(this).parent().append($currentTooltip);
+
+            var tooltipOffset = $(this).offset();
+
+            var tooltipWidth = $currentTooltip.outerWidth();
+            var tooltipHeight = $currentTooltip.outerHeight();
+
+            console.log(position.left, positionWidth, tooltipWidth);
+            $currentTooltip.css({
+                "left": position.left + (positionWidth / 2) - (tooltipWidth / 2) + 5,
+                "top":  position.top - tooltipHeight - 2
+            });
+
+            if ($(this).hasClass(self.tooltipElSelector)){
+                var currentLeft = parseInt($currentTooltip.css('left'));
+                $currentTooltip.css('left', currentLeft + 7);
+            }
+
+            $currentTooltip.fadeIn();
+        });
+        this.$el.on('mouseleave', this.tooltipElSelector, function (e) {
+            var $current = self.$el.find('.hub-current-tooltip');
+            $current.removeClass('hub-current-tooltip').fadeOut(200, function(){
+                $(this).remove();
+            });
+        });
         return this;
     };
     

@@ -19,6 +19,16 @@ function (ContentView, TwitterContentTemplate, $) {
 	
 	TwitterContentView.prototype.elClass += ' content-tweet ';
 	TwitterContentView.prototype.template = TwitterContentTemplate;
-	
+
+    /**
+     * Gets the template rendering context. By default, returns "this.content".
+     * @return {Content} The content object this view was instantiated with.
+     */  
+    TwitterContentView.prototype.getTemplateContext = function () {
+        var context = ContentView.prototype.getTemplateContext.call(this);
+        context.author.twitterUsername = context.author.profileUrl.split('/').pop();
+        return context;
+    };
+
 	return TwitterContentView;
 });

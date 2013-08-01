@@ -1,24 +1,46 @@
-{{#author.avatar}}
-<a class="content-author-avatar">
-    <img src="{{ author.avatar }}" />
-</a>
-{{/author.avatar}}
-
-<div class="content-main">
-    <div class="content-byline">
-        <a class="content-author-name" href="{{author.profileUrl}}" target="_blank">{{ author.displayName }}</a>
-        <a class="content-source-logo" href="https://twitter.com/statuses/{{tweetId}}/" target="_blank"></a>
-        <div class="content-created-at">{{{formattedCreatedAt}}}</div>
-    </div>
-    <div class="content-body">
-        {{{ body }}}
+<div class="content-header">
+    <div class="content-header-inner">
+        {{#author.avatar}}
+            <a class="content-author-avatar">
+                <img src="{{ author.avatar }}" />
+            </a>
+        {{/author.avatar}}
+        <div class="content-byline">
+            {{#permalink}}
+                <a class="hub-tooltip-link tooltip-link content-source-logo" href="{{ permalink }}" target="_blank" title="View on Facebook"></a>
+            {{/permalink}}
+            {{^permalink}}
+                <span class="content-source-logo"></span>
+            {{/permalink}}
+            <div class="content-author-name">
+                <a href="{{author.profileUrl}}" target="_blank">{{ author.displayName }}</a>
+            </div>
+        </div>
     </div>
 </div>
 
 <div class="content-attachments">
-{{#attachments}}
-    <div class="content-attachment">
-        {{{renderAttachment}}}
+    {{#attachments}}
+        <div class="content-attachment">
+            <div class="content-attachment-frame"></div>
+            {{{renderAttachment}}}
+        </div>
+    {{/attachments}}
+</div>
+
+<div class="content-body">
+    {{{ body }}}
+</div>
+
+<div class="content-meta">
+    {{#formattedCreatedAt}}
+    <div class="content-created-at">
+        {{#permalink}}
+            <a href="{{ permalink }}" target="_blank">{{{formattedCreatedAt}}}</a>
+        {{/permalink}}
+        {{^permalink}}
+            {{{formattedCreatedAt}}}
+        {{/permalink}}
     </div>
-{{/attachments}}
+    {{/formattedCreatedAt}}
 </div>

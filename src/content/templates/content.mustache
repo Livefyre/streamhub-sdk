@@ -1,28 +1,36 @@
-{{#author.avatar}}
-<a class="content-author-avatar">
-    <img src="{{ author.avatar }}" />
-</a>
-{{/author.avatar}}
-<div class="content-main">
-    <div class="content-byline">
-        {{#author.url}}
-            <a class="content-author-name" href="{{ author.url }}" target="_blank">{{ author.displayName }}</a>
-        {{/author.url}}
-        {{^author.url}}
-            <span class="content-author-name">{{ author.displayName }}</span>
-        {{/author.url}}
-        {{#formattedCreatedAt}}
-            <div class="content-created-at">{{{formattedCreatedAt}}}</div>
-        {{/formattedCreatedAt}}
+<div class="content-header">
+    <div class="content-header-inner">
+        {{#author.avatar}}
+            <a class="content-author-avatar">
+                <img src="{{ author.avatar }}" />
+            </a>
+        {{/author.avatar}}
+        <div class="content-byline">
+            {{#author.url}}
+                <a class="content-author-name" href="{{ author.url }}" target="_blank">{{ author.displayName }}</a>
+            {{/author.url}}
+            {{^author.url}}
+                <span class="content-author-name">{{ author.displayName }}</span>
+            {{/author.url}}
+        </div>
     </div>
-	<div class="content-body">
-    	{{{ body }}}
-	</div>
 </div>
+
 <div class="content-attachments">
-{{#attachments}}
-    <div class="content-attachment">
-        {{{renderAttachment}}}
-    </div>
-{{/attachments}}
+    {{#attachments}}
+        <div class="content-attachment">
+            <div class="content-attachment-frame"></div>
+            {{{renderAttachment}}}
+        </div>
+    {{/attachments}}
+</div>
+
+<div class="content-body">
+	{{{ body }}}
+</div>
+
+<div class="content-meta">
+    {{#formattedCreatedAt}}
+    <div class="content-created-at">{{{formattedCreatedAt}}}</div>
+    {{/formattedCreatedAt}}
 </div>
