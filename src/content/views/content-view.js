@@ -38,7 +38,8 @@ define([
     ContentView.prototype.elClass = 'content';
     ContentView.prototype.tooltipElSelector = '.hub-tooltip-link';
     ContentView.prototype.template = ContentTemplate;
-    
+    ContentView.prototype.formatDate = Util.formatDate;
+
      /**
      * Set the .el DOMElement that the ContentView should render to
      * @param el {DOMElement} The new element the ContentView should render to
@@ -60,7 +61,7 @@ define([
     ContentView.prototype.render = function () {
         var context = this.getTemplateContext();
         if (this.content.createdAt) {
-            context.formattedCreatedAt = Util.formatDate(this.content.createdAt);
+            context.formattedCreatedAt = this.formatDate(this.content.createdAt);
         }
         this.el.innerHTML = this.template(context);
 
