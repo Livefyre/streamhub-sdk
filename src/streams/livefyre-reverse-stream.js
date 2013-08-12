@@ -24,6 +24,8 @@ define([
      * Defines a livefyre stream that is readable in reverse time order from a livefyre
      * conversation.
      * @param opts {Object} A set of options to config the stream client with
+     * @param [opts.replies=false] {boolean} Whether the reverse stream should emit Content that is in reply to
+     *     other Content.
      * @exports streamhub-sdk/streams/livefyre-reverse-stream
      * @constructor
      */
@@ -36,6 +38,7 @@ define([
         this.environment = opts.environment;
         this.followers = opts.followers || [];
         this.page = opts.page;
+        this._pushReplies = opts.replies || false;
         this.plugins = this.plugins || [];
         if (opts.initData) {
             this._setInitData(opts.initData);
@@ -123,48 +126,53 @@ define([
         }
         for (var i in data.content) {
             var state = data.content[i];
-            // Don't re-emit content that was already in the headDocument
-            if (this._pushedHeadDocument && this._headDocumentContentIds.indexOf(state.content.id) !== -1) {
-                continue;
-            }
+            this._handleState(state, authors);
+        }
+    };
 
-            state.author = authors[state.content.authorId];
+    /**
+     * Process a state object from Livefyre's Bootstrap APIs.
+     * State objects are objects like those in headDocument.content[] here: http://bootstrap.livefyre.com/bs3/livefyre.com/4/NTg0/init
+     * They can contain .childContent[] arrays that contain more states, so this function may call itself recursively.
+     * Only top-level states will be pushed through the stream, unless the stream is constructed with opts.replies=true.
+     * Attachments and Replies will always be added to their parent content.
+     * @param state {object} A State object from Livefyre's Bootstrap APIs
+     * @param authors {object} An object mapping authorIds to author information. Like headDocument.authors in above sample response
+     */
+    LivefyreReverseStream.prototype._handleState = function (state, authors) {
+        var alreadyPushed = (this._pushedHeadDocument) && (this._headDocumentContentIds.indexOf(state.content.id) !== -1),
+            isPublic = (typeof state.vis === 'undefined') ? true : (state.vis === 1),
+            isReply = state.content.parentId,
+            childStates = state.childContent || [],
+            content;
 
-            // Ignore non-publicly-visible messages
-            // vis 1 means public content
-            if ((typeof state.vis !== 'undefined') && state.vis !== 1) {
-                continue;
-            }
+        // Don't emit non-visible Content or Content that was already pushed via headDocument
+        if ( ! isPublic || alreadyPushed) {
+            return;
+        }
 
-            var content = this.createContent(state);
+        state.author = authors[state.content.authorId];
+        content = this.createContent(state);
 
-            if ( ! content) {
-                continue;
-            }
-            if (content && content.id) {
-                Storage.set(content.id, content);
-            }
+        if (content && content.id) {
+            Storage.set(content.id, content);
+        }
+
+        // Push content. Only push replies if this stream was configured to push them
+        if (content && ( ! isReply || ( isReply && this._pushReplies) )) {
             this._push(content);
+        }
 
-            // todo: make this recursive for nested replies
-            for (var j in state.childContent) {
-                var child = state.childContent[j];
-
-                if (child.content && child.content.authorId) {
-                    child.author = authors[child.content.authorId];
-                }
-                var childContent = this.createContent(child);
-
-                if (childContent instanceof Oembed) {
-                    content.addAttachment(childContent);
-                } else {
-                    content.addReply(childContent);
-                }
-                if (childContent && childContent.id) {
-                    Storage.set(childContent.id, childContent);
-                }
+        for (var i=0, numChildren=childStates.length; i < numChildren; i++) {
+            var childContent = this._handleState(state.childContent[i], authors);
+            if (childContent instanceof Oembed) {
+                content.addAttachment(childContent);
+            } else {
+                content.addReply(childContent);
             }
         }
+
+        return content;
     };
 
     /**

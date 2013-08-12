@@ -166,6 +166,83 @@ function ($, jasmine, LivefyreReverseStream, LivefyreBootstrapClient) {
                 });
             });
         });
+		
+		/**
+		 * By default, this stream will not emit content that is in reply to another piece of Content.
+		 * However, if the stream is constructed with opts.replies=true, then all reply Content will be emitted
+		 */
+		describe('replies', function () {
+			var stateWithChildren,
+				bootstrapResponse;
+			/**
+			 * Make a state object with the provided Content ID
+			 */
+			function makeState (id, parentId) {
+				return {"source":0,"content":{"parentId": parentId || "","bodyHtml":"Yay!!!!!!!  Love being part of the <a vocab=\"http://schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:7025662\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https://twitter.com/#!/DrPhil\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">DrPhil</span></a> <a href=\"https://twitter.com/#!/search/realtime/%23cheaters\" class=\"fyre-hashtag\" hashtag=\"cheaters\" rel=\"tag\" target=\"_blank\">#cheaters</a> segment!!!!","annotations":{},"authorId":"24070923@twitter.com","updatedAt":1376328718,"id":String(id),"createdAt":1376328718},"vis":1,"type":0,"event":1376328743545495,"childContent":[]};
+			}
+			beforeEach(function () {
+				// Top level
+				stateWithChildren = makeState(1);
+				// First level of replies
+				stateWithChildren.childContent.push(makeState(2, 1));
+				stateWithChildren.childContent.push(makeState(3, 1));
+				// Second level of replies
+				stateWithChildren.childContent[0].childContent.push(makeState(4, 2));
+				bootstrapResponse = {
+					content: [stateWithChildren],
+					authors: {
+						"24070923@twitter.com": {"displayName":"Anna Davenport","tags":[],"profileUrl":"https://twitter.com/#!/PrettyUnlimited","avatar":"http://a0.twimg.com/profile_images/3681462401/9ec2fff9c0f8ccaf8ea4bdc30e512fd0_normal.jpeg","type":3,"id":"24070923@twitter.com"}
+					}
+				}
+				spyOn(LivefyreBootstrapClient, 'getContent').andCallFake(function (opts, errback) {
+					errback(null, bootstrapResponse);
+				});
+			});
+			it('does not emit reply Content by default', function () {
+				var numTimesReadable = 0;
+				var stream = new LivefyreReverseStream({
+					"network": "labs-t402.fyre.co",
+                    "siteId": "303827",
+                    "articleId": "gene_publish_0",
+                    "environment": "t402.livefyre.com"
+				});
+				stream.on('readable', function () {
+					numTimesReadable++;
+				});
+				stream.start();
+				waitsFor(function () {
+					return LivefyreBootstrapClient.getContent.callCount > 0;
+				});
+				runs(function () {
+					expect(numTimesReadable).toBe(1);
+				});
+			});
+			describe('when constructed with opts.replies = true', function () {
+				var stream;
+				beforeEach(function () {
+					stream = new LivefyreReverseStream({
+						"network": "labs-t402.fyre.co",
+	                    "siteId": "303827",
+	                    "articleId": "gene_publish_0",
+	                    "environment": "t402.livefyre.com",
+	                    "replies": true
+					});
+				})
+				it('emits reply Content, including replies of replies', function () {
+					var numTimesReadable = 0;
+					stream.on('readable', function () {
+						numTimesReadable++;
+					});
+					stream.start();
+					waitsFor(function () {
+						return LivefyreBootstrapClient.getContent.callCount > 0;
+					});
+					runs(function () {
+						expect(numTimesReadable).toBe(4);
+					});
+				});
+			});
+		});
 
         describe('when a plugin is added', function () {
             var stream,
