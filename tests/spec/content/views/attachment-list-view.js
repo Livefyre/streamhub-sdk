@@ -2,9 +2,10 @@ define([
     'jquery',
     'jasmine',
     'jasmine-jquery',
+    'streamhub-sdk/content/content',
     'streamhub-sdk/content/views/attachment-list-view',
     'streamhub-sdk/content/views/oembed-view'],
-function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
+function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
 
     describe('AttachmentListView', function () {
         var oembedAttachment = {
@@ -13,11 +14,12 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             type: "photo",
             url: "http://pbs.twimg.com/media/BQGNgs9CEAEhmEF.jpg"
         };
+        var content = new Content({ body: 'what' });
 
         describe('when constructed', function() {
 
             describe('with no arguments or options', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 it('is instance of AttachmentListView', function() {
                     expect(attachmentListView).toBeDefined();
                     expect(attachmentListView instanceof AttachmentListView).toBe(true);
@@ -28,14 +30,14 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
         describe('when adding an attachment', function() {
 
             it('increments the attachment count', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 expect(attachmentListView.count()).toBe(0);
                 attachmentListView.add(oembedAttachment);
                 expect(attachmentListView.count()).toBe(1);
             });
 
             describe('creates an attachment view', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 var oembedView = attachmentListView.createOembedView(oembedAttachment);
                 it('is instance of OembedView', function() {
                     expect(oembedView).toBeDefined();
@@ -44,7 +46,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('with photo attachment', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'photo';
                 attachmentListView.add(oembedAttachment);
@@ -56,7 +58,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('with video attachment', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'video';
                 attachmentListView.add(oembedAttachment);
@@ -68,7 +70,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('with link attachment', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'link';
                 attachmentListView.add(oembedAttachment);
@@ -80,7 +82,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('with rich attachment', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'rich';
                 attachmentListView.add(oembedAttachment);
@@ -95,7 +97,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
         describe('when removing an attachment', function() {
 
             it ('decrements the attachment count', function() {
-                var attachmentListView = new AttachmentListView()
+                var attachmentListView = new AttachmentListView({ content: content })
                 attachmentListView.add(oembedAttachment);
 
                 expect(attachmentListView.count()).toBe(1);
@@ -104,7 +106,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('retrieves OembedView given an attachment', function() {
-                var attachmentListView = new AttachmentListView()
+                var attachmentListView = new AttachmentListView({ content: content })
                 attachmentListView.add(oembedAttachment);
 
                 it ('is corresponding OembedView of the attachment object', function() {
@@ -117,7 +119,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
         describe('when rendering', function() {
 
             describe('with 1 tiled attachment', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'photo';
                 attachmentListView.add(oembedAttachment);
@@ -129,7 +131,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('with 2 tiled attachments', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'photo';
                 for (var i=0; i < 2; i++) {
@@ -143,7 +145,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('with 3 tiled attachments', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'photo';
                 for (var i=0; i < 3; i++) {
@@ -162,7 +164,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('with 4 tiled attachments', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'photo';
                 for (var i=0; i < 4; i++) {
@@ -176,7 +178,7 @@ function($, jasmine, jasminejQuery, AttachmentListView, OembedView) {
             });
 
             describe('with > 4 tiled attachments', function() {
-                var attachmentListView = new AttachmentListView();
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'photo';
                 for (var i=0; i < 9; i++) {

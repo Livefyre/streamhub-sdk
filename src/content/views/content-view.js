@@ -25,12 +25,6 @@ define([
 
         if (this.content) {
             var self = this;
-            this.content.on("attachment", function(attachment) {
-                self.render();
-                if (self.attachmentsView) {
-                    self.attachmentsView.add(attachment);
-                }
-            });
             this.content.on("reply", function(content) {
                 self.render();
             });
@@ -78,9 +72,15 @@ define([
 
     ContentView.prototype.attachHandlers = function () {
         var self = this;
-        
+
         this.$el.on('imageLoaded.hub', function(e) {
             self.$el.addClass('content-with-image');
+        });
+        this.$el.on('imageError.hub', function(e, oembed) {
+            self.attachmentsView.remove(oembed);
+            if (!self.attachmentsView.count()) {
+                self.$el.removeClass('content-with-image');
+            }
         });
 
         this.$el.on('mouseenter', this.tooltipElSelector, function (e) {

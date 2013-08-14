@@ -67,7 +67,8 @@ define([
             } else if (current.viewFunction) {
                 currentType = current.viewFunction(content);
             }
-            var contentView = new currentType({ content : content, attachmentsView: new AttachmentListView() });
+            var attachmentListView = new AttachmentListView({ content: content });
+            var contentView = new currentType({ content : content, attachmentsView: attachmentListView });
             return contentView;
         }
     };

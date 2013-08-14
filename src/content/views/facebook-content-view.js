@@ -30,18 +30,6 @@ function (ContentView, FacebookContentTemplate, util, $) {
         }
         return context;
     };
-
-    FacebookContentView.prototype.attachHandlers = function () {
-        ContentView.prototype.attachHandlers.call(this);
-
-        var self = this;
-        this.$el.on('imageError.hub', function(e, oembed) {
-            self.attachmentsView.remove(oembed);
-            if (!self.attachmentsView.count()) {
-                self.$el.removeClass('content-with-image');
-            }
-        });
-    };
     
     return FacebookContentView;
 });
