@@ -3,12 +3,11 @@ define([
     'jasmine-jquery',
     'streamhub-sdk/jquery',
     'streamhub-sdk/views/list-view',
-    'streamhub-sdk/views/modal-view',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/views/content-view',
     'streamhub-sdk/stream',
     'streamhub-sdk-tests/mocks/jasmine-spy-stream'],
-function (jasmine, jasminejquery, $, ListView, ModalView, Content, ContentView, Stream, JasmineSpyStream) {
+function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, JasmineSpyStream) {
     describe('A ListView', function () {
         var fixtureId = 'sandbox',
             listView,
@@ -56,17 +55,8 @@ function (jasmine, jasminejquery, $, ListView, ModalView, Content, ContentView, 
                 listView = new ListView({
                     streams: {
                         main: new JasmineSpyStream()
-                    },
-                    modal: new ModalView()
+                    }
                 });
-            });
-
-            it('renders and shows the modal view', function() {
-                spyOn(listView.modal, 'setFocus');
-                spyOn(listView.modal, 'show');
-                listView.$el.trigger('focusContent.hub', { content: new Content() });
-                expect(listView.modal.setFocus).toHaveBeenCalled();
-                expect(listView.modal.show).toHaveBeenCalled();
             });
         });
 
