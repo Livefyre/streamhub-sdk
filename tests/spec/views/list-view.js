@@ -3,11 +3,12 @@ define([
     'jasmine-jquery',
     'streamhub-sdk/jquery',
     'streamhub-sdk/views/list-view',
+    'streamhub-sdk/views/modal-view',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/views/content-view',
     'streamhub-sdk/stream',
     'streamhub-sdk-tests/mocks/jasmine-spy-stream'],
-function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, JasmineSpyStream) {
+function (jasmine, jasminejquery, $, ListView, ModalView, Content, ContentView, Stream, JasmineSpyStream) {
     describe('A ListView', function () {
         var fixtureId = 'sandbox',
             listView,
@@ -22,9 +23,9 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
             });
         });
 
-        describe ("when constructed", function () {
+        describe("when constructed", function () {
 
-            it ("is instanceof ListView", function () {
+            it("is instanceof ListView", function () {
                 expect(listView instanceof ListView).toBe(true);
             });
 
@@ -46,11 +47,41 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
                 it ("should have .el set to opts.el", function () {
                     expect(listView.el).toBe(el);
                 });
-
             });
         });
 
-        describe("when the default comparator is pased ContentViews a, b", function () {
+        describe('handles focusContent.hub event', function () {
+
+            beforeEach(function() {
+                listView = new ListView({
+                    streams: {
+                        main: new JasmineSpyStream()
+                    },
+                    modal: new ModalView()
+                });
+            });
+
+            it('renders and shows the modal view', function() {
+                spyOn(listView.modal, 'setFocus');
+                spyOn(listView.modal, 'show');
+                listView.$el.trigger('focusContent.hub', { content: new Content() });
+                expect(listView.modal.setFocus).toHaveBeenCalled();
+                expect(listView.modal.show).toHaveBeenCalled();
+            });
+        });
+
+        describe('handles removeContentView.hub event', function() {
+
+            it('calls the .remove method', function() {
+                var content = new Content();
+                listView.add(content);
+                spyOn(listView, 'remove');
+                listView.$el.trigger('removeContentView.hub', content);
+                expect(listView.remove).toHaveBeenCalled();
+            });
+        });
+
+        describe("when the default comparator is passed ContentViews a, b", function () {
             var baseDate = new Date(),
                 earlierDate = new Date(),
                 laterDate = new Date();

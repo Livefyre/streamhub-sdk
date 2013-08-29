@@ -10,9 +10,12 @@ function(View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, Oem
 
     /**
      * A view that renders oembed attachments
+     *
      * @param opts {Object} A set of options to config the view with
      * @param opts.el {HTMLElement} The element in which to render the streamed content
      * @param opts.oembed {Object} The oembed attachment object to display
+     * @fires OembedView#imageLoaded.hub
+     * @fires OembedView#imageError.hub
      * @exports streamhub-sdk/content/views/oembed-view
      * @constructor
      */
@@ -28,6 +31,8 @@ function(View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, Oem
 
     /**
      * A mapping of oembed type to its mustache template for rendering 
+     * @readonly
+     * @enum {Template}
      */
     OembedView.prototype.OEMBED_TEMPLATES = {
         'photo': OembedPhotoTemplate,
@@ -35,12 +40,6 @@ function(View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, Oem
         'link':  OembedLinkTemplate,
         'rich':  OembedRichTemplate
     };
-
-     /**
-     * The default element tag name to use for the containing element of this
-     * view
-     */
-    OembedView.prototype.elTag = 'div';
 
     /**
      * Renders the template and appends itself to this.el
@@ -73,9 +72,17 @@ function(View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, Oem
             } else {
                 newImg.fadeIn();
             }
+            /**
+             * Image load success
+             * @event OembedView#imageLoaded.hub
+             */
             self.$el.trigger('imageLoaded.hub');
         });
         newImg.on('error', function() {
+            /**
+             * Image load error
+             * @event OembedView#imageError.hub
+             */
             self.$el.trigger('imageError.hub', self.oembed);
         });
     };

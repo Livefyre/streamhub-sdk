@@ -6,7 +6,7 @@ define([
     'streamhub-sdk/content/types/livefyre-instagram-content',
     'streamhub-sdk/content/types/twitter-content',
     'streamhub-sdk/content/views/content-view',
-    'streamhub-sdk/content/views/attachment-list-view',
+    'streamhub-sdk/content/views/tiled-attachment-list-view',
     'streamhub-sdk/content/views/twitter-content-view',
     'streamhub-sdk/content/views/facebook-content-view',
     'streamhub-sdk/content/views/instagram-content-view'
@@ -18,7 +18,7 @@ define([
     LivefyreInstagramContent,
     TwitterContent,
     ContentView,
-    AttachmentListView,
+    TiledAttachmentListView,
     TwitterContentView,
     FacebookContentView,
     InstagramContentView
@@ -29,7 +29,9 @@ define([
      * @exports streamhub-sdk/content/content-view-factory
      * @constructor
      */
-    var ContentViewFactory = function() {
+    var ContentViewFactory = function(opts) {
+        opts = opts || {};
+        this.attachmentListViewType = opts.attachmentListViewType || TiledAttachmentListView;
         this.contentRegistry = this.contentRegistry.slice(0);
     };
 
@@ -67,7 +69,7 @@ define([
             } else if (current.viewFunction) {
                 currentType = current.viewFunction(content);
             }
-            var attachmentListView = new AttachmentListView({ content: content });
+            var attachmentListView = new this.attachmentListViewType({ content: content });
             var contentView = new currentType({ content : content, attachmentsView: attachmentListView });
             return contentView;
         }

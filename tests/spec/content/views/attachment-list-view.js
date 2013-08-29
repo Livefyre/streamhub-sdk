@@ -19,6 +19,14 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
         describe('when constructed', function() {
 
             describe('with no arguments or options', function() {
+                var attachmentListView = new AttachmentListView();
+                it('is instance of AttachmentListView', function() {
+                    expect(attachmentListView).toBeDefined();
+                    expect(attachmentListView instanceof AttachmentListView).toBe(true);
+                }); 
+            });
+
+            describe('with opts.content', function() {
                 var attachmentListView = new AttachmentListView({ content: content });
                 it('is instance of AttachmentListView', function() {
                     expect(attachmentListView).toBeDefined();
@@ -48,36 +56,36 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
             describe('with photo attachment', function() {
                 var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
+                attachmentListView.render();
                 oembedAttachment.type = 'photo';
                 attachmentListView.add(oembedAttachment);
 
-                it('is a tiled attachment (appended to .content-attachments-tiled)', function() {
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')).toContain('.content-attachment');
-                    expect(attachmentListView.$el.find('.content-attachments-stacked')).toBeEmpty();
+                it('is a stacked attachment (appended to .content-attachments-stacked)', function() {
+                    expect(attachmentListView.$el.find('.content-attachments-stacked')).toContain('.content-attachment');
                 });
             });
 
             describe('with video attachment', function() {
                 var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
+                attachmentListView.render();
                 oembedAttachment.type = 'video';
                 attachmentListView.add(oembedAttachment);
 
-                it('is a tiled attachment (appended to .content-attachments-tiled)', function() {
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')).toContain('.content-attachment');
-                    expect(attachmentListView.$el.find('.content-attachments-stacked')).toBeEmpty();
+                it('is a stacked attachment (appended to .content-attachments-stacked)', function() {
+                    expect(attachmentListView.$el.find('.content-attachments-stacked')).toContain('.content-attachment');
                 });
             });
 
             describe('with link attachment', function() {
                 var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
+                attachmentListView.render();
                 oembedAttachment.type = 'link';
                 attachmentListView.add(oembedAttachment);
 
                 it('is a stacked attachment (appended to .content-attachments-stacked)', function() {
                     expect(attachmentListView.$el.find('.content-attachments-stacked')).toContain('.content-attachment');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')).toBeEmpty();
                 });
             });
 
@@ -85,11 +93,11 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
                 var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.setElement($('<div></div>'));
                 oembedAttachment.type = 'rich';
+                attachmentListView.render();
                 attachmentListView.add(oembedAttachment);
 
                 it('is a stacked attachment (appended to .content-attachments-stacked)', function() {
                     expect(attachmentListView.$el.find('.content-attachments-stacked')).toContain('.content-attachment');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')).toBeEmpty();
                 });
             });
         });
@@ -98,6 +106,7 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
 
             it ('decrements the attachment count', function() {
                 var attachmentListView = new AttachmentListView({ content: content })
+                attachmentListView.render();
                 attachmentListView.add(oembedAttachment);
 
                 expect(attachmentListView.count()).toBe(1);
@@ -107,6 +116,7 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
 
             describe('retrieves OembedView given an attachment', function() {
                 var attachmentListView = new AttachmentListView({ content: content })
+                attachmentListView.render();
                 attachmentListView.add(oembedAttachment);
 
                 it ('is corresponding OembedView of the attachment object', function() {
@@ -117,80 +127,8 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
         });
 
         describe('when rendering', function() {
-
-            describe('with 1 tiled attachment', function() {
-                var attachmentListView = new AttachmentListView({ content: content });
-                attachmentListView.setElement($('<div></div>'));
-                oembedAttachment.type = 'photo';
-                attachmentListView.add(oembedAttachment);
-
-                it('has .content-attachments-1 class name', function() {
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')).toHaveClass('content-attachments-1');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled .content-attachment')).toHaveClass('content-attachment-square-tile');
-                });
-            });
-
-            describe('with 2 tiled attachments', function() {
-                var attachmentListView = new AttachmentListView({ content: content });
-                attachmentListView.setElement($('<div></div>'));
-                oembedAttachment.type = 'photo';
-                for (var i=0; i < 2; i++) {
-                    attachmentListView.add(oembedAttachment);
-                }
-
-                it('has .content-attachments-2 class name', function() {
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')).toHaveClass('content-attachments-2');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled .content-attachment')).toHaveClass('content-attachment-square-tile');
-                });
-            });
-
-            describe('with 3 tiled attachments', function() {
-                var attachmentListView = new AttachmentListView({ content: content });
-                attachmentListView.setElement($('<div></div>'));
-                oembedAttachment.type = 'photo';
-                for (var i=0; i < 3; i++) {
-                    attachmentListView.add(oembedAttachment);
-                }
-
-                it('has .content-attachments-3 class name', function() {
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')).toHaveClass('content-attachments-3');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled > *:nth-child(1) .content-attachment'))
-                        .toHaveClass('content-attachment-horizontal-tile');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled > *:nth-child(2) .content-attachment'))
-                        .toHaveClass('content-attachment-square-tile');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled > *:nth-child(3) .content-attachment'))
-                        .toHaveClass('content-attachment-square-tile');
-                });
-            });
-
-            describe('with 4 tiled attachments', function() {
-                var attachmentListView = new AttachmentListView({ content: content });
-                attachmentListView.setElement($('<div></div>'));
-                oembedAttachment.type = 'photo';
-                for (var i=0; i < 4; i++) {
-                    attachmentListView.add(oembedAttachment);
-                }
-
-                it('has .content-attachments-4 class name', function() {
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')).toHaveClass('content-attachments-4');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled .content-attachment')).toHaveClass('content-attachment-square-tile');
-                });
-            });
-
-            describe('with > 4 tiled attachments', function() {
-                var attachmentListView = new AttachmentListView({ content: content });
-                attachmentListView.setElement($('<div></div>'));
-                oembedAttachment.type = 'photo';
-                for (var i=0; i < 9; i++) {
-                    attachmentListView.add(oembedAttachment);
-                }
-
-                it('has only .content-attachments-tiled class name', function() {
-                    expect(attachmentListView.$el.find('.content-attachments-tiled')[0].className).toBe('content-attachments-tiled');
-                    expect(attachmentListView.$el.find('.content-attachments-tiled .content-attachment')).toHaveClass('content-attachment-horizontal-tile');
-                });
-            });
         });
+
     });
 
 });

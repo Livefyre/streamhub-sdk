@@ -25,7 +25,6 @@ define([
         this.opts = opts;
 
         this.setElement(opts.el || document.createElement(this.elTag));
-        this.initialize.apply(this, arguments);
     };
     util.inherits(View, EventEmitter);
 
@@ -37,7 +36,6 @@ define([
      * You will probably want to call .render() after this, but not always.
      * @param element {HTMLElement} The element to render this View in
      * @return this
-     * @param
      */
     View.prototype.setElement = function (element) {
         this.el = element;
@@ -55,17 +53,6 @@ define([
             this.el.innerHTML = this.template(this);
         }
     };
-
-    /**
-     * Create an extended subclass of View
-     * @param prototypeExtension {Object} Properties to add to the subclass's prototype
-     */
-    View.extend = util.extend;
-
-    /**
-     * Initializes the View after construction. Subclasses can implement this
-     */
-    View.prototype.initialize = function () {};
 
     /**
      * Add a piece of Content to the View. Subclasses should implement this

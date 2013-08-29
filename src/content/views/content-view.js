@@ -7,9 +7,11 @@ define([
     /**
      * Defines the base class for all content-views. Handles updates to attachments
      * and loading of images.
+     *
      * @param opts {Object} The set of options to configure this view with.
      * @param opts.content {Content} The content object to use when rendering. 
      * @param opts.el {?HTMLElement} The element to render this object in.
+     * @fires ContentView#removeContentView.hub
      * @exports streamhub-sdk/content/views/content-view
      * @constructor
      */
@@ -23,8 +25,8 @@ define([
         this.setElement(opts.el || document.createElement(this.elTag));
         this.attachmentsView = opts.attachmentsView;
 
+        var self = this;
         if (this.content) {
-            var self = this;
             this.content.on("reply", function(content) {
                 self.render();
             });
@@ -35,12 +37,15 @@ define([
     ContentView.prototype.elClass = 'content';
     ContentView.prototype.tooltipElSelector = '.hub-tooltip-link';
     ContentView.prototype.attachmentsElSelector = '.content-attachments';
+    ContentView.prototype.headerElSelector = '.content-header';
+    ContentView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
     ContentView.prototype.template = ContentTemplate;
     ContentView.prototype.formatDate = Util.formatDate;
 
      /**
      * Set the .el DOMElement that the ContentView should render to
      * @param el {DOMElement} The new element the ContentView should render to
+     * @returns {ContentView}
      */
     ContentView.prototype.setElement = function (el) {
         this.el = el;
@@ -55,6 +60,7 @@ define([
     
     /**
      * Render the content inside of the ContentView's element.
+     * @returns {ContentView}
      */
     ContentView.prototype.render = function () {
         var context = this.getTemplateContext();
@@ -65,11 +71,16 @@ define([
 
         if (this.attachmentsView) {
             this.attachmentsView.setElement(this.$el.find(this.attachmentsElSelector)[0]);
+            this.attachmentsView.render();
         }
 
         return this;
     };
-
+    
+    /**
+     * Binds event handlers on this.el
+     * @returns {ContentView}
+     */
     ContentView.prototype.attachHandlers = function () {
         var self = this;
 
@@ -78,11 +89,23 @@ define([
         });
         this.$el.on('imageError.hub', function(e, oembed) {
             self.attachmentsView.remove(oembed);
-            if (!self.attachmentsView.count()) {
+            if (self.attachmentsView.tileableCount && !self.attachmentsView.tileableCount()) {
                 self.$el.removeClass('content-with-image');
             }
         });
 
+        this.$el.on('click', this.headerElSelector, function(e) {
+            var headerEl = $(e.currentTarget)
+            var frameEl = self.$el.find('.content-attachments-tiled ' + self.attachmentFrameElSelector);
+            headerEl.hide();
+            frameEl.hide();
+
+            var targetEl = document.elementFromPoint(e.clientX, e.clientY);
+            $(targetEl).trigger('click');
+
+            frameEl.show();
+            headerEl.show();
+        });
         this.$el.on('mouseenter', this.tooltipElSelector, function (e) {
             var title = $(this).attr('title');
             var position = $(this).position();
@@ -119,14 +142,23 @@ define([
     
     /**
      * Gets the template rendering context. By default, returns "this.content".
-     * @return {Content} The content object this view was instantiated with.
+     * @returns {Content} The content object this view was instantiated with.
      */  
     ContentView.prototype.getTemplateContext = function () {
         var context = $.extend({}, this.content);
         return context;
     };
 
+    /**
+     * Removes the content view element, and triggers 'removeContentView.hub'
+     * event for the instance to be removed from its associated ListView.
+     */
     ContentView.prototype.remove = function() {
+        /**
+         * removeContentView.hub
+         * @event ContentView#removeContentView.hub
+         * @type {Content}
+         */
         this.$el.trigger('removeContentView.hub', this.content);
         this.$el.remove();
     };

@@ -19,6 +19,7 @@ define([
     'streamhub-sdk/content/types/oembed',
     'streamhub-sdk/content/types/twitter-content',
     'streamhub-sdk/content/views/attachment-list-view',
+    'streamhub-sdk/content/views/gallery-attachment-list-view',
     'streamhub-sdk/content/views/content-view',
     'streamhub-sdk/content/views/oembed-view',
     'streamhub-sdk/content/views/facebook-content-view',
@@ -28,6 +29,7 @@ define([
     'streamhub-sdk/streams/livefyre-reverse-stream',
     'streamhub-sdk/stream-helpers/livefyre-helper',
     'streamhub-sdk/views/list-view',
+    'streamhub-sdk/views/modal-view',
     'text!streamhub-sdk/version.txt'
 ], function(
     $,
@@ -50,6 +52,7 @@ define([
     Oembed,
     TwitterContent,
     AttachmentListView,
+    GalleryAttachmentListView,
     ContentView,
     OembedView,
     FacebookContentView,
@@ -59,6 +62,7 @@ define([
     LivefyreReverseStream,
     LivefyreHelper,
     ListView,
+    ModalView,
     VersionInfo
 ) {
     var Hub = {};
@@ -88,6 +92,7 @@ define([
 
     Hub.Content.Views = {};
     Hub.Content.Views.AttachmentListView = AttachmentListView;
+    Hub.Content.Views.GalleryAttachmentListView = GalleryAttachmentListView;
     Hub.Content.Views.ContentView = ContentView;
     Hub.Content.Views.OembedView = OembedView;
     Hub.Content.Views.FacebookContentView = FacebookContentView;
@@ -103,6 +108,7 @@ define([
 
     Hub.Views = {};
     Hub.Views.ListView = ListView;
+    Hub.Views.ModalView = ModalView;
     
     Hub.version = $.trim(VersionInfo);
 

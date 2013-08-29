@@ -197,7 +197,8 @@
     .content-attachments-stacked > *:nth-child(1) {
         border-top: 1px solid rgba(0,0,0,0.15);
     }
-    .content-attachment > .content-attachment-link-thumbnail {
+    .content-attachment > .content-attachment-link-thumbnail,
+    &.content-with-image .content-attachment > .content-attachment-link-thumbnail {
         display: block;
         position: absolute;
 	    border-radius: 3px;
@@ -221,6 +222,9 @@
     }
     .content-attachments-stacked > div {
         background-color: #f7f7f7;
+    }
+    .content-attachments-stacked .content-attachment-frame {
+        display: none;
     }
 
     .content-actions {
@@ -384,11 +388,14 @@
                 display: block;
             }
             .content-attachment-photo,
-            .content-attachment-video,
-            .content-attachment-video iframe {
+            .content-attachment-video {
+                cursor: pointer;
                 position: absolute;
                 border-radius: 3px 3px 0 0;
                 display: block;
+            }
+            .content-attachment-video {
+                display: none;
             }
 
             .content-attachment-frame {

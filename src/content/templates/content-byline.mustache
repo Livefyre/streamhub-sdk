@@ -1,0 +1,23 @@
+<div class="content-header-inner">
+    {{#author.avatar}}
+        <a class="content-author-avatar">
+            <img src="{{ author.avatar }}" />
+        </a>
+    {{/author.avatar}}
+    <div class="content-byline">
+        {{#author.url}}
+            <a class="content-author-name" href="{{ author.url }}" target="_blank">{{ author.displayName }}</a>
+        {{/author.url}}
+        {{^author.url}}
+            {{#author.profileUrl}}
+                <div class="content-author-name">
+                    <a href="{{ author.profileUrl }}" target="_blank">{{ author.displayName }}</a>
+                </div>
+                <a class="content-author-username" href="https://twitter.com/intent/user?user_id={{author.twitterUserId}}" target="_blank">@{{ author.twitterUsername }}</a>
+            {{/author.profileUrl}}
+            {{^author.profileUrl}}
+                <span class="content-author-name">{{ author.displayName }}</span>
+            {{/author.profileUrl}}
+        {{/author.url}}
+    </div>
+</div>

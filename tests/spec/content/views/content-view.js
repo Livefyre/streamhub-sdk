@@ -6,8 +6,8 @@ define([
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/livefyre-content',
     'streamhub-sdk/content/views/content-view',
-    'streamhub-sdk/content/views/attachment-list-view'],
-function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView, AttachmentListView) {
+    'streamhub-sdk/content/views/tiled-attachment-list-view'],
+function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView, TiledAttachmentListView) {
     describe('Default ContentView', function () {
         
         describe('when constructed', function () {
@@ -60,7 +60,7 @@ function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView
                         url: "http://pbs.twimg.com/media/BQGNgs9CEAEhmEF.jpg"
                     },
                     content = new Content({ body: 'what' }),
-                    attachmentListView = new AttachmentListView({ content: content }),
+                    attachmentListView = new TiledAttachmentListView({ content: content }),
                     contentView = new ContentView({ content: content, attachmentsView: attachmentListView });
 
                 contentView.render();
@@ -90,7 +90,7 @@ function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView
 
                 beforeEach(function() {
                     content = new Content({ body: 'what' }),
-                    attachmentListView = new AttachmentListView({ content: content }),
+                    attachmentListView = new TiledAttachmentListView({ content: content }),
                     contentView = new ContentView({ content: content, attachmentsView: attachmentListView });
                     imageError = false;
                     contentView.$el.on('imageError.hub', function() {

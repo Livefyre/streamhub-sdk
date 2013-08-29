@@ -169,6 +169,20 @@ define([
             var childContent = this._handleState(state.childContent[i], authors);
             if (childContent instanceof Oembed) {
                 content.addAttachment(childContent);
+                var oembedAttachment = {
+                    provider_name: "Twimg",
+                    provider_url: "http://pbs.twimg.com",
+                    type: "photo",
+                    url: "http://pbs.twimg.com/media/BQGNgs9CEAEhmEF.jpg"
+                };
+                content.addAttachment(oembedAttachment);
+                var oembedAttachment = {
+                    provider_name: "Instagram",
+                    provider_url: "http://pbs.twimg.com",
+                    type: "photo",
+                    url: "http://distilleryimage1.ak.instagram.com/24c932660b0c11e3bb4e22000aaa0771_7.jpg"
+                };
+                content.addAttachment(oembedAttachment);
             } else {
                 content.addReply(childContent);
             }
