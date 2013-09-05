@@ -144,6 +144,7 @@ define([
     LivefyreReverseStream.prototype._handleState = function (state, authors) {
         var alreadyPushed = (this._pushedHeadDocument) && (this._headDocumentContentIds.indexOf(state.content.id) !== -1),
             isPublic = (typeof state.vis === 'undefined') ? true : (state.vis === 1),
+            isAttachment = state.content.targetId,
             isReply = state.content.parentId,
             childStates = state.childContent || [],
             content;
@@ -161,7 +162,7 @@ define([
         }
 
         // Push content. Only push replies if this stream was configured to push them
-        if (content && ( ! isReply || ( isReply && this._pushReplies) )) {
+        if (content && !isAttachment && ( ! isReply || ( isReply && this._pushReplies) )) {
             this._push(content);
         }
 

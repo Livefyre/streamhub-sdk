@@ -5,14 +5,17 @@
     "./src/main.js"
   ],
   "dependencies": {
-    "requirejs": "~2.1.5",
     "jquery": "~1.10.1",
+    "base64": "~0.1.1",
+    "hogan": "latest",
+    "requirejs": "~2.1.5",
     "requirejs-text": "~2.0.5",
+    "requirejs-hogan-plugin": "git://github.com/millermedeiros/requirejs-hogan-plugin.git#~0.2.1",
+    "requirejs-plugins": "~1.0.2"
+  },
+  "devDependencies": {
     "jasmine": "*",
     "jasmine-jquery": "*",
-    "base64": "~0.1.1",
-    "almond": "~0.2.5",
-    "hogan": "latest",
-    "requirejs-hogan-plugin": "git://github.com/millermedeiros/requirejs-hogan-plugin.git#~0.2.1"
+    "almond": "~0.2.5"
   }
 }
