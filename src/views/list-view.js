@@ -34,8 +34,7 @@ function($, View, ContentViewFactory, ModalView, util) {
                 contentView.showAttachmentsGallery(context.attachmentToFocus);
                 return;
             }
-            self.modal.setFocus(context.content, { attachment: context.attachmentToFocus });
-            self.modal.show();
+            self.modal.show(context.content, { attachment: context.attachmentToFocus });
         });
     };
     util.inherits(ListView, View);

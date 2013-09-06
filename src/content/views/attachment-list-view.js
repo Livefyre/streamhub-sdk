@@ -75,13 +75,6 @@ function($, View, OembedView, AttachmentListTemplate, util) {
     };
 
     /**
-     * Renders the template and appends itself to this.el
-     */
-    AttachmentListView.prototype.render = function () {
-        this.$el.html(this.template());
-    };
-
-    /**
      * Appends a new OembedView given an Oembed instance to the view
      * @param oembed {Oembed} A Oembed instance to insert into the view
      * @returns {OembedView} The OembedView associated with the newly inserted oembed

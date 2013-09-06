@@ -18,9 +18,13 @@ define([
     var ModalView = function (opts) {
         opts = opts || {};
         this.visible = false;
+        this._rendered = false;
+
         if (opts.createContentView) {
             this._createModalContentView = opts.createContentView;
         }
+
+        this.modalContentView = this._createModalContentView();
 
         View.call(this);
 
@@ -37,16 +41,36 @@ define([
                 e.preventDefault();
             }
         });
+
+        ModalView.instances.push(this);
     };
     util.inherits(ModalView, View);
 
+
+    ModalView.instances = [];
+
+
+    // Create the singleton container element that will house all modals
+    ModalView.$el = $('<div class="hub-modals"></div>')
+    ModalView.el = ModalView.$el[0];
+
+
+    ModalView.insertEl = function () {
+        $('body').append(ModalView.el);
+    }
+    $(document).ready(ModalView.insertEl);
+
+
     ModalView.prototype.template = ModalTemplate;
+    ModalView.prototype.elClass = ' hub-modal';
 
     ModalView.prototype.modalElSelector = '.hub-modal';
     ModalView.prototype.closeButtonSelector = '.hub-modal-close';
     ModalView.prototype.containerElSelector = '.hub-modal-content';
 
+
     /**
+     * @private
      * Set the element for the view to render in.
      * You will probably want to call .render() after this, but not always.
      * @param element {HTMLElement} The element to render this View in
@@ -54,35 +78,21 @@ define([
      */
     ModalView.prototype.setElement = function (element) {
         View.prototype.setElement.call(this, element);
-
         var self = this;
+
+        this.$el.addClass(this.elClass);
+
         this.$el.on('hideModal.hub', function (e) {
+            self.hide();
+        });
+
+        this.$el.on('click', this.closeButtonSelector, function (e) {
             self.hide();
         });
 
         return this;
     };
 
-    /**
-     * Initialize the modal by appending the modal container as a sibling of the body element
-     * @private
-     */
-    ModalView.prototype._initModal = function () {
-        var modalEl = $(this.modalElSelector, 'body');
-        if (! modalEl.length) {
-            modalEl = $(this.template());
-            $('body').append(modalEl);
-        }
-        this.modalEl = modalEl;
-        this.modalContainerEl = modalEl.find(this.containerElSelector);
-
-        var self = this;
-        modalEl.on('click', this.closeButtonSelector, function (e) {
-            self.hide();
-        });
-
-        this.setElement(this.modalContainerEl);
-    };
 
     /**
      * Sets the content object and optional attachment to be displayed in the content view 
@@ -92,14 +102,9 @@ define([
      */
     ModalView.prototype.setFocus = function (content, opts) {
         opts = opts || {};
-        if (! this.modalContentView) {
-            this.modalContentView = this._createModalContentView();
-        }
-        this.modalContentView.setContent(content);
-        if (opts.attachment) {
-            this.modalContentView.setFocusedAttachment(opts.attachment);
-        }
+        this.modalContentView.setContent(content, opts);
     };
+
 
     /**
      * Creates a the content view to display within the modal view
@@ -117,40 +122,52 @@ define([
         return modalContentView;
     };
 
+
     /**
+     * @private
      * Creates DOM structure of gallery to be displayed
      */
     ModalView.prototype.render = function () {
-        if (! this.modalEl) {
-            this._initModal();
-        }
-        if (! this.modalContentView) {
-            this.modalContentView = this._createModalContentView();
-        }
-        this.modalContentView.$el.appendTo(this.modalContainerEl);
+        View.prototype.render.call(this);
+
+        this.$el.appendTo(ModalView.$el);
+
+        this.modalContentView.setElement(this.$el.find(this.containerElSelector));
         this.modalContentView.render(); 
-        this.modalContentView.$el.show();
+
+        this._rendered = true;
     };
+
 
     /**
      * Makes the modal and its content visible
      */
-    ModalView.prototype.show = function() {
-        if (! this.modalEl) {
-            this._initModal();
+    ModalView.prototype.show = function(content, options) {
+        if (content) {
+            this.setFocus(content, options);
         }
-        this.modalEl.show();
-        this.render();
+
+        // First hide any other modals
+        $.each(ModalView.instances, function (i, modal) {
+            modal.hide();
+        });
+
+        this.$el.show();
+        if ( ! this._rendered) {
+            this.render();
+        }
         this.visible = true;
     };
+
 
     /**
      * Makes the modal and its content not visible
      */
     ModalView.prototype.hide = function() {
-        this.modalEl.hide();
+        this.$el.hide();
         this.visible = false;
     };
+
 
     return ModalView;
 });

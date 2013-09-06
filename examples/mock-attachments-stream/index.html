@@ -5,6 +5,10 @@
     <style>
         #controls { display: none; margin: 20px 0; }
         #feed { width: 500px; }
+        .streamhub-list-view {
+            float: left;
+            width: 500px;
+        }
     </style>
     <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 </head>
@@ -15,6 +19,7 @@
             <button onclick="window.streamManager.get('main').stop()">Stop</button>
         </div>
         <div id="feed"></div>
+        <div id="feed1"></div>
 
         <script src="../../lib/requirejs/require.js" type="text/javascript"></script>
         <script src="/requirejs.conf.js" type="text/javascript"></script>
@@ -35,6 +40,16 @@
             });
 
             streams.bind(feed).start();
+
+            var feed1 = window.view = new ListView({
+                el: document.getElementById("feed1")
+            });
+
+            var streams1 = new StreamManager({
+                main: new MockAttachmentsStream()
+            });
+
+            streams1.bind(feed1).start();
         });
         </script>
     </body>

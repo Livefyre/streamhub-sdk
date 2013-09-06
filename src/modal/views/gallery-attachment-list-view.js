@@ -138,7 +138,6 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
     GalleryAttachmentListView.prototype.render = function () {
         TiledAttachmentListView.prototype.render.call(this);
 
-        this.$el.html(this.template());
         var attachmentsGalleryEl = this.$el.find(this.attachmentsGallerySelector);
         var self = this;
         $.each(this.oembedViews, function (i, oembedView) {
@@ -168,7 +167,21 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         }
 
         this.focus();
+        this._rendered = true;
     };
+
+
+    GalleryAttachmentListView.prototype.setContent = function (content, opts) {
+        opts = opts || {};
+        TiledAttachmentListView.prototype.setContent.apply(this, arguments);
+        if (opts.attachment) {
+            this.setFocusedAttachment(opts.attachment);
+        }
+        if (this._rendered) {
+            this.render();
+        }
+    }
+
 
     /**
      * Appends a new OembedView given an Oembed instance to the view
