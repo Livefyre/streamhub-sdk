@@ -1,0 +1,27 @@
+<div class="content-header">
+    <div class="content-header-inner">
+        {{#author.avatar}}
+            <a class="content-author-avatar">
+                <img src="{{ author.avatar }}" />
+            </a>
+        {{/author.avatar}}
+        <div class="content-byline">
+            <span class="content-source-logo"></span>
+            {{#author.displayName}}
+                <a class="content-author-name" href="http://instagram.com/{{ author.displayName }}" target="_blank">{{ author.displayName }}</a>
+            {{/author.displayName}}
+        </div>
+    </div>
+</div>
+
+<div class="content-attachments"></div>
+
+<div class="content-body">
+	{{{ body }}}
+</div>
+
+<div class="content-meta">
+    {{#formattedCreatedAt}}
+    <div class="content-created-at">{{{formattedCreatedAt}}}</div>
+    {{/formattedCreatedAt}}
+</div>

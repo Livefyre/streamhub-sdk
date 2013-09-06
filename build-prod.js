@@ -14,7 +14,7 @@
   baseUrl: '.',
   name: "streamhub-sdk",
   include: ['almond'],
-  stubModules: ['text', 'hgn'],
+  stubModules: ['text', 'hgn', 'json'],
   out: "streamhub-sdk.min.js",
   namespace: 'Livefyre',
   pragmasOnSave: {

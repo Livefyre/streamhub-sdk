@@ -1,8 +1,14 @@
-define(['streamhub-sdk/jquery', 'streamhub-sdk/view', 'streamhub-sdk/content/views/content-view'],
-function($, View, ContentView) {
+define([
+    'streamhub-sdk/jquery',
+    'streamhub-sdk/view',
+    'streamhub-sdk/content/content-view-factory',
+    'streamhub-sdk/modal/modal',
+    'streamhub-sdk/util'],
+function($, View, ContentViewFactory, ModalView, util) {
 
     /**
      * A simple View that displays Content in a list (`<ul>` by default).
+     *
      * @param opts {Object} A set of options to config the view with
      * @param opts.el {HTMLElement} The element in which to render the streamed content
      * @exports streamhub-sdk/views/list-view
@@ -10,16 +16,32 @@ function($, View, ContentView) {
      */
     var ListView = function(opts) {
         opts = opts || {};
+        this.modal = opts.modal === undefined ? new ModalView() : opts.modal;
         View.call(this, opts);
 
         $(this.el).addClass('streamhub-list-view');
 
+        this.contentViewFactory = new ContentViewFactory();
         this.contentViews = [];
 
         var self = this;
+        $(this.el).on('removeContentView.hub', function(e, content) {
+            self.remove(content);
+        });
+        $(this.el).on('focusContent.hub', function(e, context) {
+            var contentView = self.getContentView(context.content);
+            if (! self.modal) {
+                if (contentView &&
+                    contentView.attachmentsView &&
+                    typeof contentView.attachmentsView.focus === 'function') {
+                    contentView.attachmentsView.focus(context.attachmentToFocus)
+                }
+                return;
+            }
+            self.modal.show(context.content, { attachment: context.attachmentToFocus });
+        });
     };
-    $.extend(ListView.prototype, View.prototype);
-
+    util.inherits(ListView, View);
 
     /**
      * Comparator function to determine ordering of ContentViews.
@@ -28,7 +50,7 @@ function($, View, ContentView) {
      *     in descending order (new first)
      * @param a {ContentView}
      * @param b {ContentView}
-     * @return {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
+     * @returns {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
      */
     ListView.prototype.comparator = function (a, b) {
         var aDate = a.content.createdAt || a.createdAt,
@@ -44,7 +66,7 @@ function($, View, ContentView) {
      *     render the newContentView
      *     insert the newContentView into this.el according to this.comparator
      * @param content {Content} A Content model to add to the ListView
-     * @return the newly created ContentView
+     * @returns the newly created ContentView
      */
     ListView.prototype.add = function(content) {
         var contentView = this.getContentView(content);
@@ -69,7 +91,7 @@ function($, View, ContentView) {
      * @returns {boolean} true if Content was removed, else false
      */
     ListView.prototype.remove = function (content) {
-        var contentView = content instanceof ContentView ? content : this.getContentView(content);
+        var contentView = content.el ? content : this.getContentView(content); //duck type for ContentView
         if (! contentView) {
             return false;
         }
@@ -123,6 +145,16 @@ function($, View, ContentView) {
             }
         }
         return null;
+    };
+
+    /**
+     * Creates a content view from the given piece of content, by looking in this view's
+     * content registry for the supplied content type.
+     * @param content {Content} A content object to create the corresponding view for.
+     * @returns {ContentView} A new content view object for the given piece of content.
+     */
+    ListView.prototype.createContentView = function (content) {
+        return this.contentViewFactory.createContentView(content);
     };
 
     return ListView;

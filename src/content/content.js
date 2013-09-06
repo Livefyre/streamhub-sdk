@@ -1,12 +1,15 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/event-emitter'
-], function($, EventEmitter) {
+    'streamhub-sdk/event-emitter',
+    'streamhub-sdk/util'
+], function($, EventEmitter, util) {
 
     /**
      * A piece of Web Content
      * @param body {String|Object} A string of HTML, the Content body.
      *     If an object, it should have a .body property
+     * @fires Content#attachment
+     * @fires Content#removeAttachment
      * @exports streamhub-sdk/content/content
      * @constructor
      */
@@ -22,16 +25,26 @@ define([
         this.attachments = obj.attachments || [];
         this.replies = obj.replies || [];
     };
-    $.extend(Content.prototype, EventEmitter.prototype);
+    util.inherits(Content, EventEmitter);
 
     /**
      * Attach an Oembed to the Content
      * @param obj {Oembed} An Oembed Content instance to attach
-     * @fires Content#addAttachment
+     * @fires Content#attachment
      */
     Content.prototype.addAttachment = function(obj) {
         this.attachments.push(obj);
         this.emit('attachment', obj);
+    };
+
+    /**
+     * Remove an Oembed from the Content
+     * @param obj {Oembed} An Oembed Content instance to attach
+     * @fires Content#removeAttachment
+     */
+    Content.prototype.removeAttachment = function(obj) {
+        this.attachments.splice(this.attachments.indexOf(obj), 1);
+        this.emit('removeAttachment', obj);
     };
 
     /**

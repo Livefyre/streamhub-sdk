@@ -1,5 +1,5 @@
-define(function() {
-
+define(['streamhub-sdk/debug'], function(debug) {
+    var log = debug('event-emitter');
     var slice = Array.prototype.slice;
 
     /**
@@ -48,6 +48,7 @@ define(function() {
             try {
                 listeners[i].apply(this, args); 
             } catch(err) {
+                log(err);
                 this.emit('error', err);
             }
         }

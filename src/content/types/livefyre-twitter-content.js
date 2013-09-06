@@ -1,8 +1,9 @@
 define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/content/types/twitter-content',
-    'streamhub-sdk/content/types/livefyre-content'
-], function($, TwitterContent, LivefyreContent) {
+    'streamhub-sdk/content/types/livefyre-content',
+    'streamhub-sdk/util'
+], function($, TwitterContent, LivefyreContent, util) {
 
     /**
      * A tweet constructed from a StreamHub state response from a twitter source
@@ -20,7 +21,8 @@ define([
             this.author.twitterUserId = LivefyreTwitterContent.twitterUserIdFromLivefyreAuthorId(this.author.id);
         }
     };
-    LivefyreTwitterContent.prototype = $.extend(new LivefyreContent(), TwitterContent.prototype);
+    util.inherits(LivefyreTwitterContent, LivefyreContent);
+    $.extend(LivefyreTwitterContent.prototype, TwitterContent.prototype);
 
     /**
      * Transform a Livefyre Message ID to a Twitter tweet id

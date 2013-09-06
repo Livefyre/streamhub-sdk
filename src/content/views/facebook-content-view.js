@@ -1,8 +1,9 @@
 define([
     'streamhub-sdk/content/views/content-view',
     'hgn!streamhub-sdk/content/templates/facebook',
+    'streamhub-sdk/util',
     'streamhub-sdk/jquery'],
-function (ContentView, FacebookContentTemplate, $) {
+function (ContentView, FacebookContentTemplate, util, $) {
 
     /**
      * A view for rendering facebook content into an element.
@@ -13,8 +14,7 @@ function (ContentView, FacebookContentTemplate, $) {
     var FacebookContentView = function FacebookContentView (opts) {
         ContentView.call(this, opts);
     };
-    
-    FacebookContentView.prototype = new ContentView();
+    util.inherits(FacebookContentView, ContentView);    
     
     FacebookContentView.prototype.elClass += ' content-facebook ';
     FacebookContentView.prototype.template = FacebookContentTemplate;

@@ -1,0 +1,10 @@
+<div class="content-attachment content-attachment-link">
+    <div class="content-attachment-frame"></div>
+    {{#thumbnail_url}}
+        <img class="content-attachment-link-thumbnail" src="{{{ thumbnail_url }}}"/>
+    {{/thumbnail_url}}
+    <div class="content-attachment-link-body">
+        <a href="{{{ url }}}" target="_blank">{{{ title }}}</a>
+        <p class="content-attachment-provider">via {{{ provider_name }}}</p>
+    </div>
+</div>

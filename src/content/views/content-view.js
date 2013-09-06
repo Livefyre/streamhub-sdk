@@ -7,9 +7,11 @@ define([
     /**
      * Defines the base class for all content-views. Handles updates to attachments
      * and loading of images.
+     *
      * @param opts {Object} The set of options to configure this view with.
      * @param opts.content {Content} The content object to use when rendering. 
      * @param opts.el {?HTMLElement} The element to render this object in.
+     * @fires ContentView#removeContentView.hub
      * @exports streamhub-sdk/content/views/content-view
      * @constructor
      */
@@ -19,30 +21,32 @@ define([
         // store construction time to use for ordering if this.content has no dates
         this.createdAt = new Date();
 
+        this.template = opts.template || this.template;
+        this.setElement(opts.el || document.createElement(this.elTag));
+        this.attachmentsView = opts.attachmentsView;
+
+        var self = this;
         if (this.content) {
-            var self = this;
-            this.content.on("attachment", function(content) {
-                self.render();
-            });
             this.content.on("reply", function(content) {
                 self.render();
             });
         }
-
-        this.template = opts.template || this.template;
-        
-        this.setElement(opts.el || document.createElement(this.elTag));
     };
     
     ContentView.prototype.elTag = 'article';
     ContentView.prototype.elClass = 'content';
     ContentView.prototype.tooltipElSelector = '.hub-tooltip-link';
+    ContentView.prototype.attachmentsElSelector = '.content-attachments';
+    ContentView.prototype.tiledAttachmentsElSelector = '.content-attachments-tiled';
+    ContentView.prototype.headerElSelector = '.content-header';
+    ContentView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
     ContentView.prototype.template = ContentTemplate;
     ContentView.prototype.formatDate = Util.formatDate;
 
      /**
      * Set the .el DOMElement that the ContentView should render to
      * @param el {DOMElement} The new element the ContentView should render to
+     * @returns {ContentView}
      */
     ContentView.prototype.setElement = function (el) {
         this.el = el;
@@ -57,6 +61,7 @@ define([
     
     /**
      * Render the content inside of the ContentView's element.
+     * @returns {ContentView}
      */
     ContentView.prototype.render = function () {
         var context = this.getTemplateContext();
@@ -65,26 +70,44 @@ define([
         }
         this.el.innerHTML = this.template(context);
 
-        // handle oembed loading gracefully
-        var self = this;
-        var newImg = $(this.el).find('.content-attachments img').last();
-        newImg.hide();
-        newImg.on('load', function() {
-            newImg.fadeIn();
-            self.$el.trigger('imageLoaded');
-            self.$el.addClass('content-with-image');
-        });
-        newImg.on('error', function() {
-            self.content.attachments.pop();
-            self.$el.find('.content-attachments').empty();
-            self.$el.removeClass('content-with-image');
-        });
+        if (this.attachmentsView) {
+            this.attachmentsView.setElement(this.$el.find(this.attachmentsElSelector)[0]);
+            this.attachmentsView.render();
+        }
 
         return this;
     };
-
+    
+    /**
+     * Binds event handlers on this.el
+     * @returns {ContentView}
+     */
     ContentView.prototype.attachHandlers = function () {
         var self = this;
+
+        this.$el.on('imageLoaded.hub', function(e) {
+            self.$el.addClass('content-with-image');
+        });
+        this.$el.on('imageError.hub', function(e, oembed) {
+            self.content.removeAttachment(oembed);
+
+            if (self.attachmentsView.tileableCount && !self.attachmentsView.tileableCount()) {
+                self.$el.removeClass('content-with-image');
+            }
+        });
+
+        this.$el.on('click', this.headerElSelector, function(e) {
+            var headerEl = $(e.currentTarget)
+            var frameEl = self.$el.find('.content-attachments-tiled ' + self.attachmentFrameElSelector);
+
+            headerEl.hide();
+            frameEl.hide();
+            var targetEl = document.elementFromPoint(e.clientX, e.clientY);
+            frameEl.show();
+            headerEl.show();
+
+            $(targetEl).trigger('click');
+        });
         this.$el.on('mouseenter', this.tooltipElSelector, function (e) {
             var title = $(this).attr('title');
             var position = $(this).position();
@@ -99,7 +122,7 @@ define([
             var tooltipHeight = $currentTooltip.outerHeight();
 
             $currentTooltip.css({
-                "left": position.left + (positionWidth / 2) - (tooltipWidth / 2) + 5,
+                "left": position.left + (positionWidth / 2) - (tooltipWidth / 2),
                 "top":  position.top - tooltipHeight - 2
             });
 
@@ -121,41 +144,26 @@ define([
     
     /**
      * Gets the template rendering context. By default, returns "this.content".
-     * @return {Content} The content object this view was instantiated with.
+     * @returns {Content} The content object this view was instantiated with.
      */  
     ContentView.prototype.getTemplateContext = function () {
         var context = $.extend({}, this.content);
-        context.renderAttachment = this.renderAttachment;
         return context;
     };
 
-    ContentView.prototype.renderAttachment = function () {
-        var linkHtml;
-        switch (this.type) {
-            case 'photo':
-                return '<img src="{url}" />'.replace('{url}', this.url);
-            case 'video':
-                return this.html;
-            case 'link':
-                /** @todo show thumbnails */
-                linkHtml = '<a href="{href}">{body}</a>'
-                    .replace("{href}", this.url)
-                    .replace("{body}", linkAttachmentBody(this));
-                return linkHtml;
-            case 'rich':
-                return this.html;
-            default:
-                return '';
-        }
+    /**
+     * Removes the content view element, and triggers 'removeContentView.hub'
+     * event for the instance to be removed from its associated ListView.
+     */
+    ContentView.prototype.remove = function() {
+        /**
+         * removeContentView.hub
+         * @event ContentView#removeContentView.hub
+         * @type {Content}
+         */
+        this.$el.trigger('removeContentView.hub', this.content);
+        this.$el.remove();
     };
-
-    function linkAttachmentBody (oembed) {
-        var body = oembed.title;
-        if (oembed.thumbnail_url) {
-            body = '<img src="'+oembed.thumbnail_url+'" />';
-        }
-        return body;
-    }
     
     return ContentView;
 });

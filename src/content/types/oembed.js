@@ -1,4 +1,4 @@
-define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content'], function($, Content) {
+define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'streamhub-sdk/util'], function($, Content, util) {
 
     /**
      * An Oembed Object. As specified by http://oembed.com/
@@ -22,7 +22,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content'], function($, Co
             this.html = null;
         }
     };
-    $.extend(Oembed.prototype, Content.prototype);
+    util.inherits(Oembed, Content);
 
     Oembed.types = ['photo', 'video', 'link', 'rich'];
     Oembed.properties = ['type', 'version', 'title', 'author_name', 'author_url',

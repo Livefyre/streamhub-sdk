@@ -1,4 +1,4 @@
-define(['streamhub-sdk/jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
+define(['streamhub-sdk/jquery', 'streamhub-sdk/event-emitter', 'streamhub-sdk/util'], function($, EventEmitter, util) {
     
     /**
      * Defines a base stream object that can be "started", which reads from its source and
@@ -13,7 +13,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/event-emitter'], function($, Even
         this.opts = opts || {};
         this.buffer = [];
     };
-    $.extend(Stream.prototype, EventEmitter.prototype);
+    util.inherits(Stream, EventEmitter);
     
     /**
      * Triggers the stream to start reading from its abstract source.

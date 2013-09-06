@@ -5,8 +5,9 @@ define([
     'streamhub-sdk/util',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/livefyre-content',
-    'streamhub-sdk/content/views/content-view'],
-function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView) {
+    'streamhub-sdk/content/views/content-view',
+    'streamhub-sdk/content/views/tiled-attachment-list-view'],
+function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView, TiledAttachmentListView) {
     describe('Default ContentView', function () {
         
         describe('when constructed', function () {
@@ -58,11 +59,20 @@ function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView
                         type: "photo",
                         url: "http://pbs.twimg.com/media/BQGNgs9CEAEhmEF.jpg"
                     },
-                    content = new Content({ body: 'what', attachments: [attachment] }),
-                    contentView = new ContentView({ content: content });
+                    content = new Content({ body: 'what' }),
+                    attachmentListView = new TiledAttachmentListView({ content: content }),
+                    contentView = new ContentView({ content: content, attachmentsView: attachmentListView });
+
                 contentView.render();
+                content.addAttachment(attachment);
+
                 it('has .content-with-image', function() {
-                    expect(contentView.el).toHaveClass('content-with-image');
+                    waitsFor(function() {
+                        return contentView.$el.hasClass('content-with-image');
+                    });
+                    runs(function() {
+                        expect(contentView.el).toHaveClass('content-with-image');
+                    });
                 });
             });
 
@@ -73,14 +83,39 @@ function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView
                         type: "photo",
                         url: "a broken url"
                     },
-                    content = new Content({ body: 'what', attachments: [attachment] }),
-                    contentView = new ContentView({ content: content });
-                contentView.render();
-                it('does not have .content-with-image', function() {
-                    expect(contentView.el).not.toHaveClass('content-with-image');
+                    content,
+                    attachmentListView,
+                    contentView,
+                    imageError;
+
+                beforeEach(function() {
+                    content = new Content({ body: 'what' }),
+                    attachmentListView = new TiledAttachmentListView({ content: content }),
+                    contentView = new ContentView({ content: content, attachmentsView: attachmentListView });
+                    imageError = false;
+                    contentView.$el.on('imageError.hub', function() {
+                        imageError = true;
+                    });
+
+                    contentView.render();
+                    content.addAttachment(attachment);
                 });
-                it('.content-attachments does not have child nodes', function() {
-                    expect(contentView.$el.find('.content-attachments')).toBeEmpty();
+
+                it('does not have .content-with-image', function() {
+                    waitsFor(function() {
+                        return imageError;
+                    });
+                    runs(function() {
+                        expect(contentView.el).not.toHaveClass('content-with-image');
+                    });
+                });
+                it('has no .content-attachment descendants', function() {
+                    waitsFor(function() {
+                        return imageError;
+                    });
+                    runs(function() {
+                        expect(contentView.$el.find('.content-attachment')).toHaveLength(0);
+                    });
                 });
             });
         });

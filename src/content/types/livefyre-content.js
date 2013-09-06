@@ -1,4 +1,4 @@
-define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content'], function($, Content) {
+define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'streamhub-sdk/util'], function($, Content, util) {
 
     /**
      * Base class for any piece of Livefyre content. Extracts the details of the content
@@ -23,7 +23,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content'], function($, Co
         this.parentId = json.content.parentId;
         this.meta = json;
     };
-    LivefyreContent.prototype = new Content();
+    util.inherits(LivefyreContent, Content);
 
     /**
      * Attach an Oembed to the Content while first checking for an existing attachment.

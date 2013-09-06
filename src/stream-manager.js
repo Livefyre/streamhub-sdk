@@ -1,4 +1,4 @@
-define(['streamhub-sdk/jquery', 'streamhub-sdk/event-emitter'], function ($, EventEmitter) {
+define(['streamhub-sdk/jquery', 'streamhub-sdk/event-emitter', 'streamhub-sdk/util'], function ($, EventEmitter, util) {
 
     /**
      * Manages a collection of Streams
@@ -31,7 +31,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/event-emitter'], function ($, Eve
         });
         this.set(streamObj);
     };
-    $.extend(StreamManager.prototype, EventEmitter.prototype);
+    util.inherits(StreamManager, EventEmitter);
 
     /**
      * A set of pluggable stream creator methods.
