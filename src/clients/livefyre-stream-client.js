@@ -6,6 +6,15 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/util'], function($, util) {
      */
     var LivefyreStreamClient = {};
 
+
+    // Keep track of whether the page is unloading, so we don't throw exceptions
+    // if the XHR fails just because of that.
+    var windowIsUnloading = false;
+    $(window).on('beforeunload', function () {
+        windowIsUnloading = true;
+    });
+
+
     /**
      * Fetches content from the livefyre conversation stream with the supplied arguments.
      * @param opts {Object} The livefyre collection options.
@@ -18,7 +27,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/util'], function($, util) {
     LivefyreStreamClient.getContent = function(opts, callback) {
         opts = opts || {};
         callback = callback || function() {};
-        
+
         var url = [
             "http://stream1.",
             (opts.network === 'livefyre.com') ? opts.environment || 'livefyre.com' : opts.network,
@@ -36,13 +45,22 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/util'], function($, util) {
             success: function(data, status, jqXhr) {
                 // todo: (genehallman) check livefyre stream status in data.status
                 if (data.timeout) {
-                    return callback("Timeout");
+                    return callback(null, { timeout: data.timeout });
                 } else if (data.status == "error") {
                     return callback(data.msg);
                 }
                 callback(null, data.data);
             },
             error: function(jqXhr, status, err) {
+                if (windowIsUnloading) {
+                    // Error fires when the user reloads the page during a long poll,
+                    // But we don't want to throw an exception if the page is
+                    // going away anyway.
+                    return;
+                }
+                if ( ! err) {
+                    err = "LivefyreStreamClient Error";
+                }
                 callback(err);
             }
         });

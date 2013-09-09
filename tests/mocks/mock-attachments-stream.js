@@ -1,12 +1,10 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/stream',
-    'streamhub-sdk/content/content',
-    'streamhub-sdk/content/types/livefyre-content',
-    'streamhub-sdk/streams/livefyre-reverse-stream',
+    'streamhub-sdk/content/state-to-content',
     'json!tests/mocks/bootstrap-data.json',
+    'stream/readable',
     'streamhub-sdk/util'
-], function ($, Stream, Content, LivefyreContent, LivefyreReverseStream, fixture, util) {
+], function ($, StateToContent, fixture, Readable, util) {
 
     for (var provider in fixture.content) {
         var state = fixture.content[provider];
@@ -19,19 +17,24 @@ define([
      * A MockAttachmentsStream of Content
      */
     var MockAttachmentsStream = function MockAttachmentsStream (opts) {
+        Readable.call(this, opts);
         opts = opts || {};
-        opts.network = 'blah';
-        opts.collectionId = 'blah';
-        opts.commentId = 'blah';
-        opts.environment = 'blah';
-        LivefyreReverseStream.call(this, opts);
         this.fixture = opts.bootstrapFixture || $.extend({}, fixture);
+        this.stateToContent = new StateToContent({
+            authors: this.fixture.authors
+        });
+        for (var provider in fixture.content) {
+            this.stateToContent.write(fixture.content[provider]);
+        }
     };
-    util.inherits(MockAttachmentsStream, LivefyreReverseStream);
+
+    util.inherits(MockAttachmentsStream, Readable);
+
 
     MockAttachmentsStream.prototype._read = function() {
-        this._handleBootstrapDocument(this.fixture);
+        this.push(this.stateToContent.read());
     };
+
 
     return MockAttachmentsStream;
 });

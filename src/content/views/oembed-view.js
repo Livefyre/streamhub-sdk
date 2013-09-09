@@ -1,4 +1,5 @@
 define([
+    'streamhub-sdk/jquery',
     'streamhub-sdk/view',
     'hgn!streamhub-sdk/content/templates/oembed-photo',
     'hgn!streamhub-sdk/content/templates/oembed-video',
@@ -6,7 +7,7 @@ define([
     'hgn!streamhub-sdk/content/templates/oembed-rich',
     'streamhub-sdk/util'
 ],
-function(View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, OembedRichTemplate, util) {
+function($, View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, OembedRichTemplate, util) {
 
     /**
      * A view that renders oembed attachments

@@ -64,6 +64,7 @@ define([
         var ContentViewType = this._getViewTypeForContent(content);
         var attachmentsView = this._createAttachmentsView(content);
         var contentView = new ContentViewType({ content : content, attachmentsView: attachmentsView });
+        
         return contentView;
     };
 
@@ -87,10 +88,10 @@ define([
 
 
     ContentViewFactory.prototype._createAttachmentsView = function (content) {
-        var tiledAttachmentListView = new TiledAttachmentListView({
+        var tiledAttachmentListView = new TiledAttachmentListView();
+        return new GalleryOnFocusView(tiledAttachmentListView, {
             content: content
         });
-        return new GalleryOnFocusView(tiledAttachmentListView);
     };
 
     return ContentViewFactory;

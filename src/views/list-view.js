@@ -3,8 +3,17 @@ define([
     'streamhub-sdk/view',
     'streamhub-sdk/content/content-view-factory',
     'streamhub-sdk/modal/views/attachment-gallery-modal',
-    'streamhub-sdk/util'],
-function($, View, ContentViewFactory, AttachmentGalleryModal, util) {
+    'inherits',
+    'streamhub-sdk/debug',
+    'stream/writable',
+    'streamhub-sdk/content/views/content-view',
+    'streamhub-sdk/streams/more',
+    'streamhub-sdk/views/show-more-button',
+    'hgn!streamhub-sdk/views/templates/list-view'],
+function($, View, ContentViewFactory, AttachmentGalleryModal, inherits,
+debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
+
+    var log = debug('streamhub-sdk/views/list-view');
 
     /**
      * A simple View that displays Content in a list (`<ul>` by default).
@@ -15,16 +24,22 @@ function($, View, ContentViewFactory, AttachmentGalleryModal, util) {
      * @constructor
      */
     var ListView = function(opts) {
+        var self = this;
         opts = opts || {};
+
         this.modal = opts.modal === undefined ? new AttachmentGalleryModal() : opts.modal;
+
         View.call(this, opts);
 
         $(this.el).addClass('streamhub-list-view');
 
         this.contentViewFactory = new ContentViewFactory();
+
+        // Default to 50 initial items
+        this._newContentGoal = opts.initial || 50;
+
         this.contentViews = [];
 
-        var self = this;
         $(this.el).on('removeContentView.hub', function(e, content) {
             self.remove(content);
         });
@@ -40,8 +55,76 @@ function($, View, ContentViewFactory, AttachmentGalleryModal, util) {
             }
             self.modal.show(context.content, { attachment: context.attachmentToFocus });
         });
+
+        Writable.call(this, opts);
+
+        this._moreAmount = opts.showMore || 50;
+        this.more = opts.more || this._createMoreStream(opts);
+        this.showMoreButton = opts.showMoreButton || this._createShowMoreButton(opts);
+        this.showMoreButton.setMoreStream(this.more);
+
+        this.render();
+
+        this.more.pipe(this, { end: false });
     };
-    util.inherits(ListView, View);
+
+    inherits(ListView, View);
+    inherits.parasitically(ListView, Writable);
+
+
+    ListView.prototype.template = ListViewTemplate;
+
+    ListView.prototype.listElSelector = '.content-list';
+    ListView.prototype.showMoreElSelector = '.content-list-more';
+
+
+    ListView.prototype.setElement = function () {
+        var self = this;
+        View.prototype.setElement.apply(this, arguments);
+        // .showMoreButton will trigger showMore.hub when it is clicked
+        this.$el.on('showMore.hub', function () {
+            self.showMore();
+        });
+    };
+
+
+    ListView.prototype.render = function () {
+        View.prototype.render.call(this);
+        this.$listEl = this.$el.find(this.listElSelector);
+
+        this.showMoreButton.setElement(this.$el.find(this.showMoreElSelector));
+        this.showMoreButton.render();
+    };
+
+
+    /**
+     * Called automatically by the Writable base class
+     */
+    ListView.prototype._write = function (content, requestMore) {
+        this.add(content);
+        requestMore();
+    };
+
+
+    /**
+     * @private
+     * Create a Stream that extra content can be written into.
+     * This will be used if an opts.moreBuffer is not provided on construction.
+     * By default, this creates a streamhub-sdk/streams/more
+     */
+    ListView.prototype._createMoreStream = function (opts) {
+        opts = opts || {};
+        return new More({
+            highWaterMark: 0,
+            goal: opts.initial || 50
+        });
+    };
+
+
+    ListView.prototype._createShowMoreButton = function (opts) {
+        return new ShowMoreButton();
+    };
+
 
     /**
      * Comparator function to determine ordering of ContentViews.
@@ -76,6 +159,10 @@ function($, View, ContentViewFactory, AttachmentGalleryModal, util) {
         }
 
         contentView = this.createContentView(content);
+        if ( ! contentView) {
+            return;
+        }
+
         contentView.render();
 
         // Add to DOM
@@ -83,6 +170,22 @@ function($, View, ContentViewFactory, AttachmentGalleryModal, util) {
 
         return contentView;
     };
+
+
+    /**
+     * Show More content.
+     * ListView keeps track of an internal ._newContentGoal
+     *     which is how many more items he wishes he had.
+     *     This increases that goal and marks the Writable
+     *     side of ListView as ready for more writes.
+     * @param numToShow {number} The number of items to try to add
+     */
+    ListView.prototype.showMore = function (numToShow) {
+        if (typeof numToShow === 'undefined') {
+            numToShow = this._moreAmount;
+        }
+        this.more.setGoal(numToShow);
+    }
 
 
     /**
@@ -121,7 +224,7 @@ function($, View, ContentViewFactory, AttachmentGalleryModal, util) {
 
         if (newContentViewIndex === 0) {
             // Beginning!
-            contentView.$el.prependTo(this.el);
+            contentView.$el.prependTo(this.$listEl);
         } else {
             // Find it's previous contentView and insert new contentView after
             $previousEl = this.contentViews[newContentViewIndex - 1].$el;
@@ -147,6 +250,7 @@ function($, View, ContentViewFactory, AttachmentGalleryModal, util) {
         return null;
     };
 
+
     /**
      * Creates a content view from the given piece of content, by looking in this view's
      * content registry for the supplied content type.
@@ -156,6 +260,7 @@ function($, View, ContentViewFactory, AttachmentGalleryModal, util) {
     ListView.prototype.createContentView = function (content) {
         return this.contentViewFactory.createContentView(content);
     };
+
 
     return ListView;
 });

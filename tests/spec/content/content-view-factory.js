@@ -3,8 +3,11 @@ define([
     'jasmine',
     'streamhub-sdk/content/types/livefyre-content',
     'streamhub-sdk/content/views/content-view',
-    'streamhub-sdk/content/content-view-factory'],
-function($, jasmine, LivefyreContent, ContentView, ContentViewFactory) {
+    'streamhub-sdk/content/content-view-factory',
+    'streamhub-sdk/content/content',
+    'streamhub-sdk/content/types/oembed'],
+function($, jasmine, LivefyreContent, ContentView, ContentViewFactory, Content,
+Oembed) {
 
     describe('ContentViewFactory', function() {
 
@@ -36,5 +39,57 @@ function($, jasmine, LivefyreContent, ContentView, ContentViewFactory) {
                 });
             }
         });
+
+        describe('when creating content with attachments', function () {
+            var contentViewFactory,
+                content;
+            beforeEach(function () {
+                content = new Content('WOAH')
+                content.addAttachment(new Oembed({
+                    "provider_url": "http://distilleryimage11.ak.instagram.com",
+                    "version": "1.0",
+                    "title": "",
+                    "url": "http://distilleryimage11.ak.instagram.com/d2a6d3f0aa1f11e2829522000a1fa769_7.jpg",
+                    "author_name": "",
+                    "height": 612,
+                    "width": 612,
+                    "html": "",
+                    "thumbnail_width": 0,
+                    "provider_name": "Instagram",
+                    "thumbnail_url": "",
+                    "type": "photo",
+                    "thumbnail_height": 0,
+                    "author_url": ""
+                }));
+                content.addAttachment(new Oembed({
+                    "provider_url": "http://distilleryimage11.ak.instagram.com",
+                    "version": "1.0",
+                    "title": "",
+                    "url": "http://distilleryimage11.ak.instagram.com/d2a6d3f0aa1f11e2829522000a1fa769_7.jpg",
+                    "author_name": "",
+                    "height": 612,
+                    "width": 612,
+                    "html": "",
+                    "thumbnail_width": 0,
+                    "provider_name": "Instagram",
+                    "thumbnail_url": "",
+                    "type": "photo",
+                    "thumbnail_height": 0,
+                    "author_url": ""
+                }))
+                contentViewFactory = new ContentViewFactory();
+            });
+
+            it('after render, has an .attachmentsListView that is a descendant of .el', function () {
+                var contentView = contentViewFactory.createContentView(content);
+                contentView.render();
+                expect(contentView.$el).toContain(contentView.attachmentsView.$el);
+            });
+
+            it('.attachmentsListView has oembedViews for each attachment', function () {
+                var contentView = contentViewFactory.createContentView(content);
+                expect(contentView.attachmentsView.count()).toBe(2);
+            });
+        })
     });
 });

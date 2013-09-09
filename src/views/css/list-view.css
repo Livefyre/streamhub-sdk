@@ -1,1 +1,21 @@
-.content-list{list-style-type:none}
+.content-list {
+  list-style-type: none;
+}
+.content-list-more {
+  background-color: white;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.03);
+  display: block;
+  color: #2c8ee0;
+  cursor: pointer;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1em;
+  margin: 0 auto;
+  padding: 0.75em;
+  text-align: center;
+  width: 10em;
+  -webkit-font-smoothing: antialiased;
+}

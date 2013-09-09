@@ -35,7 +35,7 @@ define(['streamhub-sdk/util', 'streamhub-sdk/jquery', 'base64'], function(util, 
             "/",
             btoa(opts.articleId),
             "/",
-            opts.page ? opts.page+'.json' : "init"
+            typeof opts.page !== 'undefined' ? opts.page+'.json' : "init"
         ].join("");
 
 

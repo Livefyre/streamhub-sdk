@@ -1,8 +1,9 @@
 define([
 	'streamhub-sdk/util',
 	'streamhub-sdk/view',
-	'streamhub-sdk/content/views/gallery-attachment-list-view'
-], function (util, View, GalleryAttachmentListView) {
+	'streamhub-sdk/content/views/gallery-attachment-list-view',
+	'streamhub-sdk/content/views/attachment-list-view'
+], function (util, View, GalleryAttachmentListView, AttachmentListView) {
 
 
 	/**
@@ -10,30 +11,49 @@ define([
 	 * shows a GalleryAttachmentListView instead
 	 */
 	var GalleryOnFocusView = function (initialView, opts) {
+		opts = opts || {};
 		this._isGallery = false;
 		this._initialView = initialView;
-		View.call(this, opts);
+		AttachmentListView.call(this, opts);
 	};
-	util.inherits(GalleryOnFocusView, View);
+	util.inherits(GalleryOnFocusView, AttachmentListView);
 
+	GalleryOnFocusView.prototype.setContent = function (content) {
+		this._initialView.setContent(content);
+		AttachmentListView.prototype.setContent.call(this, content);
+	}
+
+	GalleryOnFocusView.prototype.add = function (attachment) {
+		AttachmentListView.prototype.add.call(this, attachment);
+		//this._initialView.add(attachment);
+		if (this._focusedView) {
+			this._focusedView.add(attachment);
+		}
+	}
 
 	GalleryOnFocusView.prototype.render = function () {
-		View.prototype.render.call(this);
+		AttachmentListView.prototype.render.call(this);
 		this._initialView.$el.appendTo(this.$el);
 		this._initialView.render();
 	}
+
+
+	GalleryOnFocusView.prototype._insert = function (oembedView) {
+		// Don't actually put anything in DOM. Subviews will do that.
+	};
 
 
 	GalleryOnFocusView.prototype.focus = function (attachment) {
 		if (this._isGallery) {
 			return;
 		}
-		var galleryView = this._createFocusedView({
+		this._focusedView = this._createFocusedView({
 			content: this._initialView.content,
 			attachmentToFocus: attachment
 		});
-		galleryView.$el.appendTo(this.$el);
-		galleryView.render();
+		this._focusedView.$el.appendTo(this.$el);
+		this._focusedView.render();
+
 		this._initialView.$el.hide();
 		this._isGallery = true;
 	};

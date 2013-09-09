@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/src/views/css/list-view.css">
+    <link rel="stylesheet" type="text/css" href="/src/content/css/content.css">
+    <style>
+    #listView {
+        width:500px;
+    }
+    </style>
+    <!-- <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script> -->
+</head>
+    <body>
+        <div id="listView"></div>
+        <a class="show-more">Add 50</a>
+
+        <script src="../../lib/requirejs/require.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+        require([
+            'jquery',
+            'streamhub-sdk',
+            'streamhub-sdk/views/list-view',
+            'streamhub-sdk/streams/collection-archive',
+            'streamhub-sdk/streams/livefyre-stream',
+            'stream/readable',
+            'streamhub-sdk/content/content',
+            'stream/writable',
+            'inherits'
+        ],function ($, Hub, ListView, CollectionArchive, LivefyreStream, Readable, Content, Writable, inherits) {
+            var $el = $('#listView');
+            var view = window.view = new ListView({
+                el: $el[0],
+                initial: 2
+            });
+
+            var opts = {
+                "network": "labs-t402.fyre.co",
+                "siteId": "303827",
+                "articleId": "labs_demo_fire",
+                "environment": "t402.livefyre.com"
+            };
+            
+            //var stream = new CollectionArchive(opts);
+            var stream = new Readable({
+            });
+
+            stream._read = function () {
+                this.push(new Content(Math.floor(Math.random() * 9999)));
+            };
+
+            stream.on('readable', (function () {
+                var i = 0;
+                return function () {
+                    console.log('stream readable', i++);
+                };
+            }()));
+            stream.on('error', function (err) {
+                console.log('stream error', err);
+            });
+            stream.on('end', function (err) {
+                console.log('stream end');
+            });
+
+            window.stream = stream
+
+            window.showMore = function (n) {
+                view.showMore(n);
+            }
+
+            stream.pipe(view.more);
+
+
+            // SHOW MORE BUTTON
+
+            $('.show-more').on('click', function () {
+                view.showMore(5);
+            });
+
+        });
+        </script>
+    </body>
+</html>

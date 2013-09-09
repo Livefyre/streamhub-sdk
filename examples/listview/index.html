@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="/src/views/css/list-view.css">
-    <link rel="stylesheet" type="text/css" href="/src/content/css/content.css">
+    <link rel="stylesheet" type="text/css" href="/src/css/style.css">
     <style>
     #listView {
         width:500px;
@@ -21,24 +20,39 @@
         <script src="/requirejs.conf.js" type="text/javascript"></script>
         <script>
         require([
-            'streamhub-sdk',
-            'streamhub-sdk/views/list-view'
-        ],function (Hub, ListView) {
+            'streamhub-sdk/views/list-view',
+            'streamhub-sdk/collection',
+            'stream/contrib/readable-array',
+            'streamhub-sdk/content/content'
+        ],function (ListView, Collection, ReadableArray, Content) {
             var opts = {
                 "network": "labs-t402.fyre.co",
                 "siteId": "303827",
-                "articleId": "labs_demo_basketball",
+                "articleId": "xbox-0",
                 "environment": "t402.livefyre.com"
             };
-            
             var listView = window.view = new ListView({
-                initial: 1,
-                showMore: 3,
+                // initial: 1,
+                // showMore: 3,
                 el: document.getElementById("listView")
             });
 
-            var livefyreStreams = window.streamManager = Hub.StreamManager.create.livefyreStreams(opts)
-            livefyreStreams.bind(listView).start();
+            var collection = new Collection(opts);
+
+
+            var archive = window.archive = collection.createArchive();
+            var updater = window.updater = collection.createUpdater();
+
+
+            archive.on('error', onError);
+            updater.on('error', onError);
+            function onError (err) {
+                console.log('stream error', err);
+            }
+
+
+            archive.pipe(listView.more);
+            updater.pipe(listView);
         });
         </script>
     </body>

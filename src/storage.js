@@ -1,4 +1,4 @@
-define(['streamhub-sdk/jquery', 'streamhub-sdk/event-emitter'], function($, EventEmitter) {
+define(['streamhub-sdk/jquery', 'event-emitter'], function($, EventEmitter) {
     
 	/**
 	 * A module to use for storing state.

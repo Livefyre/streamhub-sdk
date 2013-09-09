@@ -1,11 +1,8 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/auth',
     'streamhub-sdk/debug',
-    'streamhub-sdk/event-emitter',
+    'event-emitter',
     'streamhub-sdk/storage',
-    'streamhub-sdk/stream',
-    'streamhub-sdk/stream-manager',
     'streamhub-sdk/util',
     'streamhub-sdk/view',
     'streamhub-sdk/clients/livefyre-stream-client',
@@ -24,20 +21,14 @@ define([
     'streamhub-sdk/content/views/facebook-content-view',
     'streamhub-sdk/content/views/twitter-content-view',
     'streamhub-sdk/content/views/instagram-content-view',
-    'streamhub-sdk/streams/livefyre-stream',
-    'streamhub-sdk/streams/livefyre-reverse-stream',
-    'streamhub-sdk/stream-helpers/livefyre-helper',
     'streamhub-sdk/views/list-view',
     'streamhub-sdk/modal/modal',
     'text!streamhub-sdk/version.txt'
 ], function(
     $,
-    Auth,
     debug,
     EventEmitter,
     Storage,
-    Stream,
-    StreamManager,
     Util,
     View,
     LivefyreStreamClient,
@@ -56,20 +47,14 @@ define([
     FacebookContentView,
     TwitterContentView,
     InstagramContentView,
-    LivefyreStream,
-    LivefyreReverseStream,
-    LivefyreHelper,
     ListView,
     Modal,
     VersionInfo
 ) {
     var Hub = {};
     Hub.debug = debug;
-    Hub.Auth = Auth;
     Hub.EventEmitter = EventEmitter;
     Hub.Storage = Storage;
-    Hub.Stream = Stream;
-    Hub.StreamManager = StreamManager;
     Hub.Util = Util;
     Hub.View = View;
     
@@ -95,13 +80,6 @@ define([
     Hub.Content.Views.FacebookContentView = FacebookContentView;
     Hub.Content.Views.TwitterContentView = TwitterContentView;
     Hub.Content.Views.InstagramContentView = InstagramContentView;
-    
-    Hub.Streams = {};
-    Hub.Streams.LivefyreStream = LivefyreStream;
-    Hub.Streams.LivefyreReverseStream = LivefyreReverseStream;
-    
-    Hub.Streams.Helpers = {};
-    Hub.Streams.Helpers.LivefyreHelper = LivefyreHelper;
 
     Hub.Views = {};
     Hub.Views.ListView = ListView;

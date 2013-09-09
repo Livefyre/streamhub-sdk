@@ -1,6 +1,6 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/event-emitter',
+    'event-emitter',
     'streamhub-sdk/util'
 ], function(
     $,
@@ -38,6 +38,9 @@ define([
      * @return this
      */
     View.prototype.setElement = function (element) {
+        if (element instanceof $) {
+            element = element[0];
+        }
         this.el = element;
         this.$el = $(element);
         return this;

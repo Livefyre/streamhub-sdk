@@ -1,9 +1,8 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/event-emitter',
+    'event-emitter',
     'streamhub-sdk/util'
 ], function($, EventEmitter, util) {
-
     /**
      * A piece of Web Content
      * @param body {String|Object} A string of HTML, the Content body.
