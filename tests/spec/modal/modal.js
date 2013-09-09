@@ -4,8 +4,9 @@ define([
     'jasmine-jquery',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/oembed',
-    'streamhub-sdk/modal/modal'
-], function($, jasmine, jasmineJquery, Content, Oembed, ModalView) {
+    'streamhub-sdk/modal/modal',
+    'streamhub-sdk/modal/views/modal-gallery-attachment-list-view'
+], function($, jasmine, jasmineJquery, Content, Oembed, ModalView, ModalGalleryAttachmentListView) {
 
     describe('ModalView', function() {
 
@@ -13,60 +14,30 @@ define([
 
             describe('with no arguments', function() {
 
-                afterEach(function() {
-                    $('body > .hub-modal').remove();
-                });
-
-                var modalView = new ModalView();
-                it('is an instance of ModalView', function() {
-                    expect(modalView instanceof ModalView).toBe(true);
-                });
-
-                it('has a .modalContentView', function () {
-                    expect(modalView.modalContentView).toBeDefined();
-                });
-            });
-
-            describe('with opts.createContentView', function () {
-
-                afterEach(function() {
-                    $('body > .hub-modal').remove();
-                });
-
-                var myCreateModalContentView = function () {};
-                modalView = new ModalView({ createContentView: myCreateModalContentView });
-                it('is an instance of ModalView', function() {
-                    expect(modalView instanceof ModalView).toBe(true);
-                });
-                it('the ._createContentView method is the same as opts.createContentView', function() {
-                    expect(modalView._createContentView).toBe(myCreateModalContentView);
+                it('throws a not implemented error', function () {
+                    expect(ModalView.prototype._createContentView).toThrow();
                 });
             });
         });
 
-        describe('when focusing content', function () {
+        describe('when DOM ready', function () {
+            
             var modalView;
 
             beforeEach(function () {
+                ModalView.prototype._createContentView = function () {
+                    return  new ModalGalleryAttachmentListView();
+                };
                 modalView = new ModalView();
             });
 
-            afterEach(function() {
-                $('body > .hub-modal').remove();
+            afterEach(function () {
+                modalView.hide();
             });
 
-            it('sets a content instance on the modal content view', function () {
-                var content = new Content({ body: 'what' });
-                modalView._setFocus(content);
-                expect(modalView.modalContentView.content).toBe(content);
-            });
-
-            it('sets the focused attachment on the modal content view', function () {
-                var content = new Content({ body: 'what' });
-                var attachment = new Oembed();
-                modalView._setFocus(content, { attachment: attachment });
-                expect(modalView.modalContentView.content).toBe(content);
-                expect(modalView.modalContentView._focusedAttachment).toBe(attachment);
+            it('has inserted a container element as a direct child of body element', function () {
+                $(document).trigger('ready');
+                expect($('body > .hub-modals')).toBe('div');
             });
         });
 
@@ -75,15 +46,15 @@ define([
             var modalView;
 
             beforeEach(function() {
-                modalView = new ModalView();
+                modalView = new ModalGalleryAttachmentListView();
                 modalView.render();
             });
 
-            afterEach(function() {
-                $('body > .hub-modal').remove();
+            afterEach(function () {
+                modalView.hide();
             });
 
-            it('has a close button', function() {
+            it('has a close button', function () {
                 var $closeButton = modalView.$el.find(modalView.closeButtonSelector);
                 expect($closeButton.length).toBe(1);
             });
@@ -99,7 +70,7 @@ define([
             var modalView;
 
             beforeEach(function() {
-                modalView = new ModalView();
+                modalView = new ModalGalleryAttachmentListView();
                 modalView.show();
             });
 
@@ -122,13 +93,13 @@ define([
             var modalView;
 
             beforeEach(function() {
-                modalView = new ModalView();
+                modalView = new ModalGalleryAttachmentListView();
                 modalView.render();
             });
 
             afterEach(function() {
                 modalView.hide();
-                $('body > .hub-modal').remove();
+                $('body > .hub-modals').remove();
             });
 
             it('the .visible property is false', function() {
@@ -144,7 +115,7 @@ define([
                 var modalView;
 
                 beforeEach(function() {
-                    modalView = new ModalView();
+                    modalView = new ModalGalleryAttachmentListView();
                 });
 
                 afterEach(function() {
@@ -163,7 +134,7 @@ define([
                 var modalView;
 
                 beforeEach(function() {
-                    modalView = new ModalView();
+                    modalView = new ModalGalleryAttachmentListView();
                 });
 
                 afterEach(function() {

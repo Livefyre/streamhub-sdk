@@ -11,9 +11,9 @@ define([
      * A view that overlays over the entire viewport to display some content
      *
      * @param opts {Object} A set of options to config the view with
-     * @param opts.createContentView {Function} A function to create a content view to be displayed within the modal view
      * @fires GalleryAttachmentListView#hideModal.hub
-     * @exports streamhub-modal/modal-view
+     * @fires GalleryAttachmentListView#error
+     * @exports streamhub-sdk/modal/modal
      * @constructor
      */
     var ModalView = function (opts) {
@@ -22,10 +22,6 @@ define([
         this.visible = false;
         this._attached = false;
         this._rendered = false;
-
-        if (opts.createContentView) {
-            this._createContentView = opts.createContentView;
-        }
 
         this.modalContentView = this._createContentView();
 
@@ -74,25 +70,38 @@ define([
 
 
     /**
+     * Overridable method for concrete modal view implementations. In this base class,
+     * the default implementation will emit a "not implemented" error.
+     * Creates a the content view to display within the modal view.
+     * @param content {Content} The content to be displayed in the content view by the modal
+     * @param opts {Object} The content to be displayed in the content view by the modal
+     * @param opts.attachment {Oembed} The attachment to be focused in the content view
+     * @private
+     */
+    ModalView.prototype._createContentView = function (content, opts) {
+        throw new Error('not implemented');
+    };
+
+
+    /**
      * Makes the modal and its content visible
      * @param content {Content} The content to be displayed in the content view by the modal
      * @param opts {Object} The content to be displayed in the content view by the modal
      * @param opts.attachment {Oembed} The attachment to be focused in the content view
      */
     ModalView.prototype.show = function(content, options) {
-        if (content) {
-            this._setFocus(content, options);
-        }
-
         // First hide any other modals
         $.each(ModalView.instances, function (i, modal) {
             modal.hide();
         });
 
         this.$el.show();
-
         if ( ! this._attached) {
             this._attach();
+        }
+
+        if (content) {
+            this._setFocus(content, options);
         }
 
         if ( ! this._rendered) {
@@ -162,23 +171,6 @@ define([
     ModalView.prototype._setFocus = function (content, opts) {
         opts = opts || {};
         this.modalContentView.setContent(content, opts);
-    };
-
-
-    /**
-     * Creates a the content view to display within the modal view
-     * @param content {Content} The content to be displayed in the content view by the modal
-     * @param opts {Object} The content to be displayed in the content view by the modal
-     * @param opts.attachment {Oembed} The attachment to be focused in the content view
-     * @private
-     */
-    ModalView.prototype._createContentView = function (content, opts) {
-        opts = opts || {};
-        var modalContentView = new GalleryAttachmentListView({
-            content: content,
-            attachmentToFocus: opts.attachment
-        });
-        return modalContentView;
     };
 
 

@@ -162,7 +162,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         if (this.proportionalThumbnails) {
             var thumbnailTileEls = thumbnailsEl.children();
             for (var i=0; i < thumbnailTileEls.length; i++) {
-                thumbnailTileEls.eq(i).width(attachmentsGalleryEl.width() / thumbnailTileEls.length).height(75);
+                thumbnailTileEls.eq(i).width(100 / thumbnailTileEls.length + '%').height(75);
             }
         }
 
@@ -308,56 +308,16 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
     };
 
     /**
-     * Resizes the focused attachment according to the viewport size
+     * Resizes the focused attachment to fit within the content view
      */
     GalleryAttachmentListView.prototype.resizeFocusedAttachment = function() {
-        var height = this.$el.height();
-        var width = this.$el.width();
-
-        var contentGalleryEl = this.$el.find('.content-attachments-gallery');
-        var modalVerticalWhitespace = parseInt(contentGalleryEl.css('margin-top')) + parseInt(contentGalleryEl.css('margin-bottom'));
-        var modalHorizontalWhitespace = parseInt(contentGalleryEl.css('margin-left')) + parseInt(contentGalleryEl.css('margin-right'));
-
-        var attachmentContainerHeight = height - modalVerticalWhitespace;
-        var attachmentContainerWidth = width - modalHorizontalWhitespace;
-        contentGalleryEl.height(attachmentContainerHeight);
-        contentGalleryEl.width(attachmentContainerWidth);
-
         var contentAttachmentEl = this.$el.find('.content-attachments-gallery-focused .content-attachment');
-        contentAttachmentEl.css({ 'height': Math.min(attachmentContainerHeight, attachmentContainerWidth)+'px', 'line-height': Math.min(attachmentContainerHeight, attachmentContainerWidth)+'px'});
 
-        var focusedAttachmentEl = this.$el.find('.'+this.focusedAttachmentClassName + '> *');
-        // Reset attachment dimensions
-        if (focusedAttachmentEl.attr('width')) {
-            focusedAttachmentEl.css({ 'width': parseInt(focusedAttachmentEl.attr('width'))+'px' });
-        } else {
-            focusedAttachmentEl.css({ 'width': 'auto'});
-        }
-        if (focusedAttachmentEl.attr('height')) {
-            focusedAttachmentEl.css({ 'height': parseInt(focusedAttachmentEl.attr('height'))+'px' });
-        } else {
-            focusedAttachmentEl.css({ 'height': 'auto', 'line-height': 'inherits'});
-        }
+        // Set direct child of focused attachment to expand to itself
+        var focusedAttachmentEl = this.$el.find('.'+this.focusedAttachmentClassName);
+        focusedAttachmentEl.children().eq(0).width('100%').height('100%');
 
-        // Scale to fit testing against modal dimensions
-        if (focusedAttachmentEl.height() + modalVerticalWhitespace >= height || focusedAttachmentEl.height() == 0) {
-            focusedAttachmentEl.css({ 'height': Math.min(attachmentContainerHeight, attachmentContainerWidth)+'px', 'line-height': Math.min(attachmentContainerHeight, attachmentContainerWidth)+'px'});
-            if (focusedAttachmentEl.attr('width')) {
-                var newWidth = Math.min(parseInt(focusedAttachmentEl.attr('width')), focusedAttachmentEl.width());
-                focusedAttachmentEl.css({ 'width': newWidth+'px' });
-            } else {
-                focusedAttachmentEl.css({ 'width': 'auto' });
-            }
-        } 
-        if (focusedAttachmentEl.width() + modalHorizontalWhitespace >= width || focusedAttachmentEl.width() == 0) {
-            focusedAttachmentEl.css({ 'width': attachmentContainerWidth+'px'});
-            if (focusedAttachmentEl.attr('height')) {
-                var newHeight = Math.min(parseInt(focusedAttachmentEl.attr('height')), focusedAttachmentEl.height()); 
-                focusedAttachmentEl.css({ 'height': newHeight+'px' });
-            } else {
-                focusedAttachmentEl.css({ 'height': 'auto', 'line-height': 'inherits'});
-            }
-        }
+        this.$el.trigger('galleryResize.hub');
     };
 
     /**

@@ -31,7 +31,8 @@
         ], function (Hub, ListView, MockAttachmentsStream, StreamManager) {
             
             var feed = window.view = new ListView({
-                el: document.getElementById("feed")
+                el: document.getElementById("feed"),
+                modal: false
             });
 
             var streams = new StreamManager({

@@ -2,9 +2,9 @@ define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/view',
     'streamhub-sdk/content/content-view-factory',
-    'streamhub-sdk/modal/modal',
+    'streamhub-sdk/modal/views/modal-gallery-attachment-list-view',
     'streamhub-sdk/util'],
-function($, View, ContentViewFactory, ModalView, util) {
+function($, View, ContentViewFactory, ModalGalleryAttachmentListView, util) {
 
     /**
      * A simple View that displays Content in a list (`<ul>` by default).
@@ -16,7 +16,7 @@ function($, View, ContentViewFactory, ModalView, util) {
      */
     var ListView = function(opts) {
         opts = opts || {};
-        this.modal = opts.modal === undefined ? new ModalView() : opts.modal;
+        this.modal = opts.modal === undefined ? new ModalGalleryAttachmentListView() : opts.modal;
         View.call(this, opts);
 
         $(this.el).addClass('streamhub-list-view');
