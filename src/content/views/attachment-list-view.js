@@ -16,9 +16,13 @@ function($, View, OembedView, AttachmentListTemplate, util) {
      */
     var AttachmentListView = function(opts) {
         opts = opts || {};
-        this.oembedViews = [];
-        this.setContent(opts.content);
         View.call(this, opts);
+
+        this.oembedViews = [];
+        
+        if (opts.content) {
+            this.setContent(opts.content);
+        }
     };
     util.inherits(AttachmentListView, View);
 
@@ -32,20 +36,26 @@ function($, View, OembedView, AttachmentListTemplate, util) {
      * @param content {HTMLElement} The element to render this View in
      */
     AttachmentListView.prototype.setContent = function (content) {
+        var self = this;
+
         if (! content) {
             return;
         }
-        var self = this;
+
+        // If this was previously managing different Content
         if (this.content) {
             // Remove existing attachment views
             this.$el.find(this.contentAttachmentSelector).remove();
             this.oembedViews = [];
         }
-        this.content = content;
-        for (var i=0; i < this.content.attachments.length; i++) {
-            this._insert(this.content.attachments[i]);
-        }
 
+        this.content = content;
+        
+        // Add attachments that already exist
+        for (var i=0; i < this.content.attachments.length; i++) {
+            this.add(this.content.attachments[i]);
+        }
+        // Add attachments added later
         this.content.on('attachment', function (attachment) {
             self.add(attachment);
         });
@@ -66,6 +76,17 @@ function($, View, OembedView, AttachmentListTemplate, util) {
         return this;
     };
 
+    AttachmentListView.prototype.render = function () {
+        var self = this;
+        View.prototype.render.call(this);
+        $.each(self.oembedViews, function (i, oembedView) {
+            if ( ! self.$el.has(oembedView.$el).length) {
+                // oembedView needs to be a descendant of AttachmentListView#.el
+                self._insert(oembedView);
+            }
+        });
+    }
+
     /**
      * A count of the number of attachments for this content item
      * @returns {int} The number of attachments for this content item
@@ -79,10 +100,8 @@ function($, View, OembedView, AttachmentListTemplate, util) {
      * @param oembed {Oembed} A Oembed instance to insert into the view
      * @returns {OembedView} The OembedView associated with the newly inserted oembed
      */
-    AttachmentListView.prototype._insert = function (oembed) {
-        var oembedView = this.createOembedView(oembed);
-        this.oembedViews.push(oembedView);
-        return oembedView;
+    AttachmentListView.prototype._insert = function (contentView) {
+        contentView.$el.appendTo(this.$el.find(this.stackedAttachmentsSelector));
     };
 
     /**
@@ -91,10 +110,17 @@ function($, View, OembedView, AttachmentListTemplate, util) {
      * @returns {AttachmentListView} By convention, return this instance for chaining
      */
     AttachmentListView.prototype.add = function(oembed) {
-        var oembedView = this._insert(oembed);
-        oembedView.$el.appendTo(this.$el.find(this.stackedAttachmentsSelector));
-        oembedView.render();
-        return this;
+        var oembedView = this.createOembedView(oembed);
+
+        this.oembedViews.push(oembedView);
+
+        // Insert in .el
+        if (this.el) {
+            this._insert(oembedView);
+            oembedView.render();
+        }
+
+        return oembedView;
     };
 
     /**

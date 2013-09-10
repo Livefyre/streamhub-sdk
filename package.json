@@ -6,7 +6,7 @@
     "name": "Gene Hallman",
     "email": "gene@livefyre.com"
   },
-  "version": "1.1.2",
+  "version": "1.2.0",
   "dependencies": {
     "bower": "*",
     "http-server": "*",

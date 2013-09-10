@@ -27,11 +27,13 @@
             var opts = {
                 "network": "labs-t402.fyre.co",
                 "siteId": "303827",
-                "articleId": "labs_demo_fire",
+                "articleId": "labs_demo_basketball",
                 "environment": "t402.livefyre.com"
             };
             
             var listView = window.view = new ListView({
+                initial: 1,
+                showMore: 3,
                 el: document.getElementById("listView")
             });
 

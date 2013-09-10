@@ -26,6 +26,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
      */
     var GalleryAttachmentListView = function(opts) {
         opts = opts || {};
+        View.call(this, opts);
 
         this.userInfo = opts.userInfo === undefined ? true : opts.userInfo;
         this.pageButtons = opts.pageButtons === undefined ? true : opts.pageButtons;
@@ -34,12 +35,14 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         this.proportionalThumbnails = opts.proportionalThumbnails === undefined ? false : opts.proportionalThumbnails;
         this.focusedIndex = 0;
         this.oembedViews = [];
-        this.setContent(opts.content);
+
+        if (opts.content) {
+            this.setContent(opts.content);
+        }
+        
         if (opts.attachmentToFocus) {
             this.setFocusedAttachment(opts.attachmentToFocus);
         }
-
-        View.call(this, opts);
 
         var self = this;
         $(window).on('resize', function(e) {
@@ -188,11 +191,25 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
      * @param oembed {Oembed} A Oembed instance to insert into the view
      * @returns {OembedView} The OembedView associated with the newly inserted oembed
      */
-    GalleryAttachmentListView.prototype._insert = function (oembed) {
-        if (! this.isTileableAttachment(oembed)) {
-            return this;
-        }
-        return TiledAttachmentListView.prototype._insert.call(this, oembed);
+    GalleryAttachmentListView.prototype._insert = function (oembedView) {
+        var self = this;
+        var stackedAttachmentsEl = this.$el.find(this.stackedAttachmentsSelector);
+        var attachmentsGalleryEl = this.$el.find(this.attachmentsGallerySelector);
+
+        if (this.isTileableAttachment(oembedView.oembed)) {
+            oembedView.$el.appendTo(attachmentsGalleryEl.find(this.galleryThumbnailsSelector));
+            oembedView.$el.on('click', function(e) {
+                /**
+                 * Focus content
+                 * @event TiledAttachmentListView#focusContent.hub
+                 */
+                $(e.target).trigger('focusContent.hub', { content: self.content, attachmentToFocus: oembedView.oembed });
+            });
+        } else {
+            oembedView.$el.appendTo(stackedAttachmentsEl);
+        }  
+
+        return oembedView;
     };
 
     /**
@@ -201,21 +218,15 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
      * @returns {AttachmentListView} By convention, return this instance for chaining
      */
     GalleryAttachmentListView.prototype.add = function (oembed) {
+        // Gallery doesn't display non-tileable attachments (e.g. links)
         if (! this.isTileableAttachment(oembed)) {
             return this;
         }
-        var oembedView = this._insert(oembed);
-
-        var attachmentsGalleryEl = this.$el.find(this.attachmentsGallerySelector);
-
-        // Render gallery thumbnails
-        oembedView.$el.appendTo(attachmentsGalleryEl.find(this.galleryThumbnailsSelector));
-        oembedView.$el.on('click', function(e) {
-            $(e.target).trigger('focusContent.hub', { content: self.content, attachmentToFocus: oembedView.oembed });
-        });
-        oembedView.render();
+        var oembedView = TiledAttachmentListView.prototype.add.call(this, oembed);
 
         this.focus();
+
+        return oembedView;
     };
 
     /**
@@ -228,6 +239,10 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
             return;
         }
         oembed = oembed ? oembed : this._focusedAttachment || this.oembedViews[0].oembed;
+
+        if ( ! this._focusedAttachment) {
+            this.setFocusedAttachment(oembed);
+        }
 
         // Render focused attachment
         var focusedAttachmentsEl = this.$el.find(this.focusedAttachmentsSelector);
