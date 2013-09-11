@@ -5,12 +5,14 @@ define([
     'streamhub-sdk/content/types/twitter-content',
     'streamhub-sdk/content/types/oembed',
     'streamhub-sdk/content/types/livefyre-oembed',
+    'streamhub-sdk/content/types/livefyre-instagram-content',
     'streamhub-sdk/streams/livefyre-stream',
     'streamhub-sdk/clients/livefyre-stream-client',
     'streamhub-sdk/clients/livefyre-write-client',
     'streamhub-sdk/storage',
     'jasmine-jquery'],
-function ($, jasmine, Content, TwitterContent, Oembed, LivefyreOembed, LivefyreStream, LivefyreStreamClient,
+function ($, jasmine, Content, TwitterContent, Oembed, LivefyreOembed,
+LivefyreInstagramContent, LivefyreStream, LivefyreStreamClient,
 LivefyreWriteClient, Storage) {
     describe('A LivefyreStream', function () {
         describe('when constructed with normal parameters', function () {
@@ -119,6 +121,15 @@ LivefyreWriteClient, Storage) {
                 runs(function() {
                     expect(stream._push.callCount).toBe(0);
                 });
+            });
+        });
+
+        describe('.createContent', function () {
+            it("transforms instagram content states into streamhub-sdk/content/types/livefyre-instagram-content", function () {
+                var instagramState = {"childContent":[{"content":{"targetId":"32b64fb7-56b3-4e20-9455-e25c51510bfe","authorId":"-","link":"http://distilleryimage5.ak.instagram.com/1867136018ce11e3995e22000ab5a7b8_7.jpg","oembed":{"provider_url":"http://distilleryimage5.ak.instagram.com","url":"http://distilleryimage5.ak.instagram.com/1867136018ce11e3995e22000ab5a7b8_7.jpg","height":612,"width":612,"version":"1.0","link":"http://distilleryimage5.ak.instagram.com/1867136018ce11e3995e22000ab5a7b8_7.jpg","provider_name":"Instagram","type":"photo"},"position":0,"id":"32b64fb7-56b3-4e20-9455-e25c51510bfe.http://distilleryimage5.ak.instagram.com/1867136018ce11e3995e22000ab5a7b8_7.jpg"},"vis":1,"type":3,"event":1378676100460520,"source":0}],"content":{"feedEntry":{"description":"Another pic! 😉 #bioshockinfinite #bioshock #videogame #game #xbox #pc #ps3 #awesome #picture #like #tap #great #photo #elizabeth #bookerdewitt #falling #sky #clouds #buildings #scary <img src=\"http://distilleryimage5.ak.instagram.com/1867136018ce11e3995e22000ab5a7b8_7.jpg\" />","pubDate":1378676098,"title":"","channelId":"http://instagram.com/tags/xbox/feed/recent.rss","link":"http://distilleryimage5.ak.instagram.com/1867136018ce11e3995e22000ab5a7b8_7.jpg","type":2,"createdAt":1378676098},"bodyHtml":"Another pic!  #bioshockinfinite #bioshock #videogame #game #xbox #pc #ps3 #awesome #picture #like #tap #great #photo #elizabeth #bookerdewitt #falling #sky #clouds #buildings #scary ","id":"32b64fb7-56b3-4e20-9455-e25c51510bfe","authorId":"85761ea656ea4f47e1b4533c656edae9@instagram.com","parentId":"","updatedAt":1378676100,"annotations":{},"createdAt":1378676098},"vis":1,"source":13,"type":0,"event":1378676100460520};
+                var instagramContent;
+                instagramContent = LivefyreStream.createContent(instagramState);
+                expect(instagramContent instanceof LivefyreInstagramContent).toBe(true);
             });
         });
 

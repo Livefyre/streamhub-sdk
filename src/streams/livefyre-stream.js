@@ -272,7 +272,7 @@ define([
             return new LivefyreFacebookContent(state);
         } else if (sourceName === 'feed') {
             var contentType = LivefyreContent;
-            if (state.content.feedEntry.transformer === 'lfcore.v2.procurement.feed.transformer.instagram') {
+            if (isInstagramState(state)) {
                 contentType = LivefyreInstagramContent;
             }
             return new contentType(state);
@@ -280,6 +280,21 @@ define([
             return new LivefyreContent(state);
         }
     };
+
+
+    /**
+     * Return whether a state represents Instagram Content
+     * @param state {object} A state object from Livefyre APIs
+     * @return {boolean}
+     */
+    function isInstagramState (state) {
+        var pattern = /\/\/instagram\.com/i;
+        try {
+            return state.content.feedEntry.channelId.match(pattern);
+        } catch (err) {
+            return false;
+        }
+    }
 
     return LivefyreStream;
 });
