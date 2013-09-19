@@ -1,9 +1,6 @@
-define([
-    'streamhub-sdk/jquery',
-    'jasmine',
-    'streamhub-sdk',
-    'jasmine-jquery'],
-function ($, jasmine, Hub) {
+define(function () {
+    'use strict';
+
     describe('A Streamhub SDK', function () {
-    }); 
+    });
 });

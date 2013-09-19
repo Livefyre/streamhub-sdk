@@ -26,30 +26,21 @@
         require([
             'streamhub-sdk',
             'streamhub-sdk/views/list-view',
-            'tests/mocks/mock-attachments-stream',
-            'streamhub-sdk/stream-manager'
-        ], function (Hub, ListView, MockAttachmentsStream, StreamManager) {
+            'tests/mocks/mock-attachments-stream'
+        ], function (Hub, ListView, MockAttachmentsStream) {
             
             var feed = window.view = new ListView({
                 el: document.getElementById("feed"),
                 modal: false
             });
 
-            var streams = new StreamManager({
-                main: new MockAttachmentsStream()
-            });
-
-            streams.bind(feed).start();
+            (new MockAttachmentsStream()).pipe(feed);
 
             var feed1 = window.view = new ListView({
                 el: document.getElementById("feed1")
             });
 
-            var streams1 = new StreamManager({
-                main: new MockAttachmentsStream()
-            });
-
-            streams1.bind(feed1).start();
+            (new MockAttachmentsStream()).pipe(feed1);
         });
         </script>
     </body>

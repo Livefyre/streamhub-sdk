@@ -4,10 +4,10 @@ define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/views/list-view',
     'streamhub-sdk/content/content',
-    'streamhub-sdk/content/views/content-view',
-    'streamhub-sdk/stream',
-    'streamhub-sdk-tests/mocks/jasmine-spy-stream'],
-function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, JasmineSpyStream) {
+    'streamhub-sdk/content/views/content-view'],
+function (jasmine, jasminejquery, $, ListView, Content, ContentView) {
+    'use strict';
+
     describe('A ListView', function () {
         var fixtureId = 'sandbox',
             listView,
@@ -15,17 +15,26 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
             $el;
 
         beforeEach(function () {
-            listView = new ListView({
-                streams: {
-                    main: new JasmineSpyStream()
-                }
-            });
+            listView = new ListView({});
         });
 
         describe("when constructed", function () {
 
             it("is instanceof ListView", function () {
                 expect(listView instanceof ListView).toBe(true);
+            });
+
+            it("is .writable", function () {
+                expect(listView.writable).toBe(true);
+                expect(listView.write).toEqual(jasmine.any(Function));
+            });
+
+            it("has a .$listEl", function () {
+                expect(listView.$listEl.length).toBe(1);
+            });
+
+            it("has a .showMoreButton", function () {
+                expect(listView.showMoreButton).toBeDefined();
             });
 
             describe("with opts.el", function () {
@@ -36,10 +45,7 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
                     el = $el[0];
 
                     listView = new ListView({
-                        el: el,
-                        streams: {
-                            main: new JasmineSpyStream()
-                        }
+                        el: el
                     });
                 });
 
@@ -49,16 +55,25 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
             });
         });
 
+        describe('.setElement', function () {
+            var newElement;
+            beforeEach(function () {
+                newElement = document.createElement('div');
+            });
+
+            it('adds class .streamhub-list-view', function () {
+                listView.setElement(newElement);
+                expect($(newElement)).toHaveClass('streamhub-list-view');
+                expect($(newElement)).toHaveClass(listView.elClass);
+            });
+        });
+
         describe('handles focusContent.hub event', function () {
 
             var content;
 
             beforeEach(function() {
-                listView = new ListView({
-                    streams: {
-                        main: new JasmineSpyStream()
-                    }
-                });
+                listView = new ListView();
 
                 content = new Content();
                 listView.add(content);
@@ -76,11 +91,99 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
             it('shows finds the correct ContentView instance and invokes .attachmentsView.focus when no modal is set on the ListView instance', function () {
                 listView.modal = false;
                 var targetContentView = listView.getContentView(content);
+                targetContentView.attachmentsView.focus = function () {};
                 spyOn(targetContentView.attachmentsView, 'focus');
 
                 listView.$el.trigger('focusContent.hub', { content: content });
 
                 expect(targetContentView.attachmentsView.focus).toHaveBeenCalled();
+            });
+        });
+
+        describe("when constructed with opts.initial", function () {
+            var initial,
+                listView;
+            beforeEach(function () {
+                initial = 2;
+                listView = new ListView({
+                    initial: initial
+                });
+            });
+            it(".add still always adds ContentViews", function () {
+                var content1 = new Content('1'),
+                    content2 = new Content('2'),
+                    content3 = new Content('3');
+                listView.add(content1);
+                listView.add(content2);
+                listView.add(content3);
+                expect(listView.contentViews.length).toBe(3);
+            });
+            it(".writing one more than initial results in only initial contentViews", function () {
+                var origInitial = initial;
+                while (--initial) {
+                    listView.write(new Content(initial.toString()));
+                }
+                listView.write(new Content(initial.toString()));
+                expect(listView.contentViews.length).toBe(origInitial);
+            });
+            it(".showMore() can be called, and sets .more's goal", function () {
+                var numToAdd = 5;
+                listView.showMore(numToAdd);
+                expect(listView.more.getGoal()).toBe(numToAdd);
+            });
+            describe("and a ton of Content is written to .more", function () {
+                var toAdd,
+                    remaining;
+                beforeEach(function () {
+                    toAdd = 50;
+                    remaining = toAdd;
+                    spyOn(listView, '_write').andCallThrough();
+                    while (remaining--) {
+                        listView.more.write(new Content(remaining.toString()));
+                    }
+                });
+                it("only results in initial # of contentViews", function () {
+                    // ContentViews may not be created until nextTick
+                    waits(1);
+                    runs(function () {
+                        expect(listView.contentViews.length).toBe(initial);
+                    });
+                });
+            });
+        });
+
+        describe("opts.showMore", function () {
+            var showMore,
+                listView;
+            beforeEach(function () {
+                showMore = 39;
+                listView = new ListView({
+                    showMore: showMore
+                });
+            });
+            it("uses opts.showMore when .showMore() is passed no argument", function () {
+                spyOn(listView.more, 'setGoal');
+                listView.showMore();
+                expect(listView.more.setGoal).toHaveBeenCalledWith(showMore);
+            });
+            it("defaults to 50", function () {
+                listView = new ListView();
+                spyOn(listView.more, 'setGoal');
+                listView.showMore();
+                expect(listView.more.setGoal).toHaveBeenCalledWith(50);
+            });
+        });
+
+        describe(".showMore()", function () {
+            it("is called on showMore.hub event", function () {
+                spyOn(listView, 'showMore').andCallThrough();
+                listView.$el.trigger('showMore.hub');
+                expect(listView.showMore).toHaveBeenCalledWith();
+            });
+            it("is called when .showMoreButton.$el is clicked", function () {
+                spyOn(listView, 'showMore').andCallThrough();
+                listView.showMoreButton.$el.click();
+                expect(listView.showMore).toHaveBeenCalledWith();
             });
         });
 
@@ -103,7 +206,7 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
             earlierDate.setFullYear(2012);
             baseDate.setFullYear(2013);
             laterDate.setFullYear(2014);
-            
+
             describe("and a, b both have .content.createdAt", function () {
                 var earlyContent = new Content({ body: 'early' }),
                     lateContent = new Content({ body: 'later' }),
@@ -118,10 +221,10 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
                 });
                 it("returns > 0 if a.content was created before b.content", function () {
                     expect(listView.comparator(earlyContentView, lateContentView)).toBeGreaterThan(0);
-                }); 
+                });
                 it("returns 0 if a.content was created at the same time as b.content", function () {
                     expect(listView.comparator(earlyContentView, earlyContentView)).toBe(0);
-                }); 
+                });
             });
 
             describe("and neither a nor b have .content.createdAt", function () {
@@ -174,7 +277,6 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
                     expect(listView.comparator(a, b)).toBeGreaterThan(0);
                 });
             });
-            
         });
 
         describe("when adding Content", function () {
@@ -187,10 +289,7 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
                 el = $el[0];
 
                 listView = new ListView({
-                    el: el,
-                    streams: {
-                        main: new JasmineSpyStream()
-                    }
+                    el: el
                 });
 
                 spyOn(listView, 'createContentView').andCallThrough();
@@ -226,7 +325,7 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView, Stream, Jas
 
             describe("and a ContentView is inserted", function () {
                 it("the new ContentView is in the DOM", function () {
-                    expect($(listView.el)).toContain($(newContentView.el));
+                    expect(listView.$listEl).toContain($(newContentView.el));
                 });
             });
         });

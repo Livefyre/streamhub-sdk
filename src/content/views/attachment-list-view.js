@@ -3,9 +3,10 @@ define([
     'streamhub-sdk/view',
     'streamhub-sdk/content/views/oembed-view',
     'hgn!streamhub-sdk/content/templates/attachment-list',
-    'streamhub-sdk/util'],
-function($, View, OembedView, AttachmentListTemplate, util) {
-    
+    'inherits'],
+function($, View, OembedView, AttachmentListTemplate, inherits) {
+    'use strict';
+   
     /**
      * A simple View that displays Content in a list (`<ul>` by default).
      * @param opts {Object} A set of options to config the view with
@@ -16,6 +17,7 @@ function($, View, OembedView, AttachmentListTemplate, util) {
      */
     var AttachmentListView = function(opts) {
         opts = opts || {};
+
         View.call(this, opts);
 
         this.oembedViews = [];
@@ -24,7 +26,7 @@ function($, View, OembedView, AttachmentListTemplate, util) {
             this.setContent(opts.content);
         }
     };
-    util.inherits(AttachmentListView, View);
+    inherits(AttachmentListView, View);
 
     AttachmentListView.prototype.template = AttachmentListTemplate;
     AttachmentListView.prototype.stackedAttachmentsSelector = '.content-attachments-stacked';
@@ -85,7 +87,7 @@ function($, View, OembedView, AttachmentListTemplate, util) {
                 self._insert(oembedView);
             }
         });
-    }
+    };
 
     /**
      * A count of the number of attachments for this content item
@@ -110,7 +112,7 @@ function($, View, OembedView, AttachmentListTemplate, util) {
      * @returns {AttachmentListView} By convention, return this instance for chaining
      */
     AttachmentListView.prototype.add = function(oembed) {
-        var oembedView = this.createOembedView(oembed);
+        var oembedView = this._createOembedView(oembed);
 
         this.oembedViews.push(oembedView);
 
@@ -144,9 +146,9 @@ function($, View, OembedView, AttachmentListTemplate, util) {
      * @param oembed {Oembed} A Oembed instance to render in the View
      * @returns {OembedView} 
      */
-    AttachmentListView.prototype.createOembedView = function(oembed) {
+    AttachmentListView.prototype._createOembedView = function(oembed) {
         var oembedView = new OembedView({
-            oembed: oembed     
+            oembed: oembed
         });
         return oembedView;
     };
@@ -158,7 +160,6 @@ function($, View, OembedView, AttachmentListTemplate, util) {
      * @returns {OembedView | null} The oembedView for the content, or null.
      */
     AttachmentListView.prototype.getOembedView = function (newOembed) {
-        var existingOembedView;
         for (var i=0; i < this.oembedViews.length; i++) {
             var oembedView = this.oembedViews[i];
             if ((newOembed === oembedView.oembed) || (newOembed.id && oembedView.oembed.id === newOembed.id)) {

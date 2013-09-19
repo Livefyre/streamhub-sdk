@@ -6,6 +6,7 @@ define([
     'streamhub-sdk/content/views/attachment-list-view',
     'streamhub-sdk/content/views/oembed-view'],
 function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
+    'use strict';
 
     describe('AttachmentListView', function () {
         var oembedAttachment = {
@@ -23,7 +24,7 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
                 it('is instance of AttachmentListView', function() {
                     expect(attachmentListView).toBeDefined();
                     expect(attachmentListView instanceof AttachmentListView).toBe(true);
-                }); 
+                });
             });
 
             describe('with opts.content', function() {
@@ -31,7 +32,7 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
                 it('is instance of AttachmentListView', function() {
                     expect(attachmentListView).toBeDefined();
                     expect(attachmentListView instanceof AttachmentListView).toBe(true);
-                }); 
+                });
             });
         });
 
@@ -46,7 +47,7 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
 
             describe('creates an attachment view', function() {
                 var attachmentListView = new AttachmentListView({ content: content });
-                var oembedView = attachmentListView.createOembedView(oembedAttachment);
+                var oembedView = attachmentListView._createOembedView(oembedAttachment);
                 it('is instance of OembedView', function() {
                     expect(oembedView).toBeDefined();
                     expect(oembedView instanceof OembedView).toBe(true);
@@ -105,7 +106,7 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
         describe('when removing an attachment', function() {
 
             it ('decrements the attachment count', function() {
-                var attachmentListView = new AttachmentListView({ content: content })
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.render();
                 attachmentListView.add(oembedAttachment);
 
@@ -115,13 +116,13 @@ function($, jasmine, jasminejQuery, Content, AttachmentListView, OembedView) {
             });
 
             describe('retrieves OembedView given an attachment', function() {
-                var attachmentListView = new AttachmentListView({ content: content })
+                var attachmentListView = new AttachmentListView({ content: content });
                 attachmentListView.render();
                 attachmentListView.add(oembedAttachment);
 
                 it ('is corresponding OembedView of the attachment object', function() {
                     var oembedView = attachmentListView.getOembedView(oembedAttachment);
-                    expect(oembedView == attachmentListView.oembedViews[0]).toBe(true);
+                    expect(oembedView === attachmentListView.oembedViews[0]).toBe(true);
                 });
             });
         });

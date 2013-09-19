@@ -1,4 +1,5 @@
-define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'streamhub-sdk/util'], function($, Content, util) {
+define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'inherits'], function($, Content, inherits) {
+    'use strict';
 
     /**
      * Base class for any piece of Livefyre content. Extracts the details of the content
@@ -23,7 +24,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'streamhub-sdk/
         this.parentId = json.content.parentId;
         this.meta = json;
     };
-    util.inherits(LivefyreContent, Content);
+    inherits(LivefyreContent, Content);
 
     /**
      * Attach an Oembed to the Content while first checking for an existing attachment.
@@ -35,7 +36,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'streamhub-sdk/
         if (obj.id) {
             for (var i in this.attachments) {
                 if (this.attachments[i].id === obj.id) {
-                   found = true;
+                    found = true;
                 }
             }
         }
@@ -55,7 +56,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'streamhub-sdk/
         if (obj.id) {
             for (var i in this.replies) {
                 if (this.replies[i].id === obj.id) {
-                   found = true;
+                    found = true;
                 }
             }
         }
@@ -64,12 +65,12 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'streamhub-sdk/
             this.emit('reply', obj);
         }
     };
-    
+
     /**
      * The set of sources as defined by Livefyre's Stream API
      */
     LivefyreContent.SOURCES = [
-        "livefyre", 
+        "livefyre",
         "twitter",
         "twitter",
         "facebook",
@@ -87,4 +88,4 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content/content', 'streamhub-sdk/
     ];
 
     return LivefyreContent;
- });
+});

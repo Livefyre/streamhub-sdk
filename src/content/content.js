@@ -1,8 +1,9 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/event-emitter',
-    'streamhub-sdk/util'
-], function($, EventEmitter, util) {
+    'event-emitter',
+    'inherits'
+], function($, EventEmitter, inherits) {
+    'use strict';
 
     /**
      * A piece of Web Content
@@ -25,7 +26,7 @@ define([
         this.attachments = obj.attachments || [];
         this.replies = obj.replies || [];
     };
-    util.inherits(Content, EventEmitter);
+    inherits(Content, EventEmitter);
 
     /**
      * Attach an Oembed to the Content
@@ -67,13 +68,15 @@ define([
         newProperties = newProperties || {};
         var oldProperties = {};
         var oldVal, newVal;
-        for (var key in newProperties) { if (newProperties.hasOwnProperty(key)) {
-            oldVal = oldProperties[key] = this[key];
-            newVal = this[key] = newProperties[key];
-            this.emit('change:'+key, newVal, oldVal);
-        }}
+        for (var key in newProperties) {
+            if (newProperties.hasOwnProperty(key)) {
+                oldVal = oldProperties[key] = this[key];
+                newVal = this[key] = newProperties[key];
+                this.emit('change:'+key, newVal, oldVal);
+            }
+        }
         this.emit('change', newProperties, oldProperties);
     };
 
     return Content;
- });
+});

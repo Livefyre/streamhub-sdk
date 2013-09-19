@@ -4,8 +4,10 @@ define([
     'streamhub-sdk/content/views/attachment-list-view',
     'streamhub-sdk/content/views/oembed-view',
     'hgn!streamhub-sdk/content/templates/tiled-attachment-list',
-    'streamhub-sdk/util'],
-function ($, View, AttachmentListView, OembedView, TiledAttachmentListTemplate, util) {
+    'inherits'],
+function ($, View, AttachmentListView, OembedView, TiledAttachmentListTemplate, inherits) {
+    'use strict';
+
     
     /**
      * A simple View that displays Content in a list (`<ul>` by default).
@@ -22,7 +24,7 @@ function ($, View, AttachmentListView, OembedView, TiledAttachmentListTemplate, 
         this.oembedViews = [];
         AttachmentListView.call(this, opts);
     };
-    util.inherits(TiledAttachmentListView, AttachmentListView);
+    inherits(TiledAttachmentListView, AttachmentListView);
 
     TiledAttachmentListView.prototype.template = TiledAttachmentListTemplate;
     TiledAttachmentListView.prototype.tiledAttachmentsSelector = '.content-attachments-tiled';
@@ -35,7 +37,7 @@ function ($, View, AttachmentListView, OembedView, TiledAttachmentListTemplate, 
     TiledAttachmentListView.prototype.render = function () {
         AttachmentListView.prototype.render.call(this);
         this.retile();
-    }
+    };
 
 
     /**
@@ -86,15 +88,14 @@ function ($, View, AttachmentListView, OembedView, TiledAttachmentListTemplate, 
     };
 
     TiledAttachmentListView.prototype._insert = function (oembedView) {
-        var self = this;
         var tiledAttachmentsEl = this.$el.find(this.tiledAttachmentsSelector);
         var stackedAttachmentsEl = this.$el.find(this.stackedAttachmentsSelector);
         if (this.isTileableAttachment(oembedView.oembed)) {
             oembedView.$el.appendTo(tiledAttachmentsEl);
         } else {
             oembedView.$el.appendTo(stackedAttachmentsEl);
-        }    
-    }
+        }
+    };
 
     /**
      * Removes a Oembed attachment from the Attachments view. 
@@ -126,7 +127,7 @@ function ($, View, AttachmentListView, OembedView, TiledAttachmentListTemplate, 
             tiledAttachmentsEl.addClass('content-attachments-' + attachmentsCount);
         }
         tiledAttachmentsEl.find(this.contentAttachmentSelector).addClass(this.squareTileClassName);
-        if (attachmentsCount == 3) {
+        if (attachmentsCount === 3) {
             tiledAttachmentsEl.find(this.contentAttachmentSelector + ':first')
                 .removeClass(this.squareTileClassName)
                 .addClass(this.horizontalTileClassName);

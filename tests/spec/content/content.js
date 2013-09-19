@@ -4,6 +4,8 @@ define([
     'streamhub-sdk/content/content',
     'jasmine-jquery'],
 function ($, jasmine, Content) {
+    'use strict';
+
     describe('Content', function () {
         it("can be constructed with just a string", function () {
             var body = 'what';

@@ -1,47 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="../lib/jasmine/lib/jasmine-core/jasmine.css">
-    <link rel="stylesheet" type="text/css" href="../src/views/css/list-view.css">
-    <link rel="stylesheet" type="text/css" href="../src/content/css/content.css">
-    <style>
-    body {
-        font-family: sans-serif;
-        font-size: 14px;
-        line-height: 18px;
-    }
-    a {
-        text-decoration: none;
-    }
-    #view {
-        position:relative;
-    }
-    .content, .content[data-content-has-avatar=true] {
-        background-color:white;
-        margin: 10px;
-        padding: 5px;
-        width: 300px;
-        overflow-x: hidden;
-    }
-    .content-attachment > *{
-        max-width: 300px;
-        max-height: 300px;
-    }
-    #view .content {
-      -webkit-transition-duration: 2s;
-         -moz-transition-duration: 2s;
-          -ms-transition-duration: 2s;
-           -o-transition-duration: 2s;
-              transition-duration: 2s;
-
-      -webkit-transition-property: -webkit-transform, opacity, top, left;
-         -moz-transition-property:    -moz-transform, opacity, top, left;
-          -ms-transition-property:     -ms-transform, opacity, top, left;
-           -o-transition-property:      -o-transform, opacity, top, left;
-              transition-property:         transform, opacity, top, left;
-    }
-    
-    </style>
+    <link rel="stylesheet" type="text/css" href="../../src/css/style.css">
     <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
 </head>
     <body>
@@ -50,18 +10,19 @@
         <script src="/streamhub-sdk.min.js" type="text/javascript"></script>
         
         <script type="text/javascript">
-            require(['streamhub-sdk'], function (Hub) {
+            Livefyre.require(['streamhub-sdk/collection', 'streamhub-sdk/views/list-view'],
+            function (Collection, ListView) {
                 var opts = {
                     "network": "labs-t402.fyre.co",
                     "siteId": "303827",
-                    "articleId": "labs_demo_fire",
+                    "articleId": "xbox-0",
                     "environment": "t402.livefyre.com"
                 };
-                
-                var view = window.gene = new Hub.Views.MediaWallView({
-                  streams: new Hub.Streams.forCollection(opts).start(),
-                  el: document.getElementById("view")
-                });
+
+                var view = window.view = new ListView({ el: document.getElementById('view') });
+                var collection = window.collection = new Collection(opts);
+
+                collection.pipe(view);
             });
         </script>
     </body>

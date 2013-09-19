@@ -1,8 +1,9 @@
 define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/content/types/livefyre-content',
-    'streamhub-sdk/util'
-], function($, LivefyreContent, util) {
+    'inherits'
+], function($, LivefyreContent, inherits) {
+    'use strict';
 
     /**
      * Represents a piece of Livefyre's content curated from Facebook.
@@ -24,7 +25,7 @@ define([
             // Pass
         }
     };
-    util.inherits(LivefyreFacebookContent, LivefyreContent);
+    inherits(LivefyreFacebookContent, LivefyreContent);
 
     /**
      * Get a jQuery Element as HTML

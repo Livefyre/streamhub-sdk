@@ -1,8 +1,8 @@
 define([
-    'streamhub-sdk/modal/modal',
+    'streamhub-sdk/modal',
     'streamhub-sdk/content/views/gallery-attachment-list-view',
-    'streamhub-sdk/util'
-], function(ModalView, GalleryAttachmentListView, util) {
+    'inherits'
+], function(ModalView, GalleryAttachmentListView, inherits) {
     'use strict';
 
     /**
@@ -16,7 +16,7 @@ define([
     var AttachmentGalleryModal = function (opts) {
         ModalView.call(this, opts);
     };
-    util.inherits(AttachmentGalleryModal, ModalView);
+    inherits(AttachmentGalleryModal, ModalView);
 
 
     /**
@@ -64,8 +64,8 @@ define([
         var width = this.$el.width();
 
         var contentGalleryEl = this.$el.find(GalleryAttachmentListView.prototype.attachmentsGallerySelector);
-        var modalVerticalWhitespace = parseInt(contentGalleryEl.css('margin-top')) + parseInt(contentGalleryEl.css('margin-bottom'));
-        var modalHorizontalWhitespace = parseInt(contentGalleryEl.css('margin-left')) + parseInt(contentGalleryEl.css('margin-right'));
+        var modalVerticalWhitespace = parseInt(contentGalleryEl.css('margin-top'), 10) + parseInt(contentGalleryEl.css('margin-bottom'), 10);
+        var modalHorizontalWhitespace = parseInt(contentGalleryEl.css('margin-left'), 10) + parseInt(contentGalleryEl.css('margin-right'), 10);
 
         var attachmentContainerHeight = height - modalVerticalWhitespace;
         var attachmentContainerWidth = width - modalHorizontalWhitespace;
@@ -78,30 +78,31 @@ define([
         var focusedAttachmentEl = this.$el.find('.'+GalleryAttachmentListView.prototype.focusedAttachmentClassName + '> *');
         // Reset attachment dimensions
         if (focusedAttachmentEl.attr('width')) {
-            focusedAttachmentEl.css({ 'width': parseInt(focusedAttachmentEl.attr('width'))+'px' });
+            focusedAttachmentEl.css({ 'width': parseInt(focusedAttachmentEl.attr('width'), 10)+'px' });
         } else {
             focusedAttachmentEl.css({ 'width': 'auto'});
         }
         if (focusedAttachmentEl.attr('height')) {
-            focusedAttachmentEl.css({ 'height': parseInt(focusedAttachmentEl.attr('height'))+'px' });
+            focusedAttachmentEl.css({ 'height': parseInt(focusedAttachmentEl.attr('height'), 10)+'px' });
         } else {
             focusedAttachmentEl.css({ 'height': 'auto', 'line-height': 'inherits'});
         }
 
         // Scale to fit testing against modal dimensions
-        if (focusedAttachmentEl.height() + modalVerticalWhitespace >= height || focusedAttachmentEl.height() == 0) {
+        if (focusedAttachmentEl.height() + modalVerticalWhitespace >= height || focusedAttachmentEl.height() === 0) {
             focusedAttachmentEl.css({ 'height': Math.min(attachmentContainerHeight, attachmentContainerWidth)+'px', 'line-height': Math.min(attachmentContainerHeight, attachmentContainerWidth)+'px'});
             if (focusedAttachmentEl.attr('width')) {
-                var newWidth = Math.min(parseInt(focusedAttachmentEl.attr('width')), focusedAttachmentEl.width());
+                var newWidth = Math.min(parseInt(focusedAttachmentEl.attr('width'), 10), focusedAttachmentEl.width());
                 focusedAttachmentEl.css({ 'width': newWidth+'px' });
             } else {
                 focusedAttachmentEl.css({ 'width': 'auto' });
             }
-        } 
-        if (focusedAttachmentEl.width() + modalHorizontalWhitespace >= width || focusedAttachmentEl.width() == 0) {
+        }
+
+        if (focusedAttachmentEl.width() + modalHorizontalWhitespace >= width || focusedAttachmentEl.width() === 0) {
             focusedAttachmentEl.css({ 'width': attachmentContainerWidth+'px'});
             if (focusedAttachmentEl.attr('height')) {
-                var newHeight = Math.min(parseInt(focusedAttachmentEl.attr('height')), focusedAttachmentEl.height()); 
+                var newHeight = Math.min(parseInt(focusedAttachmentEl.attr('height'), 10), focusedAttachmentEl.height());
                 focusedAttachmentEl.css({ 'height': newHeight+'px' });
             } else {
                 focusedAttachmentEl.css({ 'height': 'auto', 'line-height': 'inherits'});

@@ -1,4 +1,5 @@
-define(['streamhub-sdk/content/content', 'streamhub-sdk/util'], function(Content, util) {
+define(['streamhub-sdk/content/content', 'inherits'], function(Content, inherits) {
+    'use strict';
     
     /**
      * A base class that represents any piece of twitter content. This constructor saves the
@@ -7,13 +8,13 @@ define(['streamhub-sdk/content/content', 'streamhub-sdk/util'], function(Content
      *        state of the content.
      * @exports streamhub-sdk/content/types/twitter-content
      * @constructor
-     */ 
+     */
     var TwitterContent = function (json) {
         Content.call(this);
         json = json || {};
         this.tweetId = json.tweetId;
     };
-    util.inherits(TwitterContent, Content);
+    inherits(TwitterContent, Content);
 
     return TwitterContent;
- });
+});

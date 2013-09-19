@@ -8,6 +8,7 @@ define([
     'hgn!streamhub-sdk/content/templates/oembed-link',
     'hgn!streamhub-sdk/content/templates/oembed-rich'],
 function($, jasmine, jasminejQuery, OembedView, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, OembedRichTemplate) {
+    'use strict';
 
     describe('OembedView', function () {
         var oembedAttachment = {
@@ -25,7 +26,7 @@ function($, jasmine, jasminejQuery, OembedView, OembedPhotoTemplate, OembedVideo
                 it('is instance of OembedView', function() {
                     expect(oembedView).toBeDefined();
                     expect(oembedView instanceof OembedView).toBe(true);
-                }); 
+                });
             });
         });
 
@@ -33,7 +34,7 @@ function($, jasmine, jasminejQuery, OembedView, OembedPhotoTemplate, OembedVideo
 
             it('modifies YouTube thumbnail url', function() {
                 oembedAttachment.provider_name = 'YouTube';
-                oembedAttachment.thumbnail_url = 'http://i.ytimg.com/vi/OOE9l23P7jg/hqdefault.jpg'
+                oembedAttachment.thumbnail_url = 'http://i.ytimg.com/vi/OOE9l23P7jg/hqdefault.jpg';
                 oembedAttachment.type = 'video';
                 var oembedView = new OembedView({ oembed: oembedAttachment });
                 oembedView.render();
@@ -66,7 +67,7 @@ function($, jasmine, jasminejQuery, OembedView, OembedPhotoTemplate, OembedVideo
 
                 it('uses OembedPhotoTemplate', function() {
                     expect(oembedView.template).toBe(OembedPhotoTemplate);
-                }); 
+                });
             });
 
             describe('a oembed video', function() {
@@ -76,7 +77,7 @@ function($, jasmine, jasminejQuery, OembedView, OembedPhotoTemplate, OembedVideo
 
                 it('uses OembedVideoTemplate', function() {
                     expect(oembedView.template).toBe(OembedVideoTemplate);
-                }); 
+                });
             });
 
             describe('a oembed link', function() {
@@ -86,7 +87,7 @@ function($, jasmine, jasminejQuery, OembedView, OembedPhotoTemplate, OembedVideo
 
                 it('uses OembedLinkTemplate', function() {
                     expect(oembedView.template).toBe(OembedLinkTemplate);
-                }); 
+                });
             });
 
             describe('a oembed rich', function() {
@@ -96,7 +97,7 @@ function($, jasmine, jasminejQuery, OembedView, OembedPhotoTemplate, OembedVideo
 
                 it('uses OembedRichTemplate', function() {
                     expect(oembedView.template).toBe(OembedRichTemplate);
-                }); 
+                });
             });
         });
     });

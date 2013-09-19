@@ -3,7 +3,8 @@ define([
     'hgn!streamhub-sdk/content/templates/content',
     'streamhub-sdk/util'
 ], function ($, ContentTemplate, Util) {
-    
+    'use strict';
+
     /**
      * Defines the base class for all content-views. Handles updates to attachments
      * and loading of images.
@@ -97,7 +98,7 @@ define([
         });
 
         this.$el.on('click', this.headerElSelector, function(e) {
-            var headerEl = $(e.currentTarget)
+            var headerEl = $(e.currentTarget);
             var frameEl = self.$el.find('.content-attachments-tiled ' + self.attachmentFrameElSelector);
 
             headerEl.hide();
@@ -116,8 +117,6 @@ define([
             var $currentTooltip = $("<div class=\"hub-current-tooltip content-action-tooltip\"><div class=\"content-action-tooltip-bubble\">" + title + "</div><div class=\"content-action-tooltip-tail\"></div></div>");
             $(this).parent().append($currentTooltip);
 
-            var tooltipOffset = $(this).offset();
-
             var tooltipWidth = $currentTooltip.outerWidth();
             var tooltipHeight = $currentTooltip.outerHeight();
 
@@ -127,7 +126,7 @@ define([
             });
 
             if ($(this).hasClass(self.tooltipElSelector)){
-                var currentLeft = parseInt($currentTooltip.css('left'));
+                var currentLeft = parseInt($currentTooltip.css('left'), 10);
                 $currentTooltip.css('left', currentLeft + 7);
             }
 
@@ -145,7 +144,7 @@ define([
     /**
      * Gets the template rendering context. By default, returns "this.content".
      * @returns {Content} The content object this view was instantiated with.
-     */  
+     */
     ContentView.prototype.getTemplateContext = function () {
         var context = $.extend({}, this.content);
         return context;

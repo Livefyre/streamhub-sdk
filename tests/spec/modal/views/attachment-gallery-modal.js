@@ -4,9 +4,9 @@ define([
     'jasmine-jquery',
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/types/oembed',
-    'streamhub-sdk/modal/views/attachment-gallery-modal',
-    'streamhub-sdk/content/views/oembed-view'],
-function($, jasmine, jasminejQuery, Content, Oembed, AttachmentGalleryModal, OembedView) {
+    'streamhub-sdk/modal/views/attachment-gallery-modal'],
+function($, jasmine, jasminejQuery, Content, Oembed, AttachmentGalleryModal) {
+    'use strict';
 
     describe('AttachmentGalleryModal', function () {
         var oembedAttachment = {
@@ -15,7 +15,6 @@ function($, jasmine, jasminejQuery, Content, Oembed, AttachmentGalleryModal, Oem
             type: "photo",
             url: "http://pbs.twimg.com/media/BQGNgs9CEAEhmEF.jpg"
         };
-        var content = new Content({ body: 'what' });
 
         it('has implemented the ._createContentView method', function () {
             expect(AttachmentGalleryModal.prototype._createContentView).toBeDefined();
@@ -24,15 +23,14 @@ function($, jasmine, jasminejQuery, Content, Oembed, AttachmentGalleryModal, Oem
         describe('when constructed', function () {
 
             describe('with no arguments or options', function () {
-                var modalView = new AttachmentGalleryModal();
+                var modalView;
+
+                beforeEach(function () {
+                    modalView = new AttachmentGalleryModal();
+                });
 
                 it('is instance of AttachmentGalleryModal', function() {
                     expect(modalView).toBeDefined();
-                    expect(modalView instanceof AttachmentGalleryModal).toBe(true);
-                });
-
-                var modalView = new AttachmentGalleryModal();
-                it('is an instance of AttachmentGalleryModal', function() {
                     expect(modalView instanceof AttachmentGalleryModal).toBe(true);
                 });
 
@@ -71,11 +69,11 @@ function($, jasmine, jasminejQuery, Content, Oembed, AttachmentGalleryModal, Oem
                 type: "video",
                 thumbnail_url: "http://pbs.twimg.com/media/BQGNgs9CEAEhmEF.jpg",
                 html: "<iframe>here's your video player</iframe>"
-            },
-            modalView,
-            tiledAttachmentEl,
-            content;
-           
+            };
+            var modalView;
+            var tiledAttachmentEl;
+            var content;
+
             beforeEach(function() {
                 content = new Content();
                 modalView = new AttachmentGalleryModal();
@@ -104,13 +102,10 @@ function($, jasmine, jasminejQuery, Content, Oembed, AttachmentGalleryModal, Oem
                 expect(focusedVideoAttachmentEl).toHaveClass('content-attachment-video');
             });
         });
-        
+
         describe('when attachment is focused', function() {
-            
             var modalView,
-                tiledAttachmentEl,
-                content,
-                attachmentListViewOpts;
+                content;
 
             beforeEach(function() {
                 content = new Content();

@@ -5,9 +5,10 @@ define([
     'hgn!streamhub-sdk/content/templates/oembed-video',
     'hgn!streamhub-sdk/content/templates/oembed-link',
     'hgn!streamhub-sdk/content/templates/oembed-rich',
-    'streamhub-sdk/util'
+    'inherits'
 ],
-function($, View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, OembedRichTemplate, util) {
+function($, View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, OembedRichTemplate, inherits) {
+    'use strict';
 
     /**
      * A view that renders oembed attachments
@@ -28,7 +29,7 @@ function($, View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, 
         }
         this.template = this.OEMBED_TEMPLATES[this.oembed.type];
     };
-    util.inherits(OembedView, View);
+    inherits(OembedView, View);
 
     /**
      * A mapping of oembed type to its mustache template for rendering 
@@ -50,7 +51,7 @@ function($, View, OembedPhotoTemplate, OembedVideoTemplate, OembedLinkTemplate, 
         // YouTube oembed thumbnails (hqdefault.jpg) include a letterbox for 16:9 aspect ratio
         // videos. Use mqdefault.jpg instead as it does not have letterboxing.
         // http://kb.oboxsites.com/knowledgebase/how-to-remove-black-bars-on-youtube-oembed-thumbnails/
-        if (this.oembed.provider_name == 'YouTube') {
+        if (this.oembed.provider_name === 'YouTube') {
             var re = /(hqdefault.jpg)$/;
             if (re.test(this.oembed.thumbnail_url)) {
                 this.oembed.thumbnail_url = this.oembed.thumbnail_url.replace(re, 'mqdefault.jpg');

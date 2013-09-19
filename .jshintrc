@@ -1,0 +1,30 @@
+{
+    "browser": true,
+    "globals": {
+        "define": true,
+        "expect": true,
+        "describe": true,
+        "it": true,
+        "spyOn": true,
+        "spyOnEvent": true,
+        "beforeEach": true,
+        "afterEach": true,
+        "waits": true,
+        "waitsFor": true,
+        "runs": true,
+        "sandbox": true,
+        "setFixtures": true
+    },
+    "forin": true,
+    "curly": true,
+    "eqeqeq": true,
+    "immed": true,
+    "smarttabs": true,
+    "latedef": "nofunc",
+    "newcap": true,
+    "noarg": true,
+    "undef": true,
+    "unused": "vars",
+    "strict": true,
+    "boss": true
+}

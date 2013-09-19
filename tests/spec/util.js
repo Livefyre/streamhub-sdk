@@ -3,6 +3,8 @@ define([
     'jasmine',
     'streamhub-sdk/util'],
 function ($, jasmine, Util) {
+    'use strict';
+
     describe('streamhub-sdk/util', function () {
         describe('formatDate', function () {
             var relativeTo,

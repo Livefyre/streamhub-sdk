@@ -25,6 +25,7 @@ define([
     InstagramContentView,
     GalleryOnFocusView
 ) {
+    'use strict';
 
     /**
      * A module to create instances of ContentView for a given Content instance.
@@ -64,6 +65,7 @@ define([
         var ContentViewType = this._getViewTypeForContent(content);
         var attachmentsView = this._createAttachmentsView(content);
         var contentView = new ContentViewType({ content : content, attachmentsView: attachmentsView });
+        
         return contentView;
     };
 
@@ -81,16 +83,16 @@ define([
             } else if (current.viewFunction) {
                 currentType = current.viewFunction(content);
             }
-            return currentType
+            return currentType;
         }
     };
 
 
     ContentViewFactory.prototype._createAttachmentsView = function (content) {
-        var tiledAttachmentListView = new TiledAttachmentListView({
+        var tiledAttachmentListView = new TiledAttachmentListView();
+        return new GalleryOnFocusView(tiledAttachmentListView, {
             content: content
         });
-        return new GalleryOnFocusView(tiledAttachmentListView);
     };
 
     return ContentViewFactory;

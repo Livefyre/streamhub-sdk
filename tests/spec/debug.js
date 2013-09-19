@@ -1,4 +1,6 @@
 define(['jasmine', 'streamhub-sdk/debug'], function (jasmine, debug) {
+    'use strict';
+
 	describe('streamhub-sdk/debug', function () {
 		it('is defined as a function', function () {
 			expect(debug).toBeDefined();

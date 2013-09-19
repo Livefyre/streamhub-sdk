@@ -5,7 +5,8 @@ define([
     'streamhub-sdk/content/content',
     'streamhub-sdk/content/views/tiled-attachment-list-view',
     'streamhub-sdk/content/views/oembed-view'],
-function($, jasmine, jasminejQuery, Content, TiledAttachmentListView, OembedView) {
+function($, jasmine, jasminejQuery, Content, TiledAttachmentListView) {
+    'use strict';
 
     describe('TiledAttachmentListView', function () {
         var oembedAttachment = {
@@ -23,7 +24,7 @@ function($, jasmine, jasminejQuery, Content, TiledAttachmentListView, OembedView
                 it('is instance of TiledAttachmentListView', function() {
                     expect(tiledAttachmentListView).toBeDefined();
                     expect(tiledAttachmentListView instanceof TiledAttachmentListView).toBe(true);
-                }); 
+                });
             });
 
             describe('with opts.content', function() {
@@ -31,7 +32,7 @@ function($, jasmine, jasminejQuery, Content, TiledAttachmentListView, OembedView
                 it('is instance of TiledAttachmentListView', function() {
                     expect(tiledAttachmentListView).toBeDefined();
                     expect(tiledAttachmentListView instanceof TiledAttachmentListView).toBe(true);
-                }); 
+                });
             });
         });
 
@@ -42,7 +43,7 @@ function($, jasmine, jasminejQuery, Content, TiledAttachmentListView, OembedView
                 tiledAttachmentListView.add(oembedAttachment);
                 spyOn(tiledAttachmentListView, 'retile');
                 tiledAttachmentListView.remove(oembedAttachment);
-                expect(tiledAttachmentListView.retile).toHaveBeenCalled(); 
+                expect(tiledAttachmentListView.retile).toHaveBeenCalled();
             });
         });
 
@@ -52,7 +53,7 @@ function($, jasmine, jasminejQuery, Content, TiledAttachmentListView, OembedView
                 var tiledAttachmentListView = new TiledAttachmentListView({ content: content });
                 spyOn(tiledAttachmentListView, 'retile');
                 tiledAttachmentListView.add(oembedAttachment);
-                expect(tiledAttachmentListView.retile).toHaveBeenCalled(); 
+                expect(tiledAttachmentListView.retile).toHaveBeenCalled();
             });
 
             describe('with photo attachment', function() {
@@ -190,7 +191,6 @@ function($, jasmine, jasminejQuery, Content, TiledAttachmentListView, OembedView
         });
 
         describe('when clicking an attachment tile', function() {
-            
             var tiledAttachmentListView,
                 tiledAttachmentEl,
                 tiledAttachmentListViewOpts = { content: content };

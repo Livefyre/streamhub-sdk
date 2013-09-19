@@ -1,10 +1,18 @@
 define(['jquery'], function($) {
+    'use strict';
+
+    /**
+     * Cross domain requests in IE8/9 fail. Here is a patch for that.
+     * AJAX POST request on IE fails with error “No Transport”: http://stackoverflow.com/q/15418290
+     */
     if (!$.support.cors && window.XDomainRequest) {
         var httpRegEx = /^https?:\/\//i;
         var getOrPostRegEx = /^get|post$/i;
         var sameSchemeRegEx = new RegExp('^'+location.protocol, 'i');
         var xmlRegEx = /\/xml/i;
-    
+        var XDomainRequest = window.XDomainRequest;
+        var ActiveXObject = window.ActiveXObject;
+
         // ajaxTransport exists in jQuery 1.5+
         $.ajaxTransport('text html xml json', function(options, userOptions, jqXHR) {
             // XDomainRequests must be: asynchronous, GET or POST methods, HTTP or HTTPS protocol, and same scheme as calling page

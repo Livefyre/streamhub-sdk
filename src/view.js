@@ -1,12 +1,13 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/event-emitter',
-    'streamhub-sdk/util'
+    'event-emitter',
+    'inherits'
 ], function(
     $,
     EventEmitter,
-    util
+    inherits
 ) {
+    'use strict';
 
     /**
      * Defines a base view object that can be bound to any number of stream-managers. Content is
@@ -26,7 +27,7 @@ define([
 
         this.setElement(opts.el || document.createElement(this.elTag));
     };
-    util.inherits(View, EventEmitter);
+    inherits(View, EventEmitter);
 
     /** The HTMLElement tag to use if this View creates its own element */
     View.prototype.elTag = 'div';
@@ -38,6 +39,9 @@ define([
      * @return this
      */
     View.prototype.setElement = function (element) {
+        if (element instanceof $) {
+            element = element[0];
+        }
         this.el = element;
         this.$el = $(element);
         return this;

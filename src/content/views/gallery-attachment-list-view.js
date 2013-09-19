@@ -5,8 +5,9 @@ define([
     'streamhub-sdk/content/views/oembed-view',
     'hgn!streamhub-sdk/content/templates/gallery-attachment-list',
     'hgn!streamhub-sdk/content/templates/content-byline',
-    'streamhub-sdk/util'],
-function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemplate, ContentBylineTemplate, util) {
+    'inherits'],
+function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemplate, contentBylineTemplate, inherits) {
+    'use strict';
 
     /**
      * A view that displays a content's attachments as a gallery
@@ -54,16 +55,16 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
             if (!self.pageButtons) {
                 return;
             }
-            if (e.keyCode == 37) {
+            if (e.keyCode === 37) {
                 // left arrow
                 self.prev();
-            } else if (e.keyCode == 39) {
+            } else if (e.keyCode === 39) {
                 // right arrow
                 self.next();
             }
         });
     };
-    util.inherits(GalleryAttachmentListView, View);
+    inherits(GalleryAttachmentListView, View);
     $.extend(GalleryAttachmentListView.prototype, TiledAttachmentListView.prototype);
 
     GalleryAttachmentListView.prototype.template = GalleryAttachmentListTemplate;
@@ -152,16 +153,17 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         });
 
         var contentMetaEl = this.$el.find(this.attachmentMetaSelector);
-        this.userInfo ? contentMetaEl.show() : contentMetaEl.hide();
+        contentMetaEl[ this.userInfo ? 'show' : 'hide' ]();
 
         var pageButtonEls = this.$el.find([this.galleryPrevSelector, this.galleryNextSelector].join(','));
-        this.pageButtons ? pageButtonEls.show() : pageButtonEls.hide();
+        pageButtonEls[ this.pageButtons ? 'show' : 'hide' ]();
 
         var pageCountEl = this.$el.find(this.galleryCountSelector);
-        this.pageCount ? pageCountEl.show() : pageCountEl.hide();
+        pageCountEl[ this.pageCount ? 'show' : 'hide' ]();
 
         var thumbnailsEl = this.$el.find(this.galleryThumbnailsSelector);
-        this.thumbnails && this.tileableCount() > 1 ?  thumbnailsEl.show() : thumbnailsEl.hide();
+        thumbnailsEl[this.thumbnails && this.tileableCount() ? 'show' : 'hide']();
+
         if (this.proportionalThumbnails) {
             var thumbnailTileEls = thumbnailsEl.children();
             for (var i=0; i < thumbnailTileEls.length; i++) {
@@ -183,7 +185,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         if (this._rendered) {
             this.render();
         }
-    }
+    };
 
 
     /**
@@ -207,7 +209,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
             });
         } else {
             oembedView.$el.appendTo(stackedAttachmentsEl);
-        }  
+        }
 
         return oembedView;
     };
@@ -248,7 +250,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         var focusedAttachmentsEl = this.$el.find(this.focusedAttachmentsSelector);
         focusedAttachmentsEl.empty();
 
-        oembedView = new OembedView({ oembed: oembed });
+        var oembedView = new OembedView({ oembed: oembed });
         oembedView.render();
         var focusedEl = oembedView.$el.clone();
         focusedEl.appendTo(focusedAttachmentsEl);
@@ -273,7 +275,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         if (this.pageCount) {
             var newIndex = 0;
             for (var i=0; i < this.oembedViews.length; i++) {
-                if (this.oembedViews[i].oembed == this._focusedAttachment) {
+                if (this.oembedViews[i].oembed === this._focusedAttachment) {
                     this.focusedIndex = newIndex;
                     break;
                 }
@@ -285,17 +287,22 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
             this.$el.find(this.galleryTotalPagesSelector).html(attachmentsCount);
 
             var galleryCountEl = this.$el.find(this.galleryCountSelector);
-            attachmentsCount > 1 ? galleryCountEl.show() : galleryCountEl.hide();
+            
+            if (attachmentsCount > 1) {
+                galleryCountEl.show();
+            } else {
+                galleryCountEl.hide();
+            }
         }
 
         // Prev/Next buttons
-        if (attachmentsCount == 1) {
+        if (attachmentsCount === 1) {
             this.$el.find(this.galleryPrevSelector).hide();
             this.$el.find(this.galleryNextSelector).hide();
-        } else if (this.focusedIndex + 1 == attachmentsCount) {
+        } else if (this.focusedIndex + 1 === attachmentsCount) {
             this.$el.find(this.galleryPrevSelector).show();
             this.$el.find(this.galleryNextSelector).hide();
-        } else if (this.focusedIndex == 0) {
+        } else if (this.focusedIndex === 0) {
             this.$el.find(this.galleryPrevSelector).hide();
             this.$el.find(this.galleryNextSelector).show();
         } else {
@@ -305,15 +312,15 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
 
         // Meta
         var contentMetaEl = this.$el.find(this.attachmentMetaSelector);
-        contentMetaEl.html(ContentBylineTemplate(this.content));
+        contentMetaEl.html(contentBylineTemplate(this.content));
 
         // Update gallery size
         var self = this;
-        var focusedAttachmentEl = this.$el.find('.'+this.focusedAttachmentClassName + '> *')
+        var focusedAttachmentEl = this.$el.find('.'+this.focusedAttachmentClassName + '> *');
         if (!focusedAttachmentEl.length) {
             return;
         }
-        if (focusedAttachmentEl[0].tagName == 'IMG') {
+        if (focusedAttachmentEl[0].tagName === 'IMG') {
             focusedAttachmentEl.on('load', function(e) {
                 self.resizeFocusedAttachment();
             });
@@ -326,8 +333,6 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
      * Resizes the focused attachment to fit within the content view
      */
     GalleryAttachmentListView.prototype.resizeFocusedAttachment = function() {
-        var contentAttachmentEl = this.$el.find('.content-attachments-gallery-focused .content-attachment');
-
         // Set direct child of focused attachment to expand to itself
         var focusedAttachmentEl = this.$el.find('.'+this.focusedAttachmentClassName);
         focusedAttachmentEl.children().eq(0).width('100%').height('100%');
@@ -344,7 +349,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
             if (!this.isTileableAttachment(this.oembedViews[i].oembed)) {
                 continue;
             }
-            if (this.focusedIndex+1 == tileableIndex) {
+            if (this.focusedIndex+1 === tileableIndex) {
                 this.focusedIndex = tileableIndex;
                 this._focusedAttachment = this.oembedViews[i].oembed;
                 this.render();
@@ -363,7 +368,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
             if (!this.isTileableAttachment(this.oembedViews[i].oembed)) {
                 continue;
             }
-            if (this.focusedIndex-1 == tileableIndex) {
+            if (this.focusedIndex-1 === tileableIndex) {
                 this.focusedIndex = tileableIndex;
                 this._focusedAttachment = this.oembedViews[i].oembed;
                 this.render();

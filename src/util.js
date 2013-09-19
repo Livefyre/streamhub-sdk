@@ -1,4 +1,6 @@
 define(['streamhub-sdk/debug', 'streamhub-sdk/jquery'], function (debug, $) {
+    'use strict';
+
     var log = debug('util');
 
     /** 
@@ -6,16 +8,6 @@ define(['streamhub-sdk/debug', 'streamhub-sdk/jquery'], function (debug, $) {
      * @module streamhub-sdk/util
      */
     var exports = {};
-
-    /**
-     * Prototype inheritance utility
-     */
-    exports.inherits = function(a, b){
-        var fn = function(){};
-        fn.prototype = b.prototype;
-        a.prototype = new fn;
-        a.prototype.constructor = a;
-    };
 
     /**
      * Get outerWidth (jquery-style) of element
@@ -61,11 +53,13 @@ define(['streamhub-sdk/debug', 'streamhub-sdk/jquery'], function (debug, $) {
     var MONTH_STRINGS = [
         'Jan', 'Feb', 'Mar', 'Apr',
         'May', 'Jun','Jul', 'Aug',
-        'Sep', 'Oct', 'Nov', 'Dec'];
+        'Sep', 'Oct', 'Nov', 'Dec'
+    ];
 
     exports.formatDate = function (date, relativeTo) {
         relativeTo = relativeTo || new Date();
-        var diffMs = date.getTime() - relativeTo.getTime();
+        var diffMs = date.getTime() - relativeTo.getTime(),
+            dateString;
         // Future
         if (diffMs > 0) {
             return '';
@@ -106,19 +100,22 @@ define(['streamhub-sdk/debug', 'streamhub-sdk/jquery'], function (debug, $) {
             DontEnumsLength = DontEnums.length;
 
         return function (o) {
-            if (typeof o != "object" && typeof o != "function" || o === null)
+            if (typeof o !== "object" && typeof o !== "function" || o === null) {
                 throw new TypeError("Object.keys called on a non-object");
+            }
 
             var result = [];
             for (var name in o) {
-                if (hasOwnProperty.call(o, name))
+                if (hasOwnProperty.call(o, name)) {
                     result.push(name);
+                }
             }
 
             if (hasDontEnumBug) {
                 for (var i = 0; i < DontEnumsLength; i++) {
-                    if (hasOwnProperty.call(o, DontEnums[i]))
+                    if (hasOwnProperty.call(o, DontEnums[i])) {
                         result.push(DontEnums[i]);
+                    }
                 }
             }
 
