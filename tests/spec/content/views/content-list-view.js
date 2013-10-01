@@ -2,7 +2,7 @@ define([
     'jasmine',
     'jasmine-jquery',
     'streamhub-sdk/jquery',
-    'streamhub-sdk/views/list-view',
+    'streamhub-sdk/content/views/content-list-view',
     'streamhub-sdk/content',
     'streamhub-sdk/content/views/content-view'],
 function (jasmine, jasminejquery, $, ListView, Content, ContentView) {
@@ -63,8 +63,7 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView) {
 
             it('adds class .streamhub-list-view', function () {
                 listView.setElement(newElement);
-                expect($(newElement)).toHaveClass('streamhub-list-view');
-                expect($(newElement)).toHaveClass(listView.elClass);
+                expect($(newElement)).toHaveClass('streamhub-content-list-view');
             });
         });
 
@@ -116,7 +115,7 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView) {
                 listView.add(content1);
                 listView.add(content2);
                 listView.add(content3);
-                expect(listView.contentViews.length).toBe(3);
+                expect(listView.views.length).toBe(3);
             });
             it(".writing one more than initial results in only initial contentViews", function () {
                 var origInitial = initial;
@@ -124,7 +123,7 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView) {
                     listView.write(new Content(initial.toString()));
                 }
                 listView.write(new Content(initial.toString()));
-                expect(listView.contentViews.length).toBe(origInitial);
+                expect(listView.views.length).toBe(origInitial);
             });
             it(".showMore() can be called, and sets .more's goal", function () {
                 var numToAdd = 5;
@@ -146,7 +145,7 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView) {
                     // ContentViews may not be created until nextTick
                     waits(1);
                     runs(function () {
-                        expect(listView.contentViews.length).toBe(initial);
+                        expect(listView.views.length).toBe(initial);
                     });
                 });
             });
@@ -306,8 +305,8 @@ function (jasmine, jasminejquery, $, ListView, Content, ContentView) {
 
             describe("and ContentViews are created", function () {
                 it("stores them in .contentViews", function () {
-                    expect(listView.contentViews.length).toBe(1);
-                    expect(listView.contentViews[0] instanceof ContentView).toBe(true);
+                    expect(listView.views.length).toBe(1);
+                    expect(listView.views[0] instanceof ContentView).toBe(true);
                 });
 
                 it("uses .createContentView(content) to create the ContentViews", function () {

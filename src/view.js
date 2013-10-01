@@ -32,6 +32,8 @@ define([
     /** The HTMLElement tag to use if this View creates its own element */
     View.prototype.elTag = 'div';
 
+    View.prototype.elClass = '';
+
     /**
      * Set the element for the view to render in.
      * You will probably want to call .render() after this, but not always.
@@ -44,6 +46,11 @@ define([
         }
         this.el = element;
         this.$el = $(element);
+
+        if (this.elClass) {
+            this.$el.addClass(this.elClass);
+        }
+
         return this;
     };
 

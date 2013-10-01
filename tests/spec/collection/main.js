@@ -4,13 +4,13 @@ define([
     'streamhub-sdk/collection/streams/archive',
     'streamhub-sdk/collection/streams/updater',
     'streamhub-sdk/collection/streams/writer',
-    'streamhub-sdk/views/list-view',
+    'streamhub-sdk/content/views/content-list-view',
     'streamhub-sdk/content',
     'streamhub-sdk/auth',
     'stream/writable',
     'stream/readable'
 ], function (jasmine, Collection, CollectionArchive, CollectionUpdater,
-CollectionWriter, ListView, Content, Auth, Writable, Readable) {
+CollectionWriter, ContentListView, Content, Auth, Writable, Readable) {
     'use strict';
 
     describe('streamhub-sdk/collection', function () {
@@ -93,7 +93,7 @@ CollectionWriter, ListView, Content, Auth, Writable, Readable) {
                     listView;
                 beforeEach(function () {
                     writable = new Writable();
-                    listView = new ListView();
+                    listView = new ContentListView();
                     collection.createUpdater = function () {
                         var readable = new Readable();
                         readable._read = function () { this.push(null); };
@@ -114,14 +114,14 @@ CollectionWriter, ListView, Content, Auth, Writable, Readable) {
                 it('can be piped to a writable', function () {
                     collection.pipe(writable);
                 });
-                describe('when piped to a ListView', function () {
-                    it('pipes an updater to ListView', function () {
+                describe('when piped to a ContentListView', function () {
+                    it('pipes an updater to ContentListView', function () {
                         var onPipe = jasmine.createSpy('pipe');
                         listView.on('pipe', onPipe);
                         collection.pipe(listView);
                         expect(onPipe).toHaveBeenCalled();
                     });
-                    it('pipes an archive to ListView#more', function () {
+                    it('pipes an archive to ContentListView#more', function () {
                         var onPipeToMore = jasmine.createSpy('pipe to more');
                         listView.more.on('pipe', onPipeToMore);
                         collection.pipe(listView);

@@ -27,21 +27,19 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
     var ListView = function(opts) {
         opts = opts || {};
 
+        this.views = [];
+
         View.call(this, opts);
         Writable.call(this, opts);
-
-        this.contentViews = [];
-
-        this.modal = opts.modal === undefined ? new AttachmentGalleryModal() : opts.modal;
-        this.contentViewFactory = new ContentViewFactory();
 
         this._moreAmount = opts.showMore || 50;
         this.more = opts.more || this._createMoreStream(opts);
         this.showMoreButton = opts.showMoreButton || this._createShowMoreButton(opts);
         this.showMoreButton.setMoreStream(this.more);
-        this.more.pipe(this, { end: false });
 
         this.render();
+
+        this._pipeMore();
     };
 
     inherits(ListView, View);
@@ -50,50 +48,26 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
     ListView.prototype.template = ListViewTemplate;
 
-    /**
-     * Class property to add to ListView instances' .el
-     */
-    ListView.prototype.elClass = 'streamhub-list-view';
 
     /**
      * Selector of .el child that contentViews should be inserted into
      */
-    ListView.prototype.listElSelector = '.content-list';
+    ListView.prototype.listElSelector = '.hub-list';
+
+
     /**
      * Selector of .el child in which to render a show more button
      */
-    ListView.prototype.showMoreElSelector = '.content-list-more';
+    ListView.prototype.showMoreElSelector = '.hub-list-more';
 
 
-    /**
-     * Set the element that this ListView renders in
-     * @param element {HTMLElement} The element to render the ListView in
-     */
     ListView.prototype.setElement = function (element) {
         var self = this;
         View.prototype.setElement.apply(this, arguments);
-
-        $(this.el).addClass(this.elClass);
-
+        this.$listEl = this.$el;
         // .showMoreButton will trigger showMore.hub when it is clicked
         this.$el.on('showMore.hub', function () {
             self.showMore();
-        });
-
-        this.$el.on('removeContentView.hub', function(e, content) {
-            self.remove(content);
-        });
-        this.$el.on('focusContent.hub', function(e, context) {
-            var contentView = self.getContentView(context.content);
-            if (! self.modal) {
-                if (contentView &&
-                    contentView.attachmentsView &&
-                    typeof contentView.attachmentsView.focus === 'function') {
-                    contentView.attachmentsView.focus(context.attachmentToFocus);
-                }
-                return;
-            }
-            self.modal.show(context.content, { attachment: context.attachmentToFocus });
         });
     };
 
@@ -113,13 +87,125 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
     /**
      * @private
      * Called automatically by the Writable base class when .write() is called
-     * @param content {Content} Content to display in the ListView
+     * @param view {View} View to display in the ListView
      * @param requestMore {function} A function to call when done writing, so
      *     that _write will be called again with more data
      */
-    ListView.prototype._write = function (content, requestMore) {
-        this.add(content);
+    ListView.prototype._write = function (view, requestMore) {
+        this.add(view);
         requestMore();
+    };
+
+
+    /**
+     * @private
+     * Comparator function to determine ordering of Views.
+     * Your subclass should implement this if you want ordering
+     * @param a {view}
+     * @param b {view}
+     * @returns {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
+     */
+    ListView.prototype.comparator = null;
+
+
+    /**
+     * Add a view to the ListView
+     *     insert the newView into this.el according to this.comparator
+     * @param newView {View} A View to add to the ListView
+     * @returns the newly added View
+     */
+    ListView.prototype.add = function(newView) {
+        log("add", newView);
+
+        if ( ! newView) {
+            log("Called add with a falsy parameter, returning");
+            return;
+        }
+
+        // Push and sort. #TODO Insert in sorted order
+        if (this.views.indexOf(newView) === -1) {
+            this.views.push(newView);
+        }
+
+        if (this.comparator) {
+            this.views.sort(this.comparator);
+        }
+
+        // Add to DOM
+        this._insert(newView);
+
+        return newView;
+    };
+
+
+    /**
+     * Remove a View from this ListView
+     * @param content {Content|ContentView} The ContentView or Content to be removed
+     * @returns {boolean} true if Content was removed, else false
+     */
+    ListView.prototype.remove = function (view) {
+        var viewIndex = this.views.indexOf(view);
+
+        // Return false if the provided view is not managed by this ListView
+        if (viewIndex === -1) {
+            return false;
+        }
+
+        // Remove from DOM
+        this._extract(view);
+
+        // Remove from this.views[]
+        this.views.splice(viewIndex, 1);
+
+        return true;
+    };
+
+
+    /**
+     * @private
+     * Remove a view from the DOM. Called by .remove();
+     * @param view {View} The View to remove from the DOM
+     */
+    ListView.prototype._extract = function (view) {
+        view.$el.remove();
+    };
+
+
+    /**
+     * Insert a contentView into the ListView's .el
+     * Get insertion index based on this.comparator
+     * @private
+     */
+    ListView.prototype._insert = function (view) {
+        var newContentViewIndex,
+            $previousEl;
+
+        newContentViewIndex = this.views.indexOf(view);
+
+        if (newContentViewIndex === 0) {
+            // Beginning!
+            view.$el.prependTo(this.$listEl);
+        } else {
+            // Find it's previous view and insert new view after
+            $previousEl = this.views[newContentViewIndex - 1].$el;
+            view.$el.insertAfter($previousEl);
+        }
+    };
+
+
+    /**
+     * Show More content.
+     * ContentListView keeps track of an internal ._newContentGoal
+     *     which is how many more items he wishes he had.
+     *     This increases that goal and marks the Writable
+     *     side of ContentListView as ready for more writes.
+     * @param numToShow {number} The number of items to try to add
+     */
+    ListView.prototype.showMore = function (numToShow) {
+        if (typeof numToShow === 'undefined') {
+            numToShow = this._moreAmount;
+        }
+        this.more.setGoal(numToShow);
     };
 
 
@@ -151,153 +237,18 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
     /**
      * @private
-     * Comparator function to determine ordering of ContentViews.
-     * ContentView elements indexes in this.el will be ordered by this
-     * By default, order on contentView.content.createdAt or contentView.createdAt
-     *     in descending order (new first)
-     * @param a {ContentView}
-     * @param b {ContentView}
-     * @returns {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
+     * Register listeners to the .more stream so that the items
+     * it reads out go somewhere useful.
+     * By default, this .add()s the items
      */
-    ListView.prototype.comparator = function (a, b) {
-        var aDate = a.content.createdAt || a.createdAt,
-            bDate = b.content.createdAt || b.createdAt;
-        return bDate - aDate;
-    };
-
-
-    /**
-     * Add a piece of Content to the ListView
-     *     .createContentView(content)
-     *     add newContentView to this.contentViews[]
-     *     render the newContentView
-     *     insert the newContentView into this.el according to this.comparator
-     * @param content {Content} A Content model to add to the ListView
-     * @returns the newly created ContentView
-     */
-    ListView.prototype.add = function(content) {
-        var contentView = this.getContentView(content);
-
-        log("add", content);
-
-        if (contentView) {
-            return contentView;
-        }
-
-        contentView = this.createContentView(content);
-        if ( ! contentView) {
-            return;
-        }
-
-        contentView.render();
-
-        // Push and sort. #TODO Insert in sorted order
-        if (this.contentViews.indexOf(contentView) === -1) {
-            this.contentViews.push(contentView);
-        }
-
-        this.contentViews.sort(this.comparator);
-
-        // Add to DOM
-        this._insert(contentView);
-
-        return contentView;
-    };
-
-
-    /**
-     * Show More content.
-     * ListView keeps track of an internal ._newContentGoal
-     *     which is how many more items he wishes he had.
-     *     This increases that goal and marks the Writable
-     *     side of ListView as ready for more writes.
-     * @param numToShow {number} The number of items to try to add
-     */
-    ListView.prototype.showMore = function (numToShow) {
-        if (typeof numToShow === 'undefined') {
-            numToShow = this._moreAmount;
-        }
-        this.more.setGoal(numToShow);
-    };
-
-
-    /**
-     * Remove a piece of Content from this ListView
-     * @param content {Content|ContentView} The ContentView or Content to be removed
-     * @returns {boolean} true if Content was removed, else false
-     */
-    ListView.prototype.remove = function (content) {
-        var contentView = content.el ? content : this.getContentView(content); //duck type for ContentView
-        if (! contentView) {
-            return false;
-        }
-
-        // Remove from DOM
-        this._extract(contentView);
-
-        // Remove from this.contentViews[]
-        this.contentViews.splice(this.contentViews.indexOf(contentView), 1);
-        return true;
-    };
-
-
-    /**
-     * @private
-     * Remove a contentView from the DOM. Called by .remove();
-     * @param contentView {ContentView} The ContentView to remove from the DOM
-     */
-    ListView.prototype._extract = function (contentView) {
-        contentView.$el.remove();
-    };
-
-
-    /**
-     * Insert a contentView into the ListView's .el
-     * Get insertion index based on this.comparator
-     * @private
-     */
-    ListView.prototype._insert = function (contentView) {
-        var newContentViewIndex,
-            $previousEl;
-
-        newContentViewIndex = this.contentViews.indexOf(contentView);
-
-        if (newContentViewIndex === 0) {
-            // Beginning!
-            contentView.$el.prependTo(this.$listEl);
-        } else {
-            // Find it's previous contentView and insert new contentView after
-            $previousEl = this.contentViews[newContentViewIndex - 1].$el;
-            contentView.$el.insertAfter($previousEl);
-        }
-    };
-
-
-    /**
-     * Given a new Content instance, return an existing contentView that
-     * should be used to update the content (based on identity or content.id).
-     * @param newContent {Content} The piece of content to find the view for.
-     * @returns {ContentView | null} The contentView for the content, or null.
-     */
-    ListView.prototype.getContentView = function (newContent) {
-        for (var i=0; i < this.contentViews.length; i++) {
-            var contentView = this.contentViews[i];
-            if ((newContent === contentView.content) || (newContent.id && contentView.content.id === newContent.id)) {
-                return contentView;
+    ListView.prototype._pipeMore = function () {
+        var self = this;
+        this.more.on('readable', function () {
+            var content;
+            while (content = self.more.read()) {
+                self.add(content);
             }
-        }
-        return null;
-    };
-
-
-    /**
-     * Creates a content view from the given piece of content, by looking in this view's
-     * content registry for the supplied content type.
-     * @param content {Content} A content object to create the corresponding view for.
-     * @returns {ContentView} A new content view object for the given piece of content.
-     */
-    ListView.prototype.createContentView = function (content) {
-        return this.contentViewFactory.createContentView(content);
+        });
     };
 
 
