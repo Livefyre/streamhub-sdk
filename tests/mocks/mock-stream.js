@@ -1,49 +1,35 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/stream',
+    'stream/readable',
     'streamhub-sdk/content',
-    'streamhub-sdk/content/types/livefyre-content'
-], function ($, Stream, Content, LivefyreContent) {
+    'streamhub-sdk/content/types/livefyre-content',
+    'inherits'
+], function ($, Readable, Content, LivefyreContent, inherits) {
 
     /**
      * A MockStream of Content
      */
     var MockStream = function MockStream (opts) {
-        Stream.call(this);
+        Readable.call(this);
         opts = opts || {};
+        this.mocks = opts.mocks || this.mocks;
         this.interval = opts.interval || 1000;
         this.timeout = null;
         this.writeLatency = opts.writeLatency || 0;
     };
-    $.extend(MockStream.prototype, Stream.prototype);
+    inherits(MockStream, Readable);
 
     MockStream.prototype.mocks = [
         new Content('Bar'),
         new Content('Foo')];
 
     MockStream.prototype._read = function() {
-        this._push(this.mocks[Math.floor(Math.random() * this.mocks.length)]);
-        this._endRead();
         var self = this;
-        this.timeout = setTimeout(function () { self._read(); }, self.interval);
-    };
-
-    MockStream.prototype._write = function (content, onWritten) {
-        var self = this;
-        function write () {
-            content.set({
-                id: Math.floor(999999999 * Math.random())
-            });
-            self._push(content);
-            if (onWritten) {
-                onWritten.call(self, null, content);
-            }
-        }
-        if (this.writeLatency) {
-            setTimeout(write, this.writeLatency);
-        } else {
-            write();
-        }
+        var content = Object.create(this.mocks[Math.floor(Math.random() * this.mocks.length)]);
+        content.id = (new Date().getTime());
+        setTimeout(function () {
+            self.push(content);
+        }, self.interval);
     };
 
     /**

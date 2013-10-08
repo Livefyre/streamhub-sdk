@@ -8,7 +8,7 @@ define([
 function (jasmine, jasminejquery, $, ListView, Content, ContentView) {
     'use strict';
 
-    describe('A ListView', function () {
+    describe('A ContentListView', function () {
         var fixtureId = 'sandbox',
             listView,
             el,

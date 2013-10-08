@@ -28,7 +28,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         opts = opts || {};
 
         this.modal = opts.modal === undefined ? new AttachmentGalleryModal() : opts.modal;
-        this.contentViewFactory = new ContentViewFactory();
+        this.contentViewFactory = opts.contentViewFactory || new ContentViewFactory();
 
         ListView.call(this, opts);
     };
