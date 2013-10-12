@@ -6,6 +6,7 @@
   },
   baseUrl: '..',
   name: "streamhub-sdk",
+  insertRequire: ['streamhub-sdk'],
   include: [
     'almond',
     'streamhub-sdk/collection',
