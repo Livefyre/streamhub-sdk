@@ -42,6 +42,14 @@ define([
 		// Don't actually put anything in DOM. Subviews will do that.
 	};
 
+    GalleryOnFocusView.prototype.tileableCount = function () {
+        if (this._initialView.tileableCount) {
+            return this._initialView.tileableCount();
+        }
+
+        return 0;
+    };
+
 
 	GalleryOnFocusView.prototype.focus = function (attachment) {
 		if (this._isGallery || (attachment.type !== 'photo' && attachment.type !== 'video')) {
