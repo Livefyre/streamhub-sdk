@@ -23,8 +23,8 @@ define([
         this.createdAt = new Date();
 
         this.template = opts.template || this.template;
-        this.setElement(opts.el || document.createElement(this.elTag));
         this.attachmentsView = opts.attachmentsView;
+        this.setElement(opts.el || document.createElement(this.elTag));
 
         var self = this;
         if (this.content) {
@@ -36,6 +36,8 @@ define([
     
     ContentView.prototype.elTag = 'article';
     ContentView.prototype.elClass = 'content';
+    ContentView.prototype.contentWithImageClass = 'content-with-image';
+    ContentView.prototype.imageLoadingClass = 'hub-content-image-loading';
     ContentView.prototype.tooltipElSelector = '.hub-tooltip-link';
     ContentView.prototype.attachmentsElSelector = '.content-attachments';
     ContentView.prototype.tiledAttachmentsElSelector = '.content-attachments-tiled';
@@ -53,10 +55,16 @@ define([
         this.el = el;
         this.$el = $(el);
         this.$el.addClass(this.elClass);
+
+        if (this.attachmentsView.tileableCount && this.attachmentsView.tileableCount()) {
+            this.$el.addClass(this.imageLoadingClass);
+        }
+
         if (this.content && this.content.id) {
             this.$el.attr('data-content-id', this.content.id);
         }
         this.attachHandlers();
+
         return this;
     };
     
@@ -87,13 +95,16 @@ define([
         var self = this;
 
         this.$el.on('imageLoaded.hub', function(e) {
-            self.$el.addClass('content-with-image');
+            self.$el.addClass(self.contentWithImageClass);
+            self.$el.removeClass(self.imageLoadingClass);
         });
+
         this.$el.on('imageError.hub', function(e, oembed) {
             self.content.removeAttachment(oembed);
 
             if (self.attachmentsView.tileableCount && !self.attachmentsView.tileableCount()) {
-                self.remove();
+                self.$el.removeClass(self.contentWithImageClass);
+                self.$el.removeClass(self.imageLoadingClass);
             }
         });
 
@@ -109,6 +120,7 @@ define([
 
             $(targetEl).trigger('click');
         });
+
         this.$el.on('mouseenter', this.tooltipElSelector, function (e) {
             var title = $(this).attr('title');
             var position = $(this).position();
