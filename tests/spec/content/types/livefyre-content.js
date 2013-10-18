@@ -10,7 +10,26 @@ function ($, jasmine, LivefyreContent) {
         var mockData = {};
         mockData.livefyreBootstrapContent = {"source": 1, "content": {"replaces": "", "parentId": "", "bodyHtml": "oh hi there", "id": "tweet-308584114829795328@twitter.com", "authorId": "890999516@twitter.com", "updatedAt": 1362407161, "annotations": {}, "createdAt": 1362407161}, "vis": 1, "type": 0, "event": 1362407161286515, "childContent": [], author: {displayName: "sara",tags: [ ],profileUrl: "https://twitter.com/#!/135sara",avatar: "http://a0.twimg.com/profile_images/1349672055/Baqueira_29-01-2010_13-54-52_normal.jpg",type: 3,id: "123568642@twitter.com"}};
         mockData.livefyreStreamContent = {"vis": 1, "content": {"replaces": "", "feedEntry": {"transformer": "lfcore.v2.procurement.feed.transformer.instagram", "feedType": 2, "description": "#gayrights #lgbt #equality #marriageequality <img src=\"http://distilleryimage2.instagram.com/18ea2500970c11e294f522000a9f30b8_7.jpg\" />", "pubDate": 1364409052, "channelId": "http://instagram.com/tags/marriageequality/feed/recent.rss", "link": "http://distilleryimage2.instagram.com/18ea2500970c11e294f522000a9f30b8_7.jpg", "id": "bffcb85a-2976-4396-bb60-3cf5b1e2c3a8", "createdAt": 1364409052}, "bodyHtml": "#gayrights #lgbt #equality #marriageequality ", "annotations": {}, "authorId": "7759cd005d95d8cc5bd93718b2ac0064@instagram.com", "parentId": "", "updatedAt": 1364409052, "id": "bffcb85a-2976-4396-bb60-3cf5b1e2c3a8", "createdAt": 1364409052}, "source": 13, "lastVis": 0, "type": 0, "event": 1364409052662964, author: {displayName: "sara",tags: [ ],profileUrl: "https://twitter.com/#!/135sara",avatar: "http://a0.twimg.com/profile_images/1349672055/Baqueira_29-01-2010_13-54-52_normal.jpg",type: 3,id: "123568642@twitter.com"}};
-
+        mockData.featuredBootstrapContent = {
+            "content": {
+                "parentId": "",
+                "bodyHtml": "Enhance your <a href=\"https:\/\/twitter.com\/#!\/search\/realtime\/%23CEM\" class=\"fyre-hashtag\" hashtag=\"CEM\" rel=\"tag\" target=\"_blank\">#CEM<\/a> knowledge at our <a href=\"https:\/\/twitter.com\/#!\/search\/realtime\/%23CX\" class=\"fyre-hashtag\" hashtag=\"CX\" rel=\"tag\" target=\"_blank\">#CX<\/a> cert. course, Nov 5-7 in Chicago. Hotel discounts expire 10\/13, register soon! <a href=\"http:\/\/t.co\/pGZokuptUG\" target=\"_blank\" rel=\"nofollow\">bit.ly\/15fuzkf<\/a>",
+                "annotations": {
+                    "featuredmessage": {
+                        "rel_collectionId": "10739960",
+                        "value": 1380848559
+                    }
+                },
+                "authorId": "18463884@twitter.com",
+                "updatedAt": 1380831787,
+                "id": "tweet-385862600707170304@twitter.com",
+                "createdAt": 1380831787
+            },
+            "vis": 1,
+            "source": 1,
+            "type": 0,
+            "event": 1.3808485590543e+15
+        };
         var mock, content;
 
         describe("when constructed from bootstrap", function () {
@@ -62,6 +81,34 @@ function ($, jasmine, LivefyreContent) {
 
             expect(spy.callCount).toBe(1);
             expect(content.replies.length).toBe(1);
+        });
+
+        describe('.isFeatured()', function () {
+            it('is a method on LivefyreContent', function () {
+                expect(content.isFeatured).toEqual(jasmine.any(Function));
+            });
+            it('returns true if LivefyreContent constructed from featured bootstrap state', function () {
+                var featuredContent = new LivefyreContent(mockData.featuredBootstrapContent);
+                expect(featuredContent.isFeatured()).toBe(true);
+            });
+            it('returns false if LivefyreContent constructed from non-featured bootstrap state', function () {
+                var nonFeaturedContent = new LivefyreContent(mockData.livefyreBootstrapContent);
+                expect(nonFeaturedContent.isFeatured()).toBe(false);
+            });
+        });
+
+        describe('.getFeaturedValue', function () {
+            it('is a method on LivefyreContent', function () {
+                expect(content.getFeaturedValue).toEqual(jasmine.any(Function));
+            });
+            it('returns Number if LivefyreContent constructed from featured bootstrap state', function () {
+                var featuredContent = new LivefyreContent(mockData.featuredBootstrapContent);
+                expect(featuredContent.getFeaturedValue()).toEqual(jasmine.any(Number));
+            });
+            it('returns undefined if LivefyreContent constructed from non-featured bootstrap state', function () {
+                var nonFeaturedContent = new LivefyreContent(mockData.livefyreBootstrapContent);
+                expect(nonFeaturedContent.getFeaturedValue()).toBe(undefined);
+            });
         });
 
     });

@@ -1,4 +1,7 @@
-define(['streamhub-sdk/util', 'streamhub-sdk/jquery', 'base64'], function(util, $) {
+define([
+    'streamhub-sdk/jquery',
+    'base64'],
+    function($) {
     'use strict';
 
     /**
@@ -13,9 +16,9 @@ define(['streamhub-sdk/util', 'streamhub-sdk/jquery', 'base64'], function(util, 
      * @param opts.network {string} The name of the network in the livefyre platform
      * @param opts.siteId {string} The livefyre siteId for the conversation
      * @param opts.articleId {string} The livefyre articleId for the conversation
-     * @param opts.page {?string} Livefyre page name or number to fetch from bootstrap
+     * @param [opts.page] {string} Livefyre page name or number to fetch from bootstrap
      *     (default "init")
-     * @param opts.environment {?string} Optional livefyre environment to use dev/prod environment
+     * @param [opts.environment] {string} Optional livefyre environment to use dev/prod environment
      * @param callback {function} A callback that is called upon success/failure of the
      *     bootstrap request. Callback signature is "function(error, data)".
      */
@@ -38,7 +41,6 @@ define(['streamhub-sdk/util', 'streamhub-sdk/jquery', 'base64'], function(util, 
             "/",
             typeof opts.page !== 'undefined' ? opts.page+'.json' : "init"
         ].join("");
-
 
         $.ajax({
             type: "GET",

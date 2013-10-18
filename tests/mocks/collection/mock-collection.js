@@ -10,7 +10,9 @@ Collection) {
 
 	var MockCollection = function (opts) {
 		opts = opts || {};
-        opts.bootstrapClient = new MockLivefyreBootstrapClient();
+        opts.bootstrapClient = new MockLivefyreBootstrapClient({
+            featuredInit: opts.withFeaturedInit
+        });
 		Collection.call(this, opts);
 	};
 

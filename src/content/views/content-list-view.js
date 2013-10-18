@@ -67,11 +67,11 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
 
 
     /**
-     * @private
      * Comparator function to determine ordering of ContentViews.
      * ContentView elements indexes in this.el will be ordered by this
      * By default, order on contentView.content.createdAt or contentView.createdAt
      *     in descending order (new first)
+     * @private
      * @param a {ContentView}
      * @param b {ContentView}
      * @returns {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a

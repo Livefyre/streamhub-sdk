@@ -9,90 +9,88 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
     "use strict";
 
 
-    var log = debug('streamhub-sdk/streams/collection-archive');
+    var log = debug('streamhub-sdk/collection/streams/featured-archive');
 
 
     /**
-     * A Readable Stream that emits Content for a Livefyre Collection as
-     *     sourced from StreamHub's Bootstrap APIs. This Stream emits Content
-     *     in descending order by bootstrap page
+     * A Readable Stream that emits Featured Content for a Livefyre Collection.
+     *     This Stream emits Content in descending order by featured value.
      * @param opts {object} Configuration options
-     * @param opts.network {string} The StreamHub Network of the Collection
-     * @param opts.siteId {string} The StreamHub Site ID of the Collection
-     * @param opts.articleId {string} The StreamHub Aritcle ID of the Collection
-     * @param [opts.environment] {string} If not production, the hostname of the
-     *     StreamHub environment the Collection resides on
+     * @param opts.collection {string} The Collection to get Featured Content for
      * @param [opts.bootstrapClient] {LivefyreBootstrapClient} A Client object
      *     that can request StreamHub's Bootstrap web service
      */
-    var CollectionArchive = function (opts) {
+    var FeaturedArchive = function (opts) {
         opts = opts || {};
 
         this._collection = opts.collection;
-
+        this._fetchedHead = false;
         this._bootstrapClient = opts.bootstrapClient || new BootstrapClient();
         this._contentIdsInHeadDocument = [];
 
         Readable.call(this, opts);
     };
 
-    inherits(CollectionArchive, Readable);
+    inherits(FeaturedArchive, Readable);
 
 
     /**
+     * @private
      * Called by Readable base class. Do not call directly
      * Get content from bootstrap and .push() onto the read buffer
-     * @private
      */
-    CollectionArchive.prototype._read = function () {
+    FeaturedArchive.prototype._read = function () {
         var self = this;
 
         log('_read', 'Buffer length is ' + this._readableState.buffer.length);
 
         // The first time this is called, we first need to get Bootstrap init
-        // to know what the latest page of data
-        if (typeof this._nextPage === 'undefined') {
+        // to get the featured head and to know if there are more past that
+        if ( ! this._fetchedHead) {
             return this._collection.initFromBootstrap(function (err, initData) {
-                var headDocument = initData.headDocument,
-                    collectionSettings = initData.collectionSettings,
-                    archiveInfo = collectionSettings && collectionSettings.archiveInfo,
-                    numPages = archiveInfo && archiveInfo.nPages;
+                var featuredHead = initData.featured;
 
-                var contents = self._contentsFromBootstrapDoc(headDocument, {
+                if ( ! featuredHead) {
+                    // There are no featured items. end
+                    return self.push(null);
+                }
+
+                // If featured.isComplete is false, then there is more featured
+                // content at the featured-all bootstrap page
+                self._nextPage = featuredHead.isComplete ? null : 'featured-all';
+
+                var contents = self._contentsFromBootstrapDoc(featuredHead, {
                     isHead: true
                 });
 
-                // Bootstrap pages are zero-based. Store the highest 
-                self._nextPage = numPages - 1;
+                self._fetchedHead = true;
 
                 self.push.apply(self, contents);
             });
         }
-        // After that, request the latest page
-        // unless there are no more pages, in which case we're done
+        // After that, request featured-all
         if (this._nextPage === null) {
             return this.push(null);
         }
-        if (typeof this._nextPage === 'number') {
+        if (this._nextPage) {
             this._readNextPage();
         }
     };
 
 
     /**
+     * @private
      * Read the next Page of data from the Collection
      * And make sure not to emit any state.events that were in the headDocument
      * ._push will eventually be called.
-     * @private
      */
-    CollectionArchive.prototype._readNextPage = function () {
+    FeaturedArchive.prototype._readNextPage = function () {
         var self = this,
             bootstrapClientOpts = this._getBootstrapClientOptions();
-        this._nextPage = this._nextPage - 1;
-        if (this._nextPage < 0) {
-            // No more pages
-            this._nextPage = null;
-        }
+
+        // There is only one extra page of featured content: featured-all
+        this._nextPage = null;
+
         this._bootstrapClient.getContent(bootstrapClientOpts, function (err, data) {
             if (err || ! data) {
                 self.emit('error', new Error('Error requesting Bootstrap page '+bootstrapClientOpts.page));
@@ -111,11 +109,11 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
 
 
     /**
+     * @private
      * Get options to pass to this._bootstrapClient methods to specify
      * which Collection we care about
-     * @private
      */
-    CollectionArchive.prototype._getBootstrapClientOptions = function () {
+    FeaturedArchive.prototype._getBootstrapClientOptions = function () {
         return {
             environment: this._collection.environment,
             network: this._collection.network,
@@ -127,13 +125,13 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
 
 
     /**
-     * Convert a bootstrapDocument to an array of Content models
      * @private
+     * Convert a bootstrapDocument to an array of Content models
      * @param bootstrapDocument {object} an object with content and authors keys
      *     e.g. http://bootstrap.livefyre.com/bs3/livefyre.com/4/NTg0/0.json
      * @return {Content[]} An array of Content models
      */
-    CollectionArchive.prototype._contentsFromBootstrapDoc = function (bootstrapDoc, opts) {
+    FeaturedArchive.prototype._contentsFromBootstrapDoc = function (bootstrapDoc, opts) {
         opts = opts || {};
         bootstrapDoc = bootstrapDoc || {};
         var self = this,
@@ -164,5 +162,5 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
     };
 
 
-    return CollectionArchive;
+    return FeaturedArchive;
 });

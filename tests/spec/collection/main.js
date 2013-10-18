@@ -1,16 +1,19 @@
 define([
     'jasmine',
     'streamhub-sdk/collection',
+    'streamhub-sdk-tests/mocks/collection/mock-collection',
     'streamhub-sdk/collection/streams/archive',
     'streamhub-sdk/collection/streams/updater',
     'streamhub-sdk/collection/streams/writer',
+    'streamhub-sdk/collection/featured-contents',
     'streamhub-sdk/content/views/content-list-view',
     'streamhub-sdk/content',
     'streamhub-sdk/auth',
     'stream/writable',
     'stream/readable'
-], function (jasmine, Collection, CollectionArchive, CollectionUpdater,
-CollectionWriter, ContentListView, Content, Auth, Writable, Readable) {
+], function (jasmine, Collection, MockCollection, CollectionArchive,
+CollectionUpdater, CollectionWriter, FeaturedContents, ContentListView, Content,
+Auth, Writable, Readable) {
     'use strict';
 
     describe('streamhub-sdk/collection', function () {
@@ -85,6 +88,110 @@ CollectionWriter, ContentListView, Content, Auth, Writable, Readable) {
                 it('returns a writable CollectionWriter Stream', function () {
                     var writer = collection.createWriter();
                     expect(writer instanceof CollectionWriter).toBe(true);
+                });
+            });
+            
+            describe('.initFromBootstrap', function () {
+                var opts,
+                    collection,
+                    mock404Response,
+                    mock400Response,
+                    mock500Response,
+                    mock200Response,
+                    mock202Response,
+                    fnSuccessfulInit,
+                    fnFailedInit,
+                    fnSuccessfulCreate,
+                    fnFailedCreate,
+                    fnServerError,
+                    fnCallback;
+                beforeEach(function () {
+                    opts = {
+                        network: 'test.fyre.co',
+                        siteId: 'testSiteId',
+                        articleId: 'testArticleId',
+                        environment: 'test.livefyre.com',
+                        collectionMeta: {
+                            title: 'SDK Test',
+                            url: 'http://test.fyre.co',
+                            tags: ['test', 'SDK']
+                        },
+                        signed: false
+                    };
+                    //Faked responses
+                    mock404Response = "Not Found";//{"msg": "", "status": "error", "error_type": "ResourceDoesNotExist", "trace": "Traceback (most recent call last):\n  File... raise ResourceDoesNotExist()\nResourceNotFoundError\n", "code": 404};
+                    mock400Response = "Bad Request";//{"msg": "Cannot create a collection without an articleId: {\"url\": \"http://www.fake.com\", \"tags\": \"test,wall\", \"title\": \"Media Wall Example\"}.", "status": "error", "error_type": "BadRequestError", "trace": "Traceback (most recent call last):\n  File... raise BadRequestError(\"Cannot create a collection without an articleId: %s.\" % json.dumps(collection_meta))\nBadDataError: Cannot create a collection without an articleId: {\"url\": \"http://www.fake.com\", \"tags\": \"test,wall\", \"title\": \"Media Wall Example\"}.\n", "code": 400}
+                    mock500Response = "Internal Server Error";//{"msg": "", "status": "error", "code": 500};
+                    mock200Response = "OK";//{};//Sometimes sent by our servers in leu of an error.
+                    mock202Response = {"msg": "This request is being processed.", "status": "ok", "code": 202};
+                    
+                    //Faked response callbacks
+                    fnSuccessfulInit = function (opts, errback) { errback(null, mockInitResponse); };
+                    fnFailedInit= function (opts, errback) { errback(mock404Response); };
+                    fnSuccessfulCreate= function (opts, errback) { errback(null, mock202Response); };
+                    fnFailedCreate= function (opts, errback) { errback(mock400Response); };
+                    fnServerError= function (opts, errback) { errback(mock500Response); };
+                    
+                    //Use spy to check callbacks
+                    fnCallback = jasmine.createSpy();
+                    
+                    collection = new Collection(opts);
+                });
+                
+                it('reads from existing collections', function () {
+                    spyOn(collection._bootstrapClient, "getContent").andCallFake(fnSuccessfulInit);
+                    
+                    collection.initFromBootstrap(fnCallback);
+                    
+                    expect(collection._bootstrapClient.getContent).toHaveBeenCalled();
+                    expect(fnCallback).toHaveBeenCalledWith(null, mockInitResponse);
+                });
+                
+                it('creates and reads from a new collection when a current collection isn\'t found', function () {
+                    var spyGetContent = spyOn(collection._bootstrapClient, "getContent").andCallFake(fnFailedInit);
+                    spyOn(collection._createClient, "createCollection").andCallFake(function (opts, errback) {
+                        spyGetContent.andCallFake(fnSuccessfulInit);
+                        fnSuccessfulCreate(opts, errback);
+                    });
+                    
+                    collection.initFromBootstrap(fnCallback);
+                    
+                    expect(collection._bootstrapClient.getContent.calls.length).toEqual(2);
+                    expect(collection._createClient.createCollection).toHaveBeenCalled();
+                    expect(fnCallback).toHaveBeenCalledWith(null, mockInitResponse);
+                });
+                
+                it('throws error when services are failing, without making more calls than necessary', function () {
+                    spyOn(collection._bootstrapClient, "getContent").andCallFake(fnServerError);
+                    spyOn(collection._createClient, "createCollection").andCallFake(function (opts, errback) {
+                        return;
+                    });
+                    
+                    expect(function () {
+                        collection.initFromBootstrap(fnCallback);
+                    }).toThrow('Fatal collection connection error');
+                    expect(collection._bootstrapClient.getContent.calls.length).toEqual(1);
+                    expect(collection._createClient.createCollection).not.toHaveBeenCalled();
+                });
+                
+                it('fails when there isn\'t an existing collection and a new collection can\'t be made', function () {
+                    spyOn(collection._bootstrapClient, "getContent").andCallFake(fnFailedInit);
+                    spyOn(collection._createClient, "createCollection").andCallFake(fnFailedCreate);
+                    
+                    collection.initFromBootstrap(fnCallback);
+                    
+                    expect(collection._bootstrapClient.getContent.calls.length).toEqual(1);
+                    expect(collection._createClient.createCollection.calls.length).toEqual(1);
+                });
+            });
+
+            describe('.createFeaturedContents', function () {
+                it('returns a FeaturedContents object', function () {
+                    var collection = new MockCollection({
+                        withFeaturedInit: true
+                    });
+                    var featuredContents = collection.createFeaturedContents();
+                    expect(featuredContents instanceof FeaturedContents).toBe(true);
                 });
             });
 

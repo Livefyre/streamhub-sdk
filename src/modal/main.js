@@ -136,10 +136,10 @@ define([
 
 
     /**
-     * @private
      * Set the element for the view to render in.
      * ModalView construction takes care of creating its own element in
      *     ModalView.el. You probably don't want to call this manually
+     * @private
      * @param element {HTMLElement} The element to render this View in
      * @returns this
      */
@@ -162,8 +162,8 @@ define([
 
 
     /**
-     * @private
      * Sets the content object and optional attachment to be displayed in the content view 
+     * @private
      * @param content {Content} The content to be displayed in the content view by the modal
      * @param opts {Object} The content to be displayed in the content view by the modal
      * @param opts.attachment {Oembed} The attachment to be focused in the content view
@@ -175,8 +175,8 @@ define([
 
 
     /**
-     * @private
      * Attach .el to the DOM
+     * @private
      */
     ModalView.prototype._attach = function () {
         this.$el.appendTo(ModalView.$el);
@@ -185,11 +185,11 @@ define([
 
 
     /**
-     * @private
      * Detach .el from the DOM
      * This may be useful when the modal is hidden, so that
      *     the browser doesn't have to lay it out, and it doesn't
      *     somehow intercept DOM events
+     * @private
      */
     ModalView.prototype._detach = function () {
         this.$el.detach();

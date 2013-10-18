@@ -2,8 +2,9 @@ define([
     'streamhub-sdk/jquery',
     'jasmine',
     'streamhub-sdk/collection/clients/bootstrap-client',
+    'streamhub-sdk-tests/mocks/collection/clients/mock-bootstrap-client',
     'jasmine-jquery'],
-function ($, jasmine, LivefyreBootstrapClient) {
+function ($, jasmine, LivefyreBootstrapClient, MockBootstrapClient) {
     'use strict';
 
     describe('A LivefyreBootstrapClient', function () {
@@ -82,5 +83,31 @@ function ($, jasmine, LivefyreBootstrapClient) {
                 expect(requestedUrl).toBe('http://bootstrap.fyre/bs3/livefyre.com/286472/NTA5Mzg4YzAtYTI3Mi00MTcwLTk4YjktNzE0OTczYjM3NTM4/init');
             });
         });
-    }); 
+    });
+
+    describe('streamhub-sdk-tests/mocks/collection/clients/mock-bootstrap-client', function () {
+        it('returns featured content in init when constructed with opts.featuredInit', function () {
+            var mockBootstrapClient = new MockBootstrapClient({
+                featuredInit: true
+            });
+            var spy = jasmine.createSpy('on bootstrap init response');
+            mockBootstrapClient.getContent({}, spy);
+            expect(spy).toHaveBeenCalledWith(null, jasmine.any(Object));
+            var featured = spy.mostRecentCall.args[1].featured;
+            expect(featured.authors).toEqual(jasmine.any(Object));
+            expect(featured.content).toEqual(jasmine.any(Array));
+            expect(typeof featured.isComplete === 'boolean').toBe(true);
+            expect(featured.size).toEqual(jasmine.any(Number));
+        });
+
+        it('returns a suitable response when page is featured-all', function () {
+            var mockBootstrapClient = new MockBootstrapClient();
+            var spy = jasmine.createSpy('on featured-all response');
+            mockBootstrapClient.getContent({
+                page: 'featured-all'
+            }, spy);
+            expect(spy).toHaveBeenCalledWith(null, jasmine.any(Object));
+        });
+    });
+
 });

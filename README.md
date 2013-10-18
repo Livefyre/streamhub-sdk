@@ -118,6 +118,21 @@ Create a new writer manually
 	var writer = collection.createWriter();
 	writer.write(new Content('Foo!'));
 
+### Featured Content
+
+StreamHub Collections support designating specific Content as 'featured', and
+this Featured Content can be retrieved specifically as a
+FeaturedContents object (`streamhub-sdk/collection/featured-contents`).
+
+    var featuredContents = collection.createFeaturedContents();
+
+Just like a Collection, FeaturedContents objects have a `.createArchive()` method
+that returns a `stream/readable` that you can pipe into a ListView to display the Featured Contents.
+
+    var featuredArchive = featuredContents.createArchive();
+    var listView = new ListView();
+    featuredArchive.pipe(listView);
+    listView.$el.appendTo('body');
 
 ## ListViews
 

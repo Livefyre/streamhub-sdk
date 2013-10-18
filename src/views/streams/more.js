@@ -26,10 +26,10 @@ function (inherits, Transform, debug) {
 
 
     /**
-     * @private
      * Required by Transform subclasses.
      * This ensures that once the goal is reached, no more content
      * passes through.
+     * @private
      */
     More.prototype._transform = function (chunk, requestMore) {
         var self = this;

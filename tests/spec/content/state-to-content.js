@@ -157,6 +157,32 @@ function (jasmine, StateToContent, Transform, LivefyreInstagramContent) {
                 expect(content).toBe(null);
             });
 
+            it("transforms featured content states into Content that isFeatured()", function () {
+                var featuredState = {
+                    "content": {
+                        "parentId": "",
+                        "bodyHtml": "Medallia LaunchpadGuest Feedback for Independent Hotels - Survey, Social, and Text Analytics <a href=\"http:\/\/t.co\/LCtLpI6QdL\" target=\"_blank\" rel=\"nofollow\">lnkd.in\/z-tAqd<\/a> <a href=\"https:\/\/twitter.com\/#!\/search\/realtime\/%23hospitality\" class=\"fyre-hashtag\" hashtag=\"hospitality\" rel=\"tag\" target=\"_blank\">#hospitality<\/a> <a href=\"https:\/\/twitter.com\/#!\/search\/realtime\/%23guestexp\" class=\"fyre-hashtag\" hashtag=\"guestexp\" rel=\"tag\" target=\"_blank\">#guestexp<\/a>",
+                        "annotations": {
+                            "featuredmessage": {
+                              "rel_collectionId": "10739960",
+                              "value": 1380848564
+                            }
+                        },
+                        "authorId": "23673018@twitter.com",
+                        "updatedAt": 1380730117,
+                        "id": "tweet-385436165546848256@twitter.com",
+                        "createdAt": 1380730117
+                    },
+                    "vis": 1,
+                    "type": 0,
+                    "event": 1.3808485649159e+15,
+                    "source": 1
+                };
+                stateToContent.write(featuredState);
+                var content = stateToContent.read();
+                expect(content.isFeatured()).toBe(true);
+            });
+
             describe('.write', function () {
                 var mockThreadState;
 

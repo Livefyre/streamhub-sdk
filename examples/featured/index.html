@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/src/css/style.css">
+    <style>
+    #listView {
+        width:500px;
+    }
+    </style>
+    <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+</head>
+    <body>
+        <div>
+        <a href="javascript:void();" onclick="window.streamManager.get('main').start()">Start</a>
+        <a href="javascript:void();" onclick="window.streamManager.get('main').stop()">Stop</a>
+        </div>
+        <div id="listView"></div>
+
+        <script src="../../lib/requirejs/require.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+        require([
+            'streamhub-sdk/content/views/content-list-view',
+            'streamhub-sdk/collection',
+            'streamhub-sdk/content'
+        ],function (ListView, Collection, Content) {
+            var opts = {
+                "network": "labs-t402.fyre.co",
+                "siteId": "303827",
+                "articleId": "custom-1380083232878",
+                "environment": "t402.livefyre.com"
+            };
+            var listView = window.view = new ListView({
+                initial: 5,
+                showMore: 2,
+                el: document.getElementById("listView")
+            });
+
+            // Show the featuredValue in the content body to verify sort order
+            var ogAdd = listView.add;
+            listView.add = function (content) {
+                content.body = String(content.getFeaturedValue()) + ' ' + content.body;
+                ogAdd.apply(this, arguments);
+            }
+
+            // Order descending by featuredValue
+            listView.comparator = function (a,b) {
+                return featuredValue(b) - featuredValue(a);
+                function featuredValue (contentView) {
+                    return contentView.content.getFeaturedValue();
+                }
+            };
+
+            var collection = window.collection =  new Collection(opts);
+
+            var featuredContents = collection.createFeaturedContents();
+
+            featuredContents.createArchive().pipe(listView.more);
+        });
+        </script>
+    </body>
+</html>

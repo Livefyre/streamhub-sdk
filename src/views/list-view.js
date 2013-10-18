@@ -85,8 +85,8 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
 
     /**
-     * @private
      * Called automatically by the Writable base class when .write() is called
+     * @private
      * @param view {View} View to display in the ListView
      * @param requestMore {function} A function to call when done writing, so
      *     that _write will be called again with more data
@@ -98,9 +98,9 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
 
     /**
-     * @private
      * Comparator function to determine ordering of Views.
      * Your subclass should implement this if you want ordering
+     * @private
      * @param a {view}
      * @param b {view}
      * @returns {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
@@ -162,8 +162,8 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
 
     /**
-     * @private
      * Remove a view from the DOM. Called by .remove();
+     * @private
      * @param view {View} The View to remove from the DOM
      */
     ListView.prototype._extract = function (view) {
@@ -172,9 +172,9 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
 
     /**
-     * @private
      * Insert a contentView into the ListView's .el
      * Get insertion index based on this.comparator
+     * @private
      * @param view {View} The view to add to this.el
      */
     ListView.prototype._insert = function (view) {
@@ -211,10 +211,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
 
     /**
-     * @private
      * Create a Stream that extra content can be written into.
      * This will be used if an opts.moreBuffer is not provided on construction.
      * By default, this creates a streamhub-sdk/views/streams/more
+     * @private
      */
     ListView.prototype._createMoreStream = function (opts) {
         opts = opts || {};
@@ -226,9 +226,9 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
 
     /**
-     * @private
      * Create a ShowMoreButton view to be used if one is not passed as
      *     opts.showMoreButton on construction
+     * @private
      * @return {ShowMoreButton}
      */
     ListView.prototype._createShowMoreButton = function (opts) {
@@ -237,10 +237,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
 
     /**
-     * @private
      * Register listeners to the .more stream so that the items
      * it reads out go somewhere useful.
      * By default, this .add()s the items
+     * @private
      */
     ListView.prototype._pipeMore = function () {
         var self = this;

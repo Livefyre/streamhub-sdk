@@ -1,16 +1,30 @@
 {
     "plugins": [ "plugins/markdown" ],
-
     "opts": {
         "recurse": "true",
-        "destination": "docs/api"
+        "destination": "docs/api",
+        "template": "node_modules/ink-docstrap/template"
     },
-    
-    "markdown": {
-        "parser": "gfm"
-    },
-
     "source": {
         "include": [ "src" ]
+    },
+    "templates" : {
+        "cleverLinks"     : false,
+        "monospaceLinks"  : false,
+        "default"         : {
+            "outputSourceFiles" : true
+        },
+        "systemName"      : "streamhub-sdk",
+        "footer"          : "<style>pre { color: black; } .nav-pills > li > a { background-color: white; } #toc .toc-active { background-color: black; } .navbar .dropdown-menu { width: auto; } #toc { border: 0; } </style> <script>(function () { document.addEventListener('DOMContentLoaded', function(event) {    var $pageTitle = $('.page-title');    if ($pageTitle.html() === 'Index') {        $pageTitle.hide();    }}); }());</script><script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');  ga('create', 'UA-38120262-13', 'livefyre.github.io'); ga('send', 'pageview');</script>",
+        "copyright"       : "© 2013, streamhub-sdk contributors.",
+        "navType"         : "vertical",
+        "theme"           : "cosmo",
+        "linenums"        : true,
+        "collapseSymbols" : false,
+        "inverseNav"      : false
+    },
+    "markdown"  : {
+        "parser"   : "gfm",
+        "hardwrap" : true
     }
 }

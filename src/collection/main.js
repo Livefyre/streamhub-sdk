@@ -2,14 +2,17 @@ define([
     'streamhub-sdk/collection/streams/archive',
     'streamhub-sdk/collection/streams/updater',
     'streamhub-sdk/collection/streams/writer',
+    'streamhub-sdk/collection/featured-contents',
     'stream/duplex',
     'streamhub-sdk/collection/clients/bootstrap-client',
+    'streamhub-sdk/collection/clients/create-client',
     'streamhub-sdk/collection/clients/write-client',
     'streamhub-sdk/auth',
     'inherits',
     'streamhub-sdk/debug'],
-function (CollectionArchive, CollectionUpdater, CollectionWriter, Duplex,
-LivefyreBootstrapClient, LivefyreWriteClient, Auth, inherits, debug) {
+function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedContents,
+        Duplex, LivefyreBootstrapClient, LivefyreCreateClient, LivefyreWriteClient,
+        Auth, inherits, debug) {
     'use strict';
 
 
@@ -26,8 +29,12 @@ LivefyreBootstrapClient, LivefyreWriteClient, Auth, inherits, debug) {
         this.siteId = opts.siteId;
         this.articleId = opts.articleId;
         this.environment = opts.environment;
+        this._collectionMeta = opts.collectionMeta;
+        this._signed = opts.signed;
+        this._autoCreate = opts.autoCreate || true;
 
         this._bootstrapClient = opts.bootstrapClient || new LivefyreBootstrapClient();
+        this._createClient = opts.createClient || new LivefyreCreateClient();
 
         // Internal streams
         this._writer = opts.writer || this.createWriter();
@@ -72,10 +79,19 @@ LivefyreBootstrapClient, LivefyreWriteClient, Auth, inherits, debug) {
 
     Collection.prototype.createWriter = function (opts) {
         opts = opts || {};
-        return new CollectionWriter({
-            collection: this,
-            writeClient: opts.writeClient
-        });
+        opts.collection = this;
+        return new CollectionWriter(opts);
+    };
+
+
+    /**
+     * Create a FeaturedContents object representing the featured
+     * contents in this Collection
+     */
+    Collection.prototype.createFeaturedContents = function (opts) {
+        opts = opts || {};
+        opts.collection = this;
+        return new FeaturedContents(opts);
     };
 
 
@@ -144,19 +160,30 @@ LivefyreBootstrapClient, LivefyreWriteClient, Auth, inherits, debug) {
         }
         this._isInitingFromBootstrap = true;
         this._getBootstrapInit(function (err, initData) {
+            self._isInitingFromBootstrap = false;
+            if (err === 'Not Found' && this._autoCreate) {
+                this._createCollection(function (err) {
+                    if (!err) {
+                        self.initFromBootstrap(errback);
+                    }
+                });
+                return;
+            }
+            if (!initData) {
+                throw 'Fatal collection connection error';
+            }
             var collectionSettings = initData.collectionSettings;
             self.id = collectionSettings && collectionSettings.collectionId;
-            self._isInitingFromBootstrap = false;
             self.emit('_initFromBootstrap', err, initData);
         });
     };
 
 
     /**
-     * @private
      * Request the Bootstrap init endpoint for the Collection to learn about
      * what pages of Content there are. This gets called the first time Stream
      * base calls _read().
+     * @private
      * @param errback {function} A callback to be passed (err|null, the number
      *     of pages of content in the collection, the headDocument containing
      *     the latest data)
@@ -179,6 +206,49 @@ LivefyreBootstrapClient, LivefyreWriteClient, Auth, inherits, debug) {
             }
             errback.call(self, err, data);
         });
+    };
+    
+    
+    /**
+     * @callback optionalObjectCallback
+     * @param [error] {Object} 
+     */
+    
+    
+    /**
+     * @private
+     * Request the Create endpoint to create an entirely new collection. This
+     * gets called when Bootstrap initialization fails.
+     * @param errback {optionalObjectCallback} Optional callback to be passed an object on
+     *      error or undefined on success.
+     */
+    Collection.prototype._createCollection = function (errback) {
+        if (this._isCreatingCollection) {
+            throw 'Attempting to create a collection more than once.';
+        }
+        this._isCreatingCollection = true;
+        
+        var self = this;
+        this._autoCreate = false;
+        this.once('_createCollection', errback);
+        var callback = function (err) {
+            self._isCreatingCollection = false;
+            if (err) {
+                log("Error requesting collection creation", err);
+            }
+            self.emit('_createCollection', err);
+        };
+
+        // Use this._createClient to request a collection creation
+        var collectionOpts = {
+            network: this.network,
+            siteId: this.siteId,
+            articleId: this.articleId,
+            environment: this.environment,
+            collectionMeta: this._collectionMeta,
+            signed: this._signed
+        };
+        this._createClient.createCollection(collectionOpts, callback);
     };
 
 

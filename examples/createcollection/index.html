@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/src/css/style.css">
+    <style>
+    #listView {
+        width:500px;
+    }
+    </style>
+    <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+</head>
+    <body>
+        <div id="listView"></div>
+
+        <script src="../../lib/requirejs/require.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+        require([
+            'streamhub-sdk/content/views/content-list-view',
+            'streamhub-sdk/collection',
+            'streamhub-sdk/content'
+        ],function (ListView, Collection, Content) {
+            var opts = {
+                "network": "labs-t402.fyre.co",
+                "siteId": "303827",
+                "articleId": "xbox-0",
+                "environment": "t402.livefyre.com",
+                "collectionMeta": {
+                    "title": "New Collection Title",
+                    "url": "http://www.url.com",
+                    "tags": ["example", "tags"]
+                },
+                "signed": false
+            };
+            var listView = window.view = new ListView({
+                initial: 1,
+                showMore: 2,
+                el: document.getElementById("listView")
+            });
+
+            var collection = window.collection =  new Collection(opts);
+
+            collection.pipe(listView);
+
+        });
+        </script>
+    </body>
+</html>

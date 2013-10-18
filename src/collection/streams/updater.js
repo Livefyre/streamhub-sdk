@@ -38,9 +38,9 @@ StateToContent, debug) {
 
 
     /**
-     * @private
      * Called by Readable base class on .read(). Do not call directly.
      * Get content from bootstrap and .push() onto the read buffer
+     * @private
      */
     CollectionUpdater.prototype._read = function () {
         var self = this;
@@ -56,7 +56,7 @@ StateToContent, debug) {
                 if ( ! self._collection.id) {
                     throw new Error("Couldn't get Collection ID after initFromBootstrap");
                 }
-                if ( ! latestEvent) {
+                if (latestEvent === undefined) {
                     throw new Error("Couldn't get latestEvent after initFromBootstrap");
                 }
                 self._latestEvent = latestEvent;
@@ -69,8 +69,8 @@ StateToContent, debug) {
 
 
     /**
-     * @private
      * Make the next stream request to get more data since the last seen event
+     * @private
      */
     CollectionUpdater.prototype._stream = function () {
         var self = this,
@@ -104,8 +104,8 @@ StateToContent, debug) {
 
 
     /**
-     * @private
      * Convert a response from the Stream service into Content models
+     * @private
      * @param streamData {object} A response from the Stream service
      * @return {Content[]} An Array of Content models
      */
@@ -131,9 +131,9 @@ StateToContent, debug) {
 
 
     /**
-     * @private
      * Get an Object that can be passed to LivefyreStreamClient to get new
      * data
+     * @private
      * @return {object}
      */
     CollectionUpdater.prototype._getStreamClientOptions = function () {

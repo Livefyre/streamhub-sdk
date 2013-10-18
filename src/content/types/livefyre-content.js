@@ -23,6 +23,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content', 'inherits'], function($
         this.visibility = json.vis;
         this.parentId = json.content.parentId;
         this.meta = json;
+        this._annotations = json.content.annotations;
     };
     inherits(LivefyreContent, Content);
 
@@ -64,6 +65,24 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content', 'inherits'], function($
             this.replies.push(obj);
             this.emit('reply', obj);
         }
+    };
+
+    /**
+     * Return whether this Content is featured in a StreamHub Collection
+     * @return {boolean}
+     */
+    LivefyreContent.prototype.isFeatured = function () {
+        var featuredAnnotation = this._annotations && this._annotations.featuredmessage;
+        return Boolean(featuredAnnotation);
+    };
+
+    /**
+     * Return the featured value for this Content, if it is featured
+     * @return {Number|undefined} The featured value, if featured, else undefined
+     */
+    LivefyreContent.prototype.getFeaturedValue = function () {
+        var featuredAnnotation = this._annotations && this._annotations.featuredmessage;
+        return featuredAnnotation ? featuredAnnotation.value : undefined;
     };
 
     /**

@@ -37,10 +37,10 @@ define([
 
 
     /**
-     * @private
      * Set the element for the view to render in.
      * ModalView construction takes care of creating its own element in
      *     ModalView.el. You probably don't want to call this manually
+     * @private
      * @param element {HTMLElement} The element to render this View in
      * @returns this
      */
