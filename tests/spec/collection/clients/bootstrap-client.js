@@ -62,6 +62,7 @@ function ($, jasmine, LivefyreBootstrapClient, MockBootstrapClient) {
                 });
             });
         });
+
         describe("when configured with environment='fyre'", function () {
             var opts,
                 callback;
@@ -82,6 +83,38 @@ function ($, jasmine, LivefyreBootstrapClient, MockBootstrapClient) {
                 var requestedUrl = $.ajax.mostRecentCall.args[0].url;
                 expect(requestedUrl).toBe('http://bootstrap.fyre/bs3/livefyre.com/286472/NTA5Mzg4YzAtYTI3Mi00MTcwLTk4YjktNzE0OTczYjM3NTM4/init');
             });
+        });
+
+        describe('when configured with opts.protocol=https', function () {
+            var bootstrapClient;
+            beforeEach(function () {
+                bootstrapClient = new LivefyreBootstrapClient({
+                    protocol: 'https'
+                });
+            });
+            it('makes request to different URL using https and jsonp', function () {
+                spyOn($, 'ajax');
+                bootstrapClient.getContent({
+                    network: 'backplane-qa.fyre.co',
+                    siteId: '290598',
+                    articleId: '1',
+                    environment: 'qa-ext.livefyre.com'
+                });
+                var ajaxArgs = $.ajax.mostRecentCall.args[0];
+                expect(ajaxArgs.url).toBe('https://backplane-qa.bootstrap.fyre.co/bs3/qa-ext.livefyre.com/backplane-qa.fyre.co/290598/MQ==/init');
+            });
+            it('makes correct request when opts.environment=fyre', function () {
+                spyOn($, 'ajax');
+                bootstrapClient.getContent({
+                    network: 'backplane-qa.fyre.co',
+                    siteId: '290598',
+                    articleId: '1',
+                    environment: 'fyre'
+                });
+                var ajaxArgs = $.ajax.mostRecentCall.args[0];
+                expect(ajaxArgs.url.indexOf('https')).toBe(0);
+            });
+
         });
     });
 

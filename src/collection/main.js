@@ -37,7 +37,7 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         this._createClient = opts.createClient || new LivefyreCreateClient();
 
         // Internal streams
-        this._writer = opts.writer || this.createWriter();
+        this._writer = opts.writer || null;
         this._updater = null;
         this._pipedArchives = [];
 
@@ -59,7 +59,7 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         opts = opts || {};
         return new CollectionArchive({
             collection: this,
-            bootstrapClient: opts.bootstrapClient
+            bootstrapClient: opts.bootstrapClient || this._bootstrapClient
         });
     };
 

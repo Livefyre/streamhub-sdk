@@ -121,5 +121,32 @@ function ($, jasmine, LivefyreCreateClient) {
                 expect(requestedUrl).toBe('http://quill.fyre/api/v3.0/site/286470/collection/create');
             });
         });
+
+        describe("when constructed with opts.protocol=https:", function () {
+            var createClient;
+            beforeEach(function () {
+                createClient = new LivefyreCreateClient({
+                    protocol: 'https:'
+                });
+            });
+            it('makes requests to the right URL', function () {
+                spyOn($, 'ajax');
+                var opts = {
+                    "network": "blah.fyre.co",
+                    "siteId": "286470",
+                    "articleId": "1111123",
+                    "collectionMeta": {
+                        "title": 'Media Wall Example',
+                        "url": 'http://www.fake.com',
+                        "tags": ['test', 'wall']
+                    },
+                    "signed": false
+                };
+                var callback = jasmine.createSpy();
+                createClient.createCollection(opts, callback);
+                var requestedUrl = $.ajax.mostRecentCall.args[0].url;
+                expect(requestedUrl).toBe('https://blah.quill.fyre.co/api/v3.0/site/286470/collection/create');
+            });
+        });
     }); 
 });

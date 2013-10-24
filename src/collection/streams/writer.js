@@ -57,7 +57,7 @@ function (Writable, LivefyreWriteClient, Auth, inherits) {
             postParams.tweetId = content.tweetId;
         }
 
-        post(postParams, done);
+        post.call(this._writeClient, postParams, done);
     };
 
 

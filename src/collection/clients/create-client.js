@@ -1,11 +1,20 @@
-define(['streamhub-sdk/jquery'], function($) {
+define([
+    'streamhub-sdk/collection/clients/http-client',
+    'inherits'],
+function(LivefyreHttpClient, inherits) {
     'use strict';
 
     /**
      * A Client for creating a Livefyre collection
      * @exports streamhub-sdk/collection/clients/create-client
      */
-    var LivefyreCreateClient = function () {};
+    var LivefyreCreateClient = function (opts) {
+        opts = opts || {};
+        opts.serviceName = 'quill';
+        LivefyreHttpClient.call(this, opts);
+    };
+
+    inherits(LivefyreCreateClient, LivefyreHttpClient);
 
     /**
      * @callback createCollectionCallback
@@ -39,8 +48,7 @@ define(['streamhub-sdk/jquery'], function($) {
         callback = callback || function() {};
         var url = [
         //api/v3.0/site/<siteId>/collection/create
-            'http://quill.',
-            (opts.network === 'livefyre.com') ? opts.environment || 'livefyre.com' : opts.network,
+            this._getUrlBase(opts),
             '/api/v3.0/site/',
             opts.siteId,
             '/collection/create'
@@ -67,20 +75,14 @@ define(['streamhub-sdk/jquery'], function($) {
             postData.checksum = opts.checksum;
         }
         postData = JSON.stringify(postData);
-        
-        $.ajax({
-            type: 'POST',
+
+        this._request({
+            method: 'POST',
             url: url,
-            data: postData,
-            success: function(data, status, jqXhr) {
-                callback(null, data);
-            },
-            error: function(jqXhr, status, err) {
-                callback(err);
-            }
-        });
+            dataType: 'json',
+            data: postData
+        }, callback);
     };
 
     return LivefyreCreateClient;
-
 });

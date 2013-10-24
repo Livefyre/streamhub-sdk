@@ -1,11 +1,20 @@
-define(['streamhub-sdk/jquery', 'base64'], function($) {
+define([
+    'streamhub-sdk/collection/clients/http-client',
+    'inherits'],
+function(LivefyreHttpClient, inherits) {
     'use strict';
 
     /**
      * A Client for requesting Livefyre's Quill/Write Service
      * @exports streamhub-sdk/collection/clients/write-client
      */
-    var LivefyreWriteClient = function () {};
+    var LivefyreWriteClient = function (opts) {
+        opts = opts || {};
+        opts.serviceName = 'quill';
+        LivefyreHttpClient.call(this, opts);
+    };
+
+    inherits(LivefyreWriteClient, LivefyreHttpClient);
 
     /**
      * Posts a piece of content to a Livefyre collection.
@@ -23,8 +32,7 @@ define(['streamhub-sdk/jquery', 'base64'], function($) {
         opts = opts || {};
         callback = callback || function() {};
         var url = [
-            "http://quill.",
-            opts.network,
+            this._getUrlBase(opts),
             "/api/v3.0/collection/",
             opts.collectionId,
             "/post/"
@@ -43,18 +51,12 @@ define(['streamhub-sdk/jquery', 'base64'], function($) {
             postData.media = JSON.stringify(opts.media);
         }
 
-        $.ajax({
-            type: "POST",
+        this._request({
+            method: 'POST',
             url: url,
-            data: postData,
-            success: function(data, status, jqXhr) {
-                // todo: (genehallman) check livefyre stream status in data.status
-                callback(null, data);
-            },
-            error: function(jqXhr, status, err) {
-                callback(err);
-            }
-        });
+            dataType: 'json',
+            data: postData
+        }, callback);
     };
 
     /**
@@ -71,8 +73,7 @@ define(['streamhub-sdk/jquery', 'base64'], function($) {
         opts = opts || {};
         callback = callback || function() {};
         var url = [
-            "http://quill.",
-            opts.network,
+            this._getUrlBase(opts),
             "/api/v3.0/collection/",
             opts.collectionId,
             "/post/tweet/"
@@ -80,26 +81,19 @@ define(['streamhub-sdk/jquery', 'base64'], function($) {
 
         var postData = {tweet_id: opts.tweetId, lftoken: opts.lftoken};
 
-        $.ajax({
-            type: "POST",
+        this._request({
+            method: 'POST',
             url: url,
-            data: postData,
-            success: function(data, status, jqXhr) {
-                // todo: (genehallman) check livefyre stream status in data.status
-                callback(null, data);
-            },
-            error: function(jqXhr, status, err) {
-                callback(err);
-            }
-        });
+            dataType: 'json',
+            data: postData
+        }, callback);
     };
 
     LivefyreWriteClient.prototype.follow = function(opts, callback) {
         opts = opts || {};
         callback = callback || function() {};
         var url = [
-            "http://quill.",
-            opts.network,
+            this._getUrlBase(opts),
             "/api/v3.0/collection/",
             opts.collectionId,
             "/follow/"
@@ -107,25 +101,19 @@ define(['streamhub-sdk/jquery', 'base64'], function($) {
 
         var postData = {lftoken: opts.lftoken};
 
-        $.ajax({
-            type: "POST",
+        this._request({
+            method: 'POST',
             url: url,
-            data: postData,
-            success: function(data, status, jqXhr) {
-                callback(null, data);
-            },
-            error: function(jqXhr, status, err) {
-                callback(err);
-            }
-        });
+            dataType: 'json',
+            data: postData
+        }, callback);
     };
 
     LivefyreWriteClient.prototype.unfollow = function(opts, callback) {
         opts = opts || {};
         callback = callback || function() {};
         var url = [
-            "http://quill.",
-            opts.network,
+            this._getUrlBase(opts),
             "/api/v3.0/collection/",
             opts.collectionId,
             "/unfollow/"
@@ -133,19 +121,13 @@ define(['streamhub-sdk/jquery', 'base64'], function($) {
 
         var postData = {lftoken: opts.lftoken};
 
-        $.ajax({
-            type: "POST",
+        this._request({
+            method: 'POST',
             url: url,
-            data: postData,
-            success: function(data, status, jqXhr) {
-                callback(null, data);
-            },
-            error: function(jqXhr, status, err) {
-                callback(err);
-            }
-        });
+            dataType: 'json',
+            data: postData
+        }, callback);
     };
 
     return LivefyreWriteClient;
-
 });

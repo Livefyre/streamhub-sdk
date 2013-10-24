@@ -1,14 +1,23 @@
 define([
-    'streamhub-sdk/jquery',
+    'streamhub-sdk/collection/clients/http-client',
+    'inherits',
     'base64'],
-    function($) {
+function(LivefyreHttpClient, inherits, base64) {
     'use strict';
 
     /**
      * A Client for requesting Livefyre's Bootstrap Service
      * @exports streamhub-sdk/collection/clients/bootstrap-client
      */
-    var LivefyreBootstrapClient = function () {};
+    var LivefyreBootstrapClient = function (opts) {
+        opts = opts || {};
+        opts.serviceName = 'bootstrap';
+        LivefyreHttpClient.call(this, opts);
+    };
+
+    inherits(LivefyreBootstrapClient, LivefyreHttpClient);
+
+    LivefyreBootstrapClient.prototype._serviceName = 'bootstrap';
 
     /**
      * Fetches data from the livefyre bootstrap service with the arguments given.
@@ -26,11 +35,11 @@ define([
         var isLocaldev;
         opts = opts || {};
         callback = callback || function() {};
+        opts.environment = opts.environment || 'livefyre.com';
         isLocaldev = opts.environment && opts.environment === 'fyre';
 
         var url = [
-            'http://bootstrap.',
-            (opts.network === 'livefyre.com') ? opts.environment || 'livefyre.com' : opts.network,
+            this._getUrlBase(opts),
             "/bs3/",
             (opts.environment && ! isLocaldev) ? opts.environment + "/" : "",
             opts.network,
@@ -42,20 +51,10 @@ define([
             typeof opts.page !== 'undefined' ? opts.page+'.json' : "init"
         ].join("");
 
-        $.ajax({
-            type: "GET",
-            url: url,
-            dataType: $.support.cors ? "json" : "jsonp",
-            success: function(data, status, jqXhr) {
-                // todo: (genehallman) check livefyre stream status in data.status
-                callback(null, data);
-            },
-            error: function(jqXhr, status, err) {
-                callback(err);
-            }
-        });
+        this._request({
+            url: url
+        }, callback);
     };
 
     return LivefyreBootstrapClient;
-
 });

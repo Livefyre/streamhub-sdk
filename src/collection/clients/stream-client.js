@@ -1,21 +1,22 @@
-define(['streamhub-sdk/jquery', 'streamhub-sdk/util'], function($, util) {
+define([
+    'streamhub-sdk/collection/clients/http-client',
+    'inherits'],
+function(LivefyreHttpClient, inherits) {
     'use strict';
-
 
     /**
      * A Client for requesting Livefyre's Stream Service
      * @exports streamhub-sdk/collection/clients/stream-client
      */
-    var LivefyreStreamClient = function () {};
+    var LivefyreStreamClient = function (opts) {
+        opts = opts || {};
+        opts.serviceName = 'stream1';
+        LivefyreHttpClient.call(this, opts);
+    };
 
+    inherits(LivefyreStreamClient, LivefyreHttpClient);
 
-    // Keep track of whether the page is unloading, so we don't throw exceptions
-    // if the XHR fails just because of that.
-    var windowIsUnloading = false;
-    $(window).on('beforeunload', function () {
-        windowIsUnloading = true;
-    });
-
+    LivefyreStreamClient.prototype._serviceName = 'stream1';
 
     /**
      * Fetches content from the livefyre conversation stream with the supplied arguments.
@@ -31,8 +32,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/util'], function($, util) {
         callback = callback || function() {};
 
         var url = [
-            "http://stream1.",
-            (opts.network === 'livefyre.com') ? opts.environment || 'livefyre.com' : opts.network,
+            this._getUrlBase(opts),
             "/v3.0/collection/",
             opts.collectionId,
             "/",
@@ -40,31 +40,19 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/util'], function($, util) {
             "/"
         ].join("");
 
-        $.ajax({
-            type: "GET",
-            url: url,
-            dataType: $.support.cors ? "json" : "jsonp",
-            success: function(data, status, jqXhr) {
-                // todo: (genehallman) check livefyre stream status in data.status
-                if (data.timeout) {
-                    return callback(null, { timeout: data.timeout });
-                } else if (data.status === "error") {
-                    return callback(data.msg);
-                }
-                callback(null, data.data);
-            },
-            error: function(jqXhr, status, err) {
-                if (windowIsUnloading) {
-                    // Error fires when the user reloads the page during a long poll,
-                    // But we don't want to throw an exception if the page is
-                    // going away anyway.
-                    return;
-                }
-                if ( ! err) {
-                    err = "LivefyreStreamClient Error";
-                }
-                callback(err);
+        this._request({
+            url: url
+        }, function (err, data) {
+            if (err) {
+                return callback.apply(this, arguments);
             }
+            if (data.timeout) {
+                return callback(null, { timeout: data.timeout });
+            }
+            if (data.status === 'error') {
+                return callback(data.msg);
+            }
+            callback(null, data.data);
         });
     };
 

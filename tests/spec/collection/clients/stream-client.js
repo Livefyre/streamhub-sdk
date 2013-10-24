@@ -14,7 +14,6 @@ function ($, jasmine, LivefyreStreamClient) {
             streamClient = new LivefyreStreamClient();
 
             spy = spyOn($, "ajax").andCallFake(function(opts) {
-                expect(opts.url).toBe("http://stream1.labs-t402.fyre.co/v3.0/collection/10669131/0/");
                 opts.success({"data": mockData});
             });
             
@@ -30,7 +29,30 @@ function ($, jasmine, LivefyreStreamClient) {
             expect(LivefyreStreamClient).toEqual(jasmine.any(Function));
             expect(new LivefyreStreamClient() instanceof LivefyreStreamClient).toBe(true);
         });
-        
+
+        it("should make requests to the right URL", function () {
+            streamClient.getContent(opts, callback);
+            expect($.ajax.mostRecentCall.args[0].url).toBe("http://stream1.labs-t402.fyre.co/v3.0/collection/10669131/0/");
+        });
+
+        describe('when constructed with opts.protocol=https', function () {
+            var streamClient;
+            beforeEach(function () {
+                streamClient = new LivefyreStreamClient({
+                    protocol: 'https'
+                });
+            });
+            it('should make requests to the right https URL', function () {
+                var opts = {
+                    network: 'backplane-qa.fyre.co',
+                    collectionId: '2486639',
+                    environment: 'qa-ext.livefyre.com'
+                };
+                streamClient.getContent(opts, callback);
+                expect($.ajax.mostRecentCall.args[0].url).toBe("https://backplane-qa.stream1.fyre.co/v3.0/collection/2486639/0/");
+            });
+        });
+
         it ("should return data when getContent is called", function () {
             streamClient.getContent(opts, callback);
     
