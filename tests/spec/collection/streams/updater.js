@@ -174,7 +174,7 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $) {
 
                 waitsFor(function () {
                     return onData.callCount;
-                });
+                }, "the 'data' event should be caught and handled");
 
                 runs(function () {
                     var content = onData.mostRecentCall.args[0];
