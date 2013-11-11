@@ -27,7 +27,6 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content', 'inherits'], function($
         this.parentId = json.content.parentId;
         this.meta = json;
         this._readAnnotations(json.content.annotations || {});
-        //this.featured = {"rel_collectionId": "10739960", "value": 1380848559};//DEBUG (joao)
     };
     inherits(LivefyreContent, Content);
 
