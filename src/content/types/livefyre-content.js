@@ -26,7 +26,8 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content', 'inherits'], function($
         this.visibility = Content.enums.visibility[json.vis];
         this.parentId = json.content.parentId;
         this.meta = json;
-        this._annotations = json.content.annotations;
+        this._readAnnotations(json.content.annotations || {});
+        //this.featured = {"rel_collectionId": "10739960", "value": 1380848559};//DEBUG (joao)
     };
     inherits(LivefyreContent, Content);
 
@@ -75,8 +76,7 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content', 'inherits'], function($
      * @return {boolean}
      */
     LivefyreContent.prototype.isFeatured = function () {
-        var featuredAnnotation = this._annotations && this._annotations.featuredmessage;
-        return Boolean(featuredAnnotation);
+        return Boolean(this.featured);
     };
 
     /**
@@ -84,10 +84,18 @@ define(['streamhub-sdk/jquery', 'streamhub-sdk/content', 'inherits'], function($
      * @return {Number|undefined} The featured value, if featured, else undefined
      */
     LivefyreContent.prototype.getFeaturedValue = function () {
-        var featuredAnnotation = this._annotations && this._annotations.featuredmessage;
-        return featuredAnnotation ? featuredAnnotation.value : undefined;
+        return this.featured.value;
     };
-
+    
+    /**
+     * Takes an object of annotations and sets properties as directed.
+     * @param anno {!Object} Object of annotations.
+     */
+    LivefyreContent.prototype._readAnnotations = function(anno) {
+        this._annotations = anno;
+        this.featured = anno.featuredmessage || false;
+    };
+    
     /**
      * The set of sources as defined by Livefyre's Stream API
      */

@@ -67,7 +67,7 @@ function (jasmine, FeaturedArchive, MockCollection, Readable) {
                 expect(latestBootstrapArgs.page).toBe('featured-all');
             });
         });
-
+        
         it('does not emit duplicates across featured-all and init', function () {
             // This MockCollection has no featured Content
             var collection = new MockCollection({
