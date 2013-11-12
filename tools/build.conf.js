@@ -5,6 +5,7 @@
     almond: 'lib/almond/almond'
   },
   baseUrl: '..',
+  cjsTranslate: true,
   name: "streamhub-sdk",
   include: [
     'almond',

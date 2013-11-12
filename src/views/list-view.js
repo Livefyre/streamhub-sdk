@@ -1,259 +1,256 @@
-define([
-    'streamhub-sdk/jquery',
-    'streamhub-sdk/view',
-    'streamhub-sdk/content/content-view-factory',
-    'streamhub-sdk/modal/views/attachment-gallery-modal',
-    'inherits',
-    'streamhub-sdk/debug',
-    'stream/writable',
-    'streamhub-sdk/content/views/content-view',
-    'streamhub-sdk/views/streams/more',
-    'streamhub-sdk/views/show-more-button',
-    'hgn!streamhub-sdk/views/templates/list-view'],
-function($, View, ContentViewFactory, AttachmentGalleryModal, inherits,
-debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
-    'use strict';
+var $ = require('streamhub-sdk/jquery');
+var View = require('streamhub-sdk/view');
+var ContentViewFactory = require('streamhub-sdk/content/content-view-factory');
+var AttachmentGalleryModal = require('streamhub-sdk/modal/views/attachment-gallery-modal');
+var inherits = require('inherits');
+var debug = require('streamhub-sdk/debug');
+var Writable = require('stream/writable');
+var ContentView = require('streamhub-sdk/content/views/content-view');
+var More = require('streamhub-sdk/views/streams/more');
+var ShowMoreButton = require('streamhub-sdk/views/show-more-button');
+var ListViewTemplate = require('hgn!streamhub-sdk/views/templates/list-view');
 
-    var log = debug('streamhub-sdk/views/list-view');
+'use strict';
 
-    /**
-     * A simple View that displays Content in a list (`<ul>` by default).
-     *
-     * @param opts {Object} A set of options to config the view with
-     * @param opts.el {HTMLElement} The element in which to render the streamed content
-     * @exports streamhub-sdk/views/list-view
-     * @constructor
-     */
-    var ListView = function(opts) {
-        opts = opts || {};
+var log = debug('streamhub-sdk/views/list-view');
 
-        this.views = [];
+/**
+ * A simple View that displays Content in a list (`<ul>` by default).
+ *
+ * @param opts {Object} A set of options to config the view with
+ * @param opts.el {HTMLElement} The element in which to render the streamed content
+ * @exports streamhub-sdk/views/list-view
+ * @constructor
+ */
+var ListView = function(opts) {
+    opts = opts || {};
 
-        View.call(this, opts);
-        Writable.call(this, opts);
+    this.views = [];
 
-        this._moreAmount = opts.showMore || 50;
-        this.more = opts.more || this._createMoreStream(opts);
-        this.showMoreButton = opts.showMoreButton || this._createShowMoreButton(opts);
-        this.showMoreButton.setMoreStream(this.more);
+    View.call(this, opts);
+    Writable.call(this, opts);
 
-        this.render();
+    this._moreAmount = opts.showMore || 50;
+    this.more = opts.more || this._createMoreStream(opts);
+    this.showMoreButton = opts.showMoreButton || this._createShowMoreButton(opts);
+    this.showMoreButton.setMoreStream(this.more);
 
-        this._pipeMore();
-    };
+    this.render();
 
-    inherits(ListView, View);
-    inherits.parasitically(ListView, Writable);
+    this._pipeMore();
+};
+
+inherits(ListView, View);
+inherits.parasitically(ListView, Writable);
 
 
-    ListView.prototype.template = ListViewTemplate;
+ListView.prototype.template = ListViewTemplate;
 
 
-    /**
-     * Selector of .el child that contentViews should be inserted into
-     */
-    ListView.prototype.listElSelector = '.hub-list';
+/**
+ * Selector of .el child that contentViews should be inserted into
+ */
+ListView.prototype.listElSelector = '.hub-list';
 
 
-    /**
-     * Selector of .el child in which to render a show more button
-     */
-    ListView.prototype.showMoreElSelector = '.hub-list-more';
+/**
+ * Selector of .el child in which to render a show more button
+ */
+ListView.prototype.showMoreElSelector = '.hub-list-more';
 
 
-    ListView.prototype.setElement = function (element) {
-        View.prototype.setElement.apply(this, arguments);
-        this.$listEl = this.$el;
-        // .showMoreButton will trigger showMore.hub when it is clicked
-        this.$el.on('showMore.hub', function () {
-            this.showMore();
-        }.bind(this));
-        this.$el.on('removeView.hub', function (ev, view) {
-            this.remove(view);
-        }.bind(this));
-    };
+ListView.prototype.setElement = function (element) {
+    View.prototype.setElement.apply(this, arguments);
+    this.$listEl = this.$el;
+    // .showMoreButton will trigger showMore.hub when it is clicked
+    this.$el.on('showMore.hub', function () {
+        this.showMore();
+    }.bind(this));
+    this.$el.on('removeView.hub', function (ev, view) {
+        this.remove(view);
+    }.bind(this));
+};
 
 
-    /**
-     * Render the ListView in its .el, and call .setElement on any subviews
-     */
-    ListView.prototype.render = function () {
-        View.prototype.render.call(this);
-        this.$listEl = this.$el.find(this.listElSelector);
+/**
+ * Render the ListView in its .el, and call .setElement on any subviews
+ */
+ListView.prototype.render = function () {
+    View.prototype.render.call(this);
+    this.$listEl = this.$el.find(this.listElSelector);
 
-        this.showMoreButton.setElement(this.$el.find(this.showMoreElSelector));
-        this.showMoreButton.render();
-    };
-
-
-    /**
-     * Called automatically by the Writable base class when .write() is called
-     * @private
-     * @param view {View} View to display in the ListView
-     * @param requestMore {function} A function to call when done writing, so
-     *     that _write will be called again with more data
-     */
-    ListView.prototype._write = function (view, requestMore) {
-        this.add(view);
-        requestMore();
-    };
+    this.showMoreButton.setElement(this.$el.find(this.showMoreElSelector));
+    this.showMoreButton.render();
+};
 
 
-    /**
-     * Comparator function to determine ordering of Views.
-     * Your subclass should implement this if you want ordering
-     * @private
-     * @param a {view}
-     * @param b {view}
-     * @returns {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
-     */
-    ListView.prototype.comparator = null;
+/**
+ * Called automatically by the Writable base class when .write() is called
+ * @private
+ * @param view {View} View to display in the ListView
+ * @param requestMore {function} A function to call when done writing, so
+ *     that _write will be called again with more data
+ */
+ListView.prototype._write = function (view, requestMore) {
+    this.add(view);
+    requestMore();
+};
 
 
-    /**
-     * Add a view to the ListView
-     *     insert the newView into this.el according to this.comparator
-     * @param newView {View} A View to add to the ListView
-     * @returns the newly added View
-     */
-    ListView.prototype.add = function(newView) {
-        log("add", newView);
+/**
+ * Comparator function to determine ordering of Views.
+ * Your subclass should implement this if you want ordering
+ * @private
+ * @param a {view}
+ * @param b {view}
+ * @returns {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
+ */
+ListView.prototype.comparator = null;
 
-        if ( ! newView) {
-            log("Called add with a falsy parameter, returning");
-            return;
+
+/**
+ * Add a view to the ListView
+ *     insert the newView into this.el according to this.comparator
+ * @param newView {View} A View to add to the ListView
+ * @returns the newly added View
+ */
+ListView.prototype.add = function(newView) {
+    log("add", newView);
+
+    if ( ! newView) {
+        log("Called add with a falsy parameter, returning");
+        return;
+    }
+
+    // Push and sort. #TODO Insert in sorted order
+    if (this.views.indexOf(newView) === -1) {
+        this.views.push(newView);
+    }
+
+    if (this.comparator) {
+        this.views.sort(this.comparator);
+    }
+
+    // Add to DOM
+    this._insert(newView);
+
+    return newView;
+};
+
+
+/**
+ * Remove a View from this ListView
+ * @param content {Content|ContentView} The ContentView or Content to be removed
+ * @returns {boolean} true if Content was removed, else false
+ */
+ListView.prototype.remove = function (view) {
+    var viewIndex = this.views.indexOf(view);
+
+    // Return false if the provided view is not managed by this ListView
+    if (viewIndex === -1) {
+        return false;
+    }
+
+    // Remove from DOM
+    this._extract(view);
+
+    // Remove from this.views[]
+    this.views.splice(viewIndex, 1);
+
+    return true;
+};
+
+
+/**
+ * Remove a view from the DOM. Called by .remove();
+ * @private
+ * @param view {View} The View to remove from the DOM
+ */
+ListView.prototype._extract = function (view) {
+    view.$el.remove();
+};
+
+
+/**
+ * Insert a contentView into the ListView's .el
+ * Get insertion index based on this.comparator
+ * @private
+ * @param view {View} The view to add to this.el
+ */
+ListView.prototype._insert = function (view) {
+    var newContentViewIndex,
+        $previousEl;
+
+    newContentViewIndex = this.views.indexOf(view);
+
+    if (newContentViewIndex === 0) {
+        // Beginning!
+        view.$el.prependTo(this.$listEl);
+    } else {
+        // Find it's previous view and insert new view after
+        $previousEl = this.views[newContentViewIndex - 1].$el;
+        view.$el.insertAfter($previousEl);
+    }
+};
+
+
+/**
+ * Show More content.
+ * ContentListView keeps track of an internal ._newContentGoal
+ *     which is how many more items he wishes he had.
+ *     This increases that goal and marks the Writable
+ *     side of ContentListView as ready for more writes.
+ * @param numToShow {number} The number of items to try to add
+ */
+ListView.prototype.showMore = function (numToShow) {
+    if (typeof numToShow === 'undefined') {
+        numToShow = this._moreAmount;
+    }
+    this.more.setGoal(numToShow);
+};
+
+
+/**
+ * Create a Stream that extra content can be written into.
+ * This will be used if an opts.moreBuffer is not provided on construction.
+ * By default, this creates a streamhub-sdk/views/streams/more
+ * @private
+ */
+ListView.prototype._createMoreStream = function (opts) {
+    opts = opts || {};
+    return new More({
+        highWaterMark: 0,
+        goal: opts.initial || 50
+    });
+};
+
+
+/**
+ * Create a ShowMoreButton view to be used if one is not passed as
+ *     opts.showMoreButton on construction
+ * @private
+ * @return {ShowMoreButton}
+ */
+ListView.prototype._createShowMoreButton = function (opts) {
+    return new ShowMoreButton();
+};
+
+
+/**
+ * Register listeners to the .more stream so that the items
+ * it reads out go somewhere useful.
+ * By default, this .add()s the items
+ * @private
+ */
+ListView.prototype._pipeMore = function () {
+    var self = this;
+    this.more.on('readable', function () {
+        var content;
+        while (content = self.more.read()) {
+            self.add(content);
         }
-
-        // Push and sort. #TODO Insert in sorted order
-        if (this.views.indexOf(newView) === -1) {
-            this.views.push(newView);
-        }
-
-        if (this.comparator) {
-            this.views.sort(this.comparator);
-        }
-
-        // Add to DOM
-        this._insert(newView);
-
-        return newView;
-    };
+    });
+};
 
 
-    /**
-     * Remove a View from this ListView
-     * @param content {Content|ContentView} The ContentView or Content to be removed
-     * @returns {boolean} true if Content was removed, else false
-     */
-    ListView.prototype.remove = function (view) {
-        var viewIndex = this.views.indexOf(view);
-
-        // Return false if the provided view is not managed by this ListView
-        if (viewIndex === -1) {
-            return false;
-        }
-
-        // Remove from DOM
-        this._extract(view);
-
-        // Remove from this.views[]
-        this.views.splice(viewIndex, 1);
-
-        return true;
-    };
-
-
-    /**
-     * Remove a view from the DOM. Called by .remove();
-     * @private
-     * @param view {View} The View to remove from the DOM
-     */
-    ListView.prototype._extract = function (view) {
-        view.$el.remove();
-    };
-
-
-    /**
-     * Insert a contentView into the ListView's .el
-     * Get insertion index based on this.comparator
-     * @private
-     * @param view {View} The view to add to this.el
-     */
-    ListView.prototype._insert = function (view) {
-        var newContentViewIndex,
-            $previousEl;
-
-        newContentViewIndex = this.views.indexOf(view);
-
-        if (newContentViewIndex === 0) {
-            // Beginning!
-            view.$el.prependTo(this.$listEl);
-        } else {
-            // Find it's previous view and insert new view after
-            $previousEl = this.views[newContentViewIndex - 1].$el;
-            view.$el.insertAfter($previousEl);
-        }
-    };
-
-
-    /**
-     * Show More content.
-     * ContentListView keeps track of an internal ._newContentGoal
-     *     which is how many more items he wishes he had.
-     *     This increases that goal and marks the Writable
-     *     side of ContentListView as ready for more writes.
-     * @param numToShow {number} The number of items to try to add
-     */
-    ListView.prototype.showMore = function (numToShow) {
-        if (typeof numToShow === 'undefined') {
-            numToShow = this._moreAmount;
-        }
-        this.more.setGoal(numToShow);
-    };
-
-
-    /**
-     * Create a Stream that extra content can be written into.
-     * This will be used if an opts.moreBuffer is not provided on construction.
-     * By default, this creates a streamhub-sdk/views/streams/more
-     * @private
-     */
-    ListView.prototype._createMoreStream = function (opts) {
-        opts = opts || {};
-        return new More({
-            highWaterMark: 0,
-            goal: opts.initial || 50
-        });
-    };
-
-
-    /**
-     * Create a ShowMoreButton view to be used if one is not passed as
-     *     opts.showMoreButton on construction
-     * @private
-     * @return {ShowMoreButton}
-     */
-    ListView.prototype._createShowMoreButton = function (opts) {
-        return new ShowMoreButton();
-    };
-
-
-    /**
-     * Register listeners to the .more stream so that the items
-     * it reads out go somewhere useful.
-     * By default, this .add()s the items
-     * @private
-     */
-    ListView.prototype._pipeMore = function () {
-        var self = this;
-        this.more.on('readable', function () {
-            var content;
-            while (content = self.more.read()) {
-                self.add(content);
-            }
-        });
-    };
-
-
-    return ListView;
-});
+module.exports = ListView;

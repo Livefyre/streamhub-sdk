@@ -1,8 +1,4 @@
-define(['streamhub-sdk/jquery', 'text!streamhub-sdk/version.txt'],
-function($, version) {
-    'use strict';
+var $ = require('streamhub-sdk/jquery');
+var version = require('text!streamhub-sdk/version.txt');
 
-    return {
-        version: $.trim(version)
-    };
-});
+exports.version = $.trim(version);
