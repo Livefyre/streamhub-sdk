@@ -36,12 +36,21 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
                 this.modal = opts.modal;
         }
 
+        this._maxVisibleItems = opts.maxVisibleItems || 20;
+        this._hasVisibleVacancy = true;
+        this._endPageIndex = 0;
+        this._bound = true;
+
         this.contentViewFactory = opts.contentViewFactory || new ContentViewFactory();
+        this.buffer = this._createBufferStream();
 
         ListView.call(this, opts);
     };
 
     inherits(ContentListView, ListView);
+
+    ContentListView.prototype.insertingClassName = 'hub-wall-is-inserting';
+    ContentListView.prototype.contentContainerClassName = 'hub-content-container';
 
     /**
      * Class property to add to ListView instances' .el
@@ -103,6 +112,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         var contentView = this.getContentView(content);
 
         log("add", content);
+        //console.log('views: ', this.views.length);
 
         if (contentView) {
             return contentView;
@@ -110,7 +120,50 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
 
         contentView = this.createContentView(content);
 
+        this._endPageIndex++;
+        if (! this.hasVisibleVacancy() && this._bound) {
+            var viewToRemove = this.views[this.views.length-1];
+
+            // Unshift content to more stream
+            this.more.unshift(viewToRemove.content);
+
+            // Remove non visible view
+            this.remove(viewToRemove);
+        }
+
         return ListView.prototype.add.call(this, contentView);
+    };
+
+    ContentListView.prototype._insert = function (contentView, opts) { 
+        opts = opts || {};
+        var newContentViewIndex,
+            $previousEl,
+            $wrappedEl;
+
+        newContentViewIndex = this.views.indexOf(contentView);
+
+        var $containerEl = $('<div class="'+this.contentContainerClassName+'"></div>');
+        contentView.$el.wrap($containerEl);
+        $wrappedEl = contentView.$el.parent();
+
+        if (newContentViewIndex === 0) {
+            // Beginning!
+            $wrappedEl.prependTo(this.el);
+        } else {
+            // Find it's previous view and insert new view after
+            $previousEl = this.views[newContentViewIndex - 1].$el;
+            $wrappedEl.insertAfter($previousEl.parent('.'+this.contentContainerClassName));
+        }
+
+        setTimeout(function () { $wrappedEl.addClass(this.insertingClassName); }.bind(this), 1);
+
+    };
+
+    ContentListView.prototype.hasVisibleVacancy = function () {
+        if (this._endPageIndex > this._maxVisibleItems) {
+            this._hasVisibleVacancy = false;
+        }
+        return this._hasVisibleVacancy;
     };
 
 
@@ -124,6 +177,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         return ListView.prototype.remove.call(this, contentView);
     };
 
+    ContentListView.prototype.showMore = function (numToShow) {
+        this._bound = false;
+        ListView.prototype.showMore.call(this, numToShow);
+    };
 
     /**
      * Given a new Content instance, return an existing contentView that
@@ -158,6 +215,35 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         return view;
     };
 
+    /**
+     * Create a Stream that extra content can be written into.
+     * This will be used if an opts.moreBuffer is not provided on construction.
+     * By default, this creates a streamhub-sdk/views/streams/more
+     * @private
+     */
+    ContentListView.prototype._createBufferStream = function (opts) {
+        opts = opts || {};
+        return new More({
+            highWaterMark: 0,
+            goal: opts.initial || 50
+        });
+    };
+
+    /**
+     * Register listeners to the .more stream so that the items
+     * it reads out go somewhere useful.
+     * By default, this .add()s the items
+     * @private
+     */
+    ContentListView.prototype._pipeBuffer = function () {
+        var self = this;
+        this.buffer.on('readable', function () {
+            var content;
+            while (content = self.buffer.read()) {
+                self.add(content);
+            }
+        });
+    };
 
     return ContentListView;
 });
