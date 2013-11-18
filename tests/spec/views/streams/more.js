@@ -66,28 +66,44 @@ function (jasmine, More) {
         });
 
         describe('.stash', function () {
+            var more;
+            beforeEach(function () {
+                more = new More({
+                    goal: 10
+                });
+            });
             it('stashed stuff returns last-in-last-out from .read()', function () {
                 var stuff = [];
-                var more = new More({
-                    goal: 1
-                });
-                more.write(1);
-                more.write(2);
                 more.stash(3);
                 more.stash(4);
+                expect(more.read()).toBe(4);
+                expect(more.read()).toBe(3);
+            });
+            it('does not cause a readable event', function () {
+                var onReadableSpy = jasmine.createSpy('onReadable');
+                more.on('readable', onReadableSpy);
+                more.stash(1);
+                expect(onReadableSpy).not.toHaveBeenCalled();
+            });
+            it('works with data events', function () {
+                var things = [];
+                more.write(1);
+                more.write(2);
+                more.stash('s1');
+                more.stash('s2');
                 more.on('data', function (d) {
-                    stuff.push(d);
+                    things.push(d);
                 });
                 waitsFor(function () {
-                    return stuff.length === 4;
+                    return things.length === 4;
                 });
                 runs(function () {
-                    debugger;
-                    expect(more.read()).toBe(4);
-                    expect(more.read()).toBe(3);
-                    expect(more.read()).toBe(1);
-                    expect(more.read()).toBe(2);
-                })
+                    expect(things.length).toBe(4);
+                    expect(things[0]).toBe('s2');
+                    expect(things[1]).toBe('s1');
+                    expect(things[2]).toBe(1);
+                    expect(things[3]).toBe(2);
+                });
             });
         });
     });
