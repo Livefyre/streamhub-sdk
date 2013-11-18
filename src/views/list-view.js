@@ -254,6 +254,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
         });
     };
 
+    ListView.prototype.destroy = function () {
+        View.prototype.destroy.call(this);
+        this.views = null;
+    };
 
     return ListView;
 });

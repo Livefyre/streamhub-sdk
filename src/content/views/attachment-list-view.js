@@ -173,5 +173,10 @@ function($, View, OembedView, AttachmentListTemplate, inherits) {
         return null;
     };
 
+    AttachmentListView.prototype.destroy = function () {
+        View.prototype.destroy.call(this);
+        this.oembedViews = null;
+    };
+
     return AttachmentListView;
 });

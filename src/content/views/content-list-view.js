@@ -42,7 +42,6 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         this._bound = true;
 
         this.contentViewFactory = opts.contentViewFactory || new ContentViewFactory();
-        this.buffer = this._createBufferStream();
 
         ListView.call(this, opts);
     };
@@ -56,6 +55,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
      * Class property to add to ListView instances' .el
      */
     ContentListView.prototype.elClass += ' streamhub-content-list-view';
+
+    ContentListView.prototype.bounded = function (bounded) {
+        this._bound = bounded;
+    };
 
     /**
      * Set the element that this ContentListView renders in
@@ -112,7 +115,6 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         var contentView = this.getContentView(content);
 
         log("add", content);
-        //console.log('views: ', this.views.length);
 
         if (contentView) {
             return contentView;
@@ -215,34 +217,9 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         return view;
     };
 
-    /**
-     * Create a Stream that extra content can be written into.
-     * This will be used if an opts.moreBuffer is not provided on construction.
-     * By default, this creates a streamhub-sdk/views/streams/more
-     * @private
-     */
-    ContentListView.prototype._createBufferStream = function (opts) {
-        opts = opts || {};
-        return new More({
-            highWaterMark: 0,
-            goal: opts.initial || 50
-        });
-    };
-
-    /**
-     * Register listeners to the .more stream so that the items
-     * it reads out go somewhere useful.
-     * By default, this .add()s the items
-     * @private
-     */
-    ContentListView.prototype._pipeBuffer = function () {
-        var self = this;
-        this.buffer.on('readable', function () {
-            var content;
-            while (content = self.buffer.read()) {
-                self.add(content);
-            }
-        });
+    ContentListView.prototype.destroy = function () {
+        ListView.prototype.destroy.call(this);
+        this.contentViewFactory = null;
     };
 
     return ContentListView;
