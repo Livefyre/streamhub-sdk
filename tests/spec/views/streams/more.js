@@ -79,17 +79,21 @@ function (jasmine, More) {
                 expect(more.read()).toBe(4);
                 expect(more.read()).toBe(3);
             });
-            it('does not cause a readable event', function () {
+            it('does not cause an extra readable event', function () {
                 var onReadableSpy = jasmine.createSpy('onReadable');
+                more.write(1);
                 more.on('readable', onReadableSpy);
                 more.stash(1);
-                expect(onReadableSpy).not.toHaveBeenCalled();
+                waits(200);
+                runs(function () {
+                    expect(onReadableSpy.callCount).toBe(1);
+                });
             });
             it('works with data events', function () {
                 var things = [];
                 more.write(1);
-                more.write(2);
                 more.stash('s1');
+                more.write(2);
                 more.stash('s2');
                 more.on('data', function (d) {
                     things.push(d);
