@@ -19,6 +19,7 @@ function (inherits, Transform, debug) {
     var More = function (opts) {
         opts = opts || {};
         this._goal = opts.goal || 0;
+        this._stash = [];
         Transform.call(this, opts);
     };
 
@@ -51,6 +52,15 @@ function (inherits, Transform, debug) {
     };
 
 
+    More.prototype._read = function () {
+        var stash = this._stash;
+        if (stash.length) {
+            return this.push(stash.shift());
+        }
+        return Transform.prototype._read.apply(this, arguments);
+    };
+
+
     /**
      * Let more items pass through.
      * This sets the goal of the stream to the provided number.
@@ -76,6 +86,16 @@ function (inherits, Transform, debug) {
         return this._goal;
     };
 
+
+    /**
+     * Stash Content that should be re-emitted later in last-in-first-out
+     * fashion. Stashed stuff is read out before written stuff
+     * @param obj {Object} An object to stash, that you may want back later
+     */
+    More.prototype.stash = function (obj) {
+        var buffer = this._readableState.buffer;
+        buffer.unshift(obj);
+    };
 
     return More;
 });

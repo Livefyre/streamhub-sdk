@@ -64,5 +64,31 @@ function (jasmine, More) {
             more.read();
             expect(onHold).toHaveBeenCalled();
         });
+
+        describe('.stash', function () {
+            it('stashed stuff returns last-in-last-out from .read()', function () {
+                var stuff = [];
+                var more = new More({
+                    goal: 1
+                });
+                more.write(1);
+                more.write(2);
+                more.stash(3);
+                more.stash(4);
+                more.on('data', function (d) {
+                    stuff.push(d);
+                });
+                waitsFor(function () {
+                    return stuff.length === 4;
+                });
+                runs(function () {
+                    debugger;
+                    expect(more.read()).toBe(4);
+                    expect(more.read()).toBe(3);
+                    expect(more.read()).toBe(1);
+                    expect(more.read()).toBe(2);
+                })
+            });
+        });
     });
 });
