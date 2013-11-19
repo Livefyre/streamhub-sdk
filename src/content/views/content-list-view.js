@@ -156,9 +156,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
             $previousEl = this.views[newContentViewIndex - 1].$el;
             $wrappedEl.insertAfter($previousEl.parent('.'+this.contentContainerClassName));
         }
-
-        setTimeout(function () { $wrappedEl.removeClass(this.insertingClassName); }.bind(this), 1);
-
+        setTimeout(function () { $wrappedEl.removeClass(this.insertingClassName); }.bind(this), 0.1);
     };
 
     ContentListView.prototype.hasVisibleVacancy = function () {
@@ -167,7 +165,6 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         }
         return this._hasVisibleVacancy;
     };
-
 
     /**
      * Remove a piece of Content from this ContentListView
@@ -199,7 +196,6 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         }
         return null;
     };
-
 
     /**
      * Creates a content view from the given piece of content, by looking in this view's
