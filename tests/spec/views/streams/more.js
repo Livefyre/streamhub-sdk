@@ -65,17 +65,17 @@ function (jasmine, More) {
             expect(onHold).toHaveBeenCalled();
         });
 
-        describe('.stash', function () {
+        describe('.stack', function () {
             var more;
             beforeEach(function () {
                 more = new More({
-                    goal: 10
+                    goal: 0
                 });
             });
-            it('stashed stuff returns last-in-last-out from .read()', function () {
-                var stuff = [];
-                more.stash(3);
-                more.stash(4);
+            it('stacked stuff returns last-in-last-out from .read()', function () {
+                more.stack(3);
+                more.stack(4);
+                more.setGoal(2);
                 expect(more.read()).toBe(4);
                 expect(more.read()).toBe(3);
             });
@@ -83,7 +83,7 @@ function (jasmine, More) {
                 var onReadableSpy = jasmine.createSpy('onReadable');
                 more.write(1);
                 more.on('readable', onReadableSpy);
-                more.stash(1);
+                more.stack('s1');
                 waits(200);
                 runs(function () {
                     expect(onReadableSpy.callCount).toBe(1);
@@ -92,12 +92,13 @@ function (jasmine, More) {
             it('works with data events', function () {
                 var things = [];
                 more.write(1);
-                more.stash('s1');
+                more.stack('s1');
                 more.write(2);
-                more.stash('s2');
+                more.stack('s2');
                 more.on('data', function (d) {
                     things.push(d);
                 });
+                more.setGoal(4);
                 waitsFor(function () {
                     return things.length === 4;
                 });
@@ -107,6 +108,40 @@ function (jasmine, More) {
                     expect(things[1]).toBe('s1');
                     expect(things[2]).toBe(1);
                     expect(things[3]).toBe(2);
+                });
+            });
+            it('respects the goal', function () {
+                var more = new More({
+                    goal: 0
+                });
+                var things = [];
+                more.write(1);
+                more.write(2);
+                more.write(3);
+                more.stack('s1');
+                more.stack('s2');
+                more.write(4);
+                more.write(5);
+                var onHold = jasmine.createSpy('on hold spy');
+                more.on('hold', onHold);
+                more.setGoal(4);
+                more.on('data', function (data) {
+                    things.push(data);
+                });
+                waitsFor(function () {
+                    return onHold.callCount;
+                });
+                runs(function () {
+                    expect(things).toEqual(['s2', 's1', 1, 2]);
+                    more.stack('s3');
+                    more.write(6);
+                    more.setGoal(50);
+                });
+                waitsFor(function () {
+                    return things.length === 9;
+                });
+                runs(function () {
+                    expect(things.slice(4)).toEqual(['s3', 3, 4, 5, 6]);
                 });
             });
         });

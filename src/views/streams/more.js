@@ -12,6 +12,8 @@ function (inherits, Transform, debug) {
     /**
      * A Duplex stream (Readable & Writable) that only passes through
      * the number of items it is instructed to.
+     * More also maintains a LIFO stack such that previously emitted Content can
+     * be stashed back into More so that it is re-read out later when needed.
      * @constructor
      * @param opts {object}
      * @param [opts.goal=0] {number} The initial amount to let through
@@ -19,7 +21,7 @@ function (inherits, Transform, debug) {
     var More = function (opts) {
         opts = opts || {};
         this._goal = opts.goal || 0;
-        this._stash = [];
+        this._stack = [];
         Transform.call(this, opts);
     };
 
@@ -52,11 +54,34 @@ function (inherits, Transform, debug) {
     };
 
 
+    /**
+     * Get content to be read out.
+     * Prioritizes Content in the stack over stuff that has been written in
+     * This is called by the Readable/Transform internals.
+     * @private
+     */
     More.prototype._read = function () {
-        var stash = this._stash;
-        if (stash.length) {
-            return this.push(stash.shift());
+        var stack = this._stack;
+        var oldPushAndContinue;
+        var pushFromStack = function () {
+            this._goal--;
+            this.push(stack.pop());
+        }.bind(this);
+
+        if (this._goal <= 0) {
+            oldPushAndContinue = this._pushAndContinue;
+            this._pushAndContinue = function () {
+                pushFromStack();
+                this._pushAndContinue = oldPushAndContinue;
+            }.bind(this);
+            this.emit('hold');
+            return this.push();
         }
+
+        if (this._stack.length) {
+            return pushFromStack();
+        }
+
         return Transform.prototype._read.apply(this, arguments);
     };
 
@@ -88,13 +113,12 @@ function (inherits, Transform, debug) {
 
 
     /**
-     * Stash Content that should be re-emitted later in last-in-first-out
-     * fashion. Stashed stuff is read out before written stuff
-     * @param obj {Object} An object to stash, that you may want back later
+     * stack Content that should be re-emitted later in last-in-first-out
+     * fashion. stacked stuff is read out before written stuff
+     * @param obj {Object} An object to stack, that you may want back later
      */
-    More.prototype.stash = function (obj) {
-        var buffer = this._readableState.buffer;
-        buffer.unshift(obj);
+    More.prototype.stack = function (obj) {
+        this._stack.push(obj);
     };
 
     return More;
