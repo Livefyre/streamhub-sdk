@@ -127,7 +127,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
             var viewToRemove = this.views[this.views.length-1];
 
             // Unshift content to more stream
-            this.more.unshift(viewToRemove.content);
+            this.more.stash(viewToRemove.content);
 
             // Remove non visible view
             this.remove(viewToRemove);
@@ -144,7 +144,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
 
         newContentViewIndex = this.views.indexOf(contentView);
 
-        var $containerEl = $('<div class="'+this.contentContainerClassName+'"></div>');
+        var $containerEl = $('<div class="'+this.contentContainerClassName+' '+this.insertingClassName+'"></div>');
         contentView.$el.wrap($containerEl);
         $wrappedEl = contentView.$el.parent();
 
@@ -157,7 +157,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
             $wrappedEl.insertAfter($previousEl.parent('.'+this.contentContainerClassName));
         }
 
-        setTimeout(function () { $wrappedEl.addClass(this.insertingClassName); }.bind(this), 1);
+        setTimeout(function () { $wrappedEl.removeClass(this.insertingClassName); }.bind(this), 1);
 
     };
 
