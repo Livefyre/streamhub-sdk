@@ -127,7 +127,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
             var viewToRemove = this.views[this.views.length-1];
 
             // Unshift content to more stream
-            this.more.stash(viewToRemove.content);
+            this.more.stack(viewToRemove.content);
 
             // Remove non visible view
             this.remove(viewToRemove);
