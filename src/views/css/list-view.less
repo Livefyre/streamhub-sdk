@@ -1,5 +1,28 @@
 .hub-list {
 	list-style-type: none;
+
+    .hub-content-container.hub-wall-is-inserting {
+        max-height: 0px;
+    }
+    .hub-content-container {
+        overflow-y: hidden;
+        max-height: 9999px;
+        -webkit-transition: max-height 10s;
+        -moz-transition: max-height 10s;
+        -ms-transition: max-height 10s;
+        -o-transition: max-height 10s;
+        transition: max-height 10s;
+    }
+    article.content {
+        width: 100%;
+        border: 1px solid rgba(0,0,0,0.15);
+        border-radius: 3px;
+        -webkit-transform: rotateY(0deg);
+        -moz-transform: rotateY(0deg);
+        -ms-transform: rotateY(0deg);
+        -o-transform: rotateY(0deg);
+        transform: rotateY(0deg);
+    }
 }
 
 .hub-list-more {
