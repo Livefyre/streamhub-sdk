@@ -1,8 +1,9 @@
 define([
     'inherits',
     'stream/transform',
-    'streamhub-sdk/debug'],
-function (inherits, Transform, debug) {
+    'streamhub-sdk/debug',
+    'stream/util'],
+function (inherits, Transform, debug, streamUtil) {
     'use strict';
 
 
@@ -22,6 +23,7 @@ function (inherits, Transform, debug) {
         opts = opts || {};
         this._goal = opts.goal || 0;
         this._stack = [];
+        this._requestMore = null;
         Transform.call(this, opts);
     };
 
@@ -35,56 +37,46 @@ function (inherits, Transform, debug) {
      * @private
      */
     More.prototype._transform = function (chunk, requestMore) {
+        console.log("More._transform", this);
         var self = this;
         log('_transform', chunk);
 
+        this._stack.unshift(chunk);
+        if (chunk >= 5) {
+            debugger;
+        }
         if (this._goal <= 0) {
-            this._pushAndContinue = pushAndContinue;
+            this._requestMore = requestMore;
             this.emit('hold');
             return;
         }
 
-        pushAndContinue();
-
-        function pushAndContinue() {
-            self._goal--;
-            self.push(chunk);
-            requestMore();
-        }
+        this._pushAndContinue();
+        requestMore();
     };
 
 
-    /**
-     * Get content to be read out.
-     * Prioritizes Content in the stack over stuff that has been written in
-     * This is called by the Readable/Transform internals.
-     * @private
-     */
     More.prototype._read = function () {
-        var stack = this._stack;
-        var oldPushAndContinue;
-        var pushFromStack = function () {
-            this._goal--;
-            this.push(stack.pop());
-        }.bind(this);
-
-        if (this._goal <= 0) {
-            oldPushAndContinue = this._pushAndContinue;
-            this._pushAndContinue = function () {
-                pushFromStack();
-                this._pushAndContinue = oldPushAndContinue;
-            }.bind(this);
-            this.emit('hold');
-            return this.push();
-        }
-
         if (this._stack.length) {
-            return pushFromStack();
+            if (this._goal >= 0) {
+                this._pushAndContinue();
+                return;
+            }
         }
 
         return Transform.prototype._read.apply(this, arguments);
-    };
+    }
 
+    More.prototype._pushAndContinue = function () {
+        console.log("More._pushAndContinue", this)
+        this._goal--;
+        this.push(this._stack.pop());
+        if ( ! this._stack.length &&
+            typeof this._requestMore === 'function') {
+            this._requestMore();
+            this._requestMore = null;
+        }
+    }
 
     /**
      * Let more items pass through.
@@ -93,13 +85,10 @@ function (inherits, Transform, debug) {
      *     let through before holding again.
      */
     More.prototype.setGoal = function (newGoal) {
-        var pushAndContinue = this._pushAndContinue;
-
         this._goal = newGoal;
 
-        if (this._goal >= 0 && typeof pushAndContinue === 'function') {
-            this._pushAndContinue = null;
-            pushAndContinue();
+        if (this._goal >= 0) {
+            this._pushAndContinue();
         }
     };
 

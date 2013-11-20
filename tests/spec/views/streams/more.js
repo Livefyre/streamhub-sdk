@@ -1,7 +1,8 @@
 define([
     'jasmine',
-    'streamhub-sdk/views/streams/more'],
-function (jasmine, More) {
+    'streamhub-sdk/views/streams/more',
+    'stream/contrib/readable-array'],
+function (jasmine, More, ReadableArray) {
     'use strict';
 
     describe('streamhub-sdk/views/streams/more', function () {
@@ -142,6 +143,60 @@ function (jasmine, More) {
                 });
                 runs(function () {
                     expect(things.slice(4)).toEqual(['s3', 3, 4, 5, 6]);
+                });
+            });
+            it('works when constructed with goal > 0', function () {
+                var more = new More({
+                    goal: 3
+                });
+                var things = [];
+                more.write(1);
+                more.write(2);
+                more.write(3);
+                more.write(4);
+                var onHold = jasmine.createSpy('on hold spy');
+                more.on('hold', onHold);
+                more.on('data', function (data) {
+                    things.push(data);
+                });
+                waitsFor(function () {
+                    return onHold.callCount;
+                });
+                runs(function () {
+                    expect(things).toEqual([1,2,3]);
+                });
+            });
+            it('works when something is piped to more', function () {
+                var source = new ReadableArray([1,2,3,4,5,6]);
+                var more = new More({
+                    goal: 3
+                });
+                var things = [];
+                var onHold = jasmine.createSpy('on hold spy').andCallFake(function () {
+                    debugger;
+                });
+                more.on('hold', onHold);
+                more.on('data', function (data) {
+                    things.push(data);
+                });
+                source.pipe(more);
+                waitsFor(function () {
+                    return onHold.callCount;
+                });
+                runs(function () {
+                    expect(things).toEqual([1,2,3]);
+                    more.stack('s1');
+                    more.stack('s2');
+                    more.stack('s3');
+                    debugger;
+                    more.setGoal(6);
+                });
+                waitsFor(function () {
+                    console.log(onHold.callCount);
+                    return onHold.callCount === 2;
+                });
+                runs(function () {
+                    expect(things.slice(3)).toEqual([4,5]);
                 });
             });
         });
