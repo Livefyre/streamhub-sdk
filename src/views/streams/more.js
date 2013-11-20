@@ -1,9 +1,8 @@
 define([
     'inherits',
-    'stream/transform',
-    'streamhub-sdk/debug',
-    'stream/util'],
-function (inherits, Transform, debug, streamUtil) {
+    'stream/duplex',
+    'streamhub-sdk/debug'],
+function (inherits, Duplex, debug) {
     'use strict';
 
 
@@ -24,59 +23,11 @@ function (inherits, Transform, debug, streamUtil) {
         this._goal = opts.goal || 0;
         this._stack = [];
         this._requestMore = null;
-        Transform.call(this, opts);
+        Duplex.call(this, opts);
     };
 
-    inherits(More, Transform);
+    inherits(More, Duplex);
 
-
-    /**
-     * Required by Transform subclasses.
-     * This ensures that once the goal is reached, no more content
-     * passes through.
-     * @private
-     */
-    More.prototype._transform = function (chunk, requestMore) {
-        console.log("More._transform", this);
-        var self = this;
-        log('_transform', chunk);
-
-        this._stack.unshift(chunk);
-        if (chunk >= 5) {
-            debugger;
-        }
-        if (this._goal <= 0) {
-            this._requestMore = requestMore;
-            this.emit('hold');
-            return;
-        }
-
-        this._pushAndContinue();
-        requestMore();
-    };
-
-
-    More.prototype._read = function () {
-        if (this._stack.length) {
-            if (this._goal >= 0) {
-                this._pushAndContinue();
-                return;
-            }
-        }
-
-        return Transform.prototype._read.apply(this, arguments);
-    }
-
-    More.prototype._pushAndContinue = function () {
-        console.log("More._pushAndContinue", this)
-        this._goal--;
-        this.push(this._stack.pop());
-        if ( ! this._stack.length &&
-            typeof this._requestMore === 'function') {
-            this._requestMore();
-            this._requestMore = null;
-        }
-    }
 
     /**
      * Let more items pass through.
@@ -88,7 +39,7 @@ function (inherits, Transform, debug, streamUtil) {
         this._goal = newGoal;
 
         if (this._goal >= 0) {
-            this._pushAndContinue();
+            this._fetchAndPush();
         }
     };
 
@@ -109,6 +60,78 @@ function (inherits, Transform, debug, streamUtil) {
     More.prototype.stack = function (obj) {
         this._stack.push(obj);
     };
+
+
+    /**
+     * Required by Duplex subclasses.
+     * This ensures that once the goal is reached, no more content
+     * passes through.
+     * @private
+     */
+    More.prototype._write = function (chunk, doneWriting) {
+        log('_write', chunk);
+
+        // Put on BOTTOM of the stack.
+        // written stuff comes after all stacked stuff
+        this._stack.unshift(chunk);
+
+        // Save the doneWriting cb for later. We'll call it once this
+        // new bottom of the stack is popped, and we need more data
+        // from the Writable side of the duplex
+        this._requestMore = function () {
+            this._requestMore = null;
+            doneWriting();
+        }.bind(this);
+
+        if (this._goal >= 1) {
+            this._fetchAndPush();
+        } else {
+            // Emit 'hold' to signify that there is data waiting, if only
+            // the goal were increased. This is useful to render a 'show more'
+            // button only if there is data in the buffer, and avoids a
+            // show more button that, when clicked, does nothing but disappear
+            this.emit('hold');
+        }
+    };
+
+
+    /**
+     * Required by Readable subclasses. Get data from upstream. In this case,
+     * either the internal ._stack or the Writable side of the Duplex
+     * @private
+     */
+    More.prototype._read = function () {
+        if (this._goal <= 0 && this._stack.length) {
+            // You don't get data yet.
+            this.emit('hold');
+            return;
+        }
+        this._fetchAndPush();
+    };
+
+
+    /**
+     * Fetch data from the internal stack (sync) and push it.
+     * Or, if there is nothing in the stack, request more from the Writable
+     * side of the duplex, which will eventually call this again.
+     * @private
+     */
+    More.prototype._fetchAndPush = function () {
+        // If there's data in the stack, pop, push it along, & decrement goal
+        if (this._stack.length) {
+            // There's stuff in the stack. Push it.
+            this._goal--;
+            this.push(this._stack.pop());
+        }
+
+        // If there was no data, or we just pushed the last bit,
+        // request more if possible
+        if (this._stack.length === 0 &&
+            typeof this._requestMore === 'function') {
+            this._requestMore();
+        }
+    };
+
 
     return More;
 });

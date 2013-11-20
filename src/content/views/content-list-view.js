@@ -126,6 +126,9 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         if (! this.hasVisibleVacancy() && this._bound) {
             var viewToRemove = this.views[this.views.length-1];
 
+            // Ensure .more won't let more through right away,
+            // we already have more than we want.
+            this.more.setGoal(0);
             // Unshift content to more stream
             this.more.stack(viewToRemove.content);
 
