@@ -123,14 +123,12 @@ function (jasmine, More, ReadableArray) {
                 more.stack('s2');
                 more.write(4);
                 more.write(5);
-                var onHold = jasmine.createSpy('on hold spy');
-                more.on('hold', onHold);
                 more.setGoal(4);
                 more.on('data', function (data) {
                     things.push(data);
                 });
                 waitsFor(function () {
-                    return onHold.callCount;
+                    return things.length === 4;
                 });
                 runs(function () {
                     expect(things).toEqual(['s2', 's1', 1, 2]);
@@ -167,14 +165,12 @@ function (jasmine, More, ReadableArray) {
                 });
             });
             it('works when something is piped to more', function () {
-                var source = new ReadableArray([1,2,3,4,5,6]);
+                var source = new ReadableArray([1,2,3,4,5,6,7]);
                 var more = new More({
                     goal: 3
                 });
                 var things = [];
-                var onHold = jasmine.createSpy('on hold spy').andCallFake(function () {
-                    debugger;
-                });
+                var onHold = jasmine.createSpy('on hold spy');
                 more.on('hold', onHold);
                 more.on('data', function (data) {
                     things.push(data);
@@ -188,15 +184,13 @@ function (jasmine, More, ReadableArray) {
                     more.stack('s1');
                     more.stack('s2');
                     more.stack('s3');
-                    debugger;
                     more.setGoal(6);
                 });
                 waitsFor(function () {
-                    console.log(onHold.callCount);
                     return onHold.callCount === 2;
                 });
                 runs(function () {
-                    expect(things.slice(3)).toEqual([4,5]);
+                    expect(things.slice(3)).toEqual(['s3', 's2', 's1', 4, 5, 6]);
                 });
             });
         });
