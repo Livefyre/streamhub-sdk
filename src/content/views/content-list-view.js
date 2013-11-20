@@ -36,14 +36,15 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
                 this.modal = opts.modal;
         }
 
+        ListView.call(this, opts);
+
+        this._stash = opts.stash || this.more;
         this._maxVisibleItems = opts.maxVisibleItems || 20;
         this._hasVisibleVacancy = true;
         this._endPageIndex = 0;
         this._bound = true;
 
         this.contentViewFactory = opts.contentViewFactory || new ContentViewFactory();
-
-        ListView.call(this, opts);
     };
 
     inherits(ContentListView, ListView);
@@ -130,7 +131,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
             // we already have more than we want.
             this.more.setGoal(0);
             // Unshift content to more stream
-            this.more.stack(viewToRemove.content);
+            this.saveForLater(viewToRemove.content);
 
             // Remove non visible view
             this.remove(viewToRemove);
@@ -167,6 +168,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
             this._hasVisibleVacancy = false;
         }
         return this._hasVisibleVacancy;
+    };
+
+    ContentListView.prototype.saveForLater = function (content) {
+        this._stash.stack(content);
     };
 
     /**
