@@ -1,5 +1,31 @@
 .hub-list {
 	list-style-type: none;
+
+    .hub-content-container.hub-wall-is-inserting {
+        margin-top: -100%;
+    }
+    .hub-content-container {
+        margin-top: 0;
+        opacity: 1;
+        -webkit-transition: margin-top 1s, opacity 1s;
+        -moz-transition: margin-top 1s, opacity 1s;
+        -ms-transition: margin-top 1s, opacity 1s;
+        -o-transition: margin-top 1s, opacity 1s;
+        transition: margin-top 1s, opacity 1s;
+    }
+    .hub-content-container-hidden {
+        opacity: 0;
+    }
+    article.content {
+        width: 100%;
+        border: 1px solid rgba(0,0,0,0.15);
+        border-radius: 3px;
+        -webkit-transform: rotateY(0deg);
+        -moz-transform: rotateY(0deg);
+        -ms-transform: rotateY(0deg);
+        -o-transform: rotateY(0deg);
+        transform: rotateY(0deg);
+    }
 }
 
 .hub-list-more {

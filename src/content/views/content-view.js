@@ -1,8 +1,10 @@
 define([
     'streamhub-sdk/jquery',
+    'streamhub-sdk/view',
     'hgn!streamhub-sdk/content/templates/content',
-    'streamhub-sdk/util'
-], function ($, ContentTemplate, Util) {
+    'streamhub-sdk/util',
+    'inherits'
+], function ($, View, ContentTemplate, util, inherits) {
     'use strict';
 
     /**
@@ -38,6 +40,7 @@ define([
             }.bind(this));
         }
     };
+    inherits(ContentView, View);
     
     ContentView.prototype.elTag = 'article';
     ContentView.prototype.elClass = 'content';
@@ -49,7 +52,7 @@ define([
     ContentView.prototype.headerElSelector = '.content-header';
     ContentView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
     ContentView.prototype.template = ContentTemplate;
-    ContentView.prototype.formatDate = Util.formatDate;
+    ContentView.prototype.formatDate = util.formatDate;
 
      /**
      * Set the .el DOMElement that the ContentView should render to
@@ -178,7 +181,7 @@ define([
          * @type {{contentView: ContentView}}
          */
         this.$el.trigger('removeContentView.hub', { contentView: this });
-        this.$el.remove();
+        this.$el.detach();
     };
     
     /**

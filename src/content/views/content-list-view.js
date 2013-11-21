@@ -36,17 +36,30 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
                 this.modal = opts.modal;
         }
 
-        this.contentViewFactory = opts.contentViewFactory || new ContentViewFactory();
-
         ListView.call(this, opts);
+
+        this._stash = opts.stash || this.more;
+        this._maxVisibleItems = opts.maxVisibleItems || 20;
+        this._endPageIndex = 0;
+        this._bound = true;
+
+        this.contentViewFactory = opts.contentViewFactory || new ContentViewFactory();
     };
 
     inherits(ContentListView, ListView);
+
+    ContentListView.prototype.insertingClassName = 'hub-wall-is-inserting';
+    ContentListView.prototype.hiddenClassName = 'hub-content-container-hidden';
+    ContentListView.prototype.contentContainerClassName = 'hub-content-container';
 
     /**
      * Class property to add to ListView instances' .el
      */
     ContentListView.prototype.elClass += ' streamhub-content-list-view';
+
+    ContentListView.prototype.bounded = function (bounded) {
+        this._bound = bounded;
+    };
 
     /**
      * Set the element that this ContentListView renders in
@@ -57,6 +70,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
 
         this.$el.on('removeContentView.hub', function(e, data) {
             this.remove(data.contentView.content);
+            data.contentView.destroy();
         }.bind(this));
         this.$el.on('focusContent.hub', function(e, context) {
             var contentView = this.getContentView(context.content);
@@ -110,9 +124,76 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
 
         contentView = this.createContentView(content);
 
+        this._endPageIndex++;
+        if (! this._hasVisibleVacancy() && this._bound) {
+            var viewToRemove = this.views[this.views.length-1];
+
+            // Ensure .more won't let more through right away,
+            // we already have more than we want.
+            this.more.setGoal(0);
+            // Unshift content to more stream
+            this.saveForLater(viewToRemove.content);
+
+            // Remove non visible view
+            this.remove(viewToRemove);
+        }
+
         return ListView.prototype.add.call(this, contentView);
     };
 
+    ContentListView.prototype._insert = function (contentView, opts) { 
+        opts = opts || {};
+        var newContentViewIndex,
+            $previousEl,
+            $wrappedEl;
+
+        newContentViewIndex = this.views.indexOf(contentView);
+
+        var $containerEl = $('<div class="'+this.contentContainerClassName+' '+this.insertingClassName+'"></div>');
+        contentView.$el.wrap($containerEl);
+        $wrappedEl = contentView.$el.parent();
+
+        if (newContentViewIndex === 0) {
+            // Beginning!
+            $wrappedEl.prependTo(this.$listEl);
+            setTimeout(function () { $wrappedEl.removeClass(this.insertingClassName); }.bind(this), 0.1);
+        } else {
+            // Find it's previous view and insert new view after
+            $previousEl = this.views[newContentViewIndex - 1].$el;
+            $wrappedEl.removeClass(this.insertingClassName).addClass(this.hiddenClassName);
+            $wrappedEl.insertAfter($previousEl.parent('.'+this.contentContainerClassName));
+            setTimeout(function () { $wrappedEl.removeClass(this.hiddenClassName); }.bind(this), 0.1);
+        }
+    };
+
+    /**
+     * Remove a view from the DOM. Called by .remove();
+     * @private
+     * @param view {View} The View to remove from the DOM
+     */
+    ContentListView.prototype._extract = function (view) {
+        view.$el.parent().remove();
+    };
+
+    /**
+     * Checks if it is still possible to add a content item
+     * into the visible list
+     * @returns {Boolean} Whether a content item can be displayed
+     */
+    ContentListView.prototype._hasVisibleVacancy = function () {
+        if (this._endPageIndex > this._maxVisibleItems) {
+            return false;
+        }
+        return true;
+    };
+
+    /**
+     * Save formerly visible content to be redisplayed later
+     * @param content {Content} A content item to be redisplayed later
+     */
+    ContentListView.prototype.saveForLater = function (content) {
+        this._stash.stack(content);
+    };
 
     /**
      * Remove a piece of Content from this ContentListView
@@ -124,6 +205,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         return ListView.prototype.remove.call(this, contentView);
     };
 
+    ContentListView.prototype.showMore = function (numToShow) {
+        this._bound = false;
+        ListView.prototype.showMore.call(this, numToShow);
+    };
 
     /**
      * Given a new Content instance, return an existing contentView that
@@ -141,7 +226,6 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         return null;
     };
 
-
     /**
      * Creates a content view from the given piece of content, by looking in this view's
      * content registry for the supplied content type.
@@ -158,6 +242,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         return view;
     };
 
+    ContentListView.prototype.destroy = function () {
+        ListView.prototype.destroy.call(this);
+        this.contentViewFactory = null;
+    };
 
     return ContentListView;
 });

@@ -39,7 +39,6 @@ function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView
                     doc = document.documentElement;//sandbox(); ?
                 $obj.prependTo(doc);
                 expect($.contains(doc, elem)).toBe(true);
-                
                 contentView.remove();
                 
                 expect($.contains(doc, elem)).toBe(false);
