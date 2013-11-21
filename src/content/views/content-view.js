@@ -181,7 +181,7 @@ define([
          * @type {{contentView: ContentView}}
          */
         this.$el.trigger('removeContentView.hub', { contentView: this });
-        this.destroy();
+        this.$el.detach();
     };
     
     /**
