@@ -71,6 +71,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
 
         this.$el.on('removeContentView.hub', function(e, data) {
             this.remove(data.contentView.content);
+            data.contentView.destroy();
         }.bind(this));
         this.$el.on('focusContent.hub', function(e, context) {
             var contentView = this.getContentView(context.content);
@@ -155,7 +156,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
 
         if (newContentViewIndex === 0) {
             // Beginning!
-            $wrappedEl.prependTo(this.el);
+            $wrappedEl.prependTo(this.$listEl);
             setTimeout(function () { $wrappedEl.removeClass(this.insertingClassName); }.bind(this), 0.1);
         } else {
             // Find it's previous view and insert new view after
@@ -164,6 +165,15 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
             $wrappedEl.insertAfter($previousEl.parent('.'+this.contentContainerClassName));
             setTimeout(function () { $wrappedEl.removeClass(this.hiddenClassName); }.bind(this), 0.1);
         }
+    };
+
+    /**
+     * Remove a view from the DOM. Called by .remove();
+     * @private
+     * @param view {View} The View to remove from the DOM
+     */
+    ContentListView.prototype._extract = function (view) {
+        view.$el.parent().remove();
     };
 
     ContentListView.prototype.hasVisibleVacancy = function () {
