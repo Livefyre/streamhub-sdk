@@ -40,7 +40,6 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
 
         this._stash = opts.stash || this.more;
         this._maxVisibleItems = opts.maxVisibleItems || 20;
-        this._hasVisibleVacancy = true;
         this._endPageIndex = 0;
         this._bound = true;
 
@@ -126,7 +125,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         contentView = this.createContentView(content);
 
         this._endPageIndex++;
-        if (! this.hasVisibleVacancy() && this._bound) {
+        if (! this._hasVisibleVacancy() && this._bound) {
             var viewToRemove = this.views[this.views.length-1];
 
             // Ensure .more won't let more through right away,
@@ -176,13 +175,22 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         view.$el.parent().remove();
     };
 
-    ContentListView.prototype.hasVisibleVacancy = function () {
+    /**
+     * Checks if it is still possible to add a content item
+     * into the visible list
+     * @returns {Boolean} Whether a content item can be displayed
+     */
+    ContentListView.prototype._hasVisibleVacancy = function () {
         if (this._endPageIndex > this._maxVisibleItems) {
-            this._hasVisibleVacancy = false;
+            return false;
         }
-        return this._hasVisibleVacancy;
+        return true;
     };
 
+    /**
+     * Save formerly visible content to be redisplayed later
+     * @param content {Content} A content item to be redisplayed later
+     */
     ContentListView.prototype.saveForLater = function (content) {
         this._stash.stack(content);
     };
