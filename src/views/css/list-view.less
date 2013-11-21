@@ -6,11 +6,15 @@
     }
     .hub-content-container {
         margin-top: 0;
-        -webkit-transition: margin-top 1s;
-        -moz-transition: margin-top 1s;
-        -ms-transition: margin-top 1s;
-        -o-transition: margin-top 1s;
-        transition: margin-top 1s;
+        opacity: 1;
+        -webkit-transition: margin-top 1s, opacity 1s;
+        -moz-transition: margin-top 1s, opacity 1s;
+        -ms-transition: margin-top 1s, opacity 1s;
+        -o-transition: margin-top 1s, opacity 1s;
+        transition: margin-top 1s, opacity 1s;
+    }
+    .hub-content-container-hidden {
+        opacity: 0;
     }
     article.content {
         width: 100%;

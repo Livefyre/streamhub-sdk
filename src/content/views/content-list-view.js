@@ -50,6 +50,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
     inherits(ContentListView, ListView);
 
     ContentListView.prototype.insertingClassName = 'hub-wall-is-inserting';
+    ContentListView.prototype.hiddenClassName = 'hub-content-container-hidden';
     ContentListView.prototype.contentContainerClassName = 'hub-content-container';
 
     /**
@@ -155,12 +156,14 @@ debug, Writable, ContentView, More, ShowMoreButton, ContentListViewTemplate) {
         if (newContentViewIndex === 0) {
             // Beginning!
             $wrappedEl.prependTo(this.el);
+            setTimeout(function () { $wrappedEl.removeClass(this.insertingClassName); }.bind(this), 0.1);
         } else {
             // Find it's previous view and insert new view after
             $previousEl = this.views[newContentViewIndex - 1].$el;
+            $wrappedEl.removeClass(this.insertingClassName).addClass(this.hiddenClassName);
             $wrappedEl.insertAfter($previousEl.parent('.'+this.contentContainerClassName));
+            setTimeout(function () { $wrappedEl.removeClass(this.hiddenClassName); }.bind(this), 0.1);
         }
-        setTimeout(function () { $wrappedEl.removeClass(this.insertingClassName); }.bind(this), 0.1);
     };
 
     ContentListView.prototype.hasVisibleVacancy = function () {
