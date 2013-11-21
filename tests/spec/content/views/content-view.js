@@ -97,6 +97,38 @@ function ($, jasmine, jasmineJquery, util, Content, LivefyreContent, ContentView
                 expect(contentView.$el.find('.content-created-at').length).toBe(0);
             });
         });
+        
+        describe('when Content is featured-content', function () {
+            var content,
+                view;
+            beforeEach(function () {
+                content = new LivefyreContent({"content": {
+                    "parentId": "",
+                    "bodyHtml": "Thanks for the follow! <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:580410539\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/DLT617\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">DLT617<\/span><\/a> <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:195633537\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/Mallyarashmi\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">Mallyarashmi<\/span><\/a> <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:14673143\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/pdeverak\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">pdeverak<\/span><\/a> <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:109383777\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/aisconsulting\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">aisconsulting<\/span><\/a> <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:472276147\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/401BayCentre\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">401BayCentre<\/span><\/a> <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:45034162\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/AveusLLC\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">AveusLLC<\/span><\/a> <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:1934860693\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/NeilNeillewis\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">NeilNeillewis<\/span><\/a> <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:21430851\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/huertaja\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">huertaja<\/span><\/a> <a vocab=\"http:\/\/schema.org\" typeof=\"Person\" rel=\"nofollow\" resource=\"acct:15837653\" data-lf-handle=\"\" data-lf-provider=\"twitter\" property=\"url\" href=\"https:\/\/twitter.com\/#!\/cboudreaux\" target=\"_blank\" class=\"fyre-mention fyre-mention-twitter\">@<span property=\"name\">cboudreaux<\/span><\/a>",
+                    "annotations": {
+                      "featuredmessage": {
+                        "rel_collectionId": "10739960",
+                        "value": 1381771898
+                      }
+                    },
+                    "authorId": "18463884@twitter.com",
+                    "updatedAt": 1381338371,
+                    "id": "tweet-387987364657643520@twitter.com",
+                    "createdAt": 1381338371
+                  },
+                  "vis": 1,
+                  "type": 0,
+                  "event": 1.3817718982409e+15,
+                  "source": 1
+                });
+                view = new ContentView({ content: content });
+            });
+            it('renders with the content-featured class in its view', function () {
+                var $el = view.render().$el.find('.content-featured');
+
+                expect($el.length).toBe(1);
+            });
+        });
 
         describe('when Content has no image attachment(s)', function() {
             var content = new Content('what'),
