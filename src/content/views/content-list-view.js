@@ -55,17 +55,12 @@ debug, Writable, ContentView, More, ShowMoreButton) {
      */
     ContentListView.prototype.elClass += ' streamhub-content-list-view';
 
-    /**
-     * Set the element that this ContentListView renders in
-     * @param element {HTMLElement} The element to render the ContentListView in
-     */
-    ContentListView.prototype.setElement = function (element) {
-        ListView.prototype.setElement.apply(this, arguments);
-
-        this.$el.on('removeContentView.hub', $.proxy(function(e, data) {
+    ContentListView.prototype.events = {
+        'removeContentView.hub': function(e, data) {
             return ListView.prototype.remove.call(this, data.contentView);
-        }, this));
-        this.$el.on('focusContent.hub', $.proxy(function(e, context) {
+        },
+
+        'focusContent.hub': function(e, context) {
             var contentView = this.getContentView(context.content);
             if (! this.modal) {
                 if (contentView &&
@@ -76,9 +71,16 @@ debug, Writable, ContentView, More, ShowMoreButton) {
                 return;
             }
             this.modal.show(context.content, { attachment: context.attachmentToFocus });
-        }, this));
+        }
     };
 
+    /**
+     * Set the element that this ContentListView renders in
+     * @param element {HTMLElement} The element to render the ContentListView in
+     */
+    ContentListView.prototype.setElement = function (element) {
+        ListView.prototype.setElement.apply(this, arguments);
+    };
 
     /**
      * Comparator function to determine ordering of ContentViews.
@@ -152,7 +154,7 @@ debug, Writable, ContentView, More, ShowMoreButton) {
             $wrappedEl.prependTo(this.$listEl);
             $wrappedEl.css('margin-top', (-1*$wrappedEl.height())+'px');
 
-            // Wait for the element to be rendered, before removing class which 
+            // Wait for the element to be rendered, before removing class which
             // transitions the margin-top from -100% to 0
             setTimeout($.proxy(function () {
                 $wrappedEl.removeClass(this.insertingClassName).css('margin-top', '');
@@ -222,7 +224,7 @@ debug, Writable, ContentView, More, ShowMoreButton) {
      * @returns {ContentView | null} The contentView for the content, or null.
      */
     ContentListView.prototype.getContentView = function (newContent) {
-        for (var i=0; i < this.views.length; i++) {
+        for (var i=0, len = this.views.length; i < len; i++) {
             var contentView = this.views[i];
             if ((newContent === contentView.content) || (newContent.id && contentView.content.id === newContent.id)) {
                 return contentView;

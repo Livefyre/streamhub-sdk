@@ -3,7 +3,7 @@ define(['streamhub-sdk/debug', 'streamhub-sdk/jquery'], function (debug, $) {
 
     var log = debug('util');
 
-    /** 
+    /**
      * A module containing utility methods.
      * @module streamhub-sdk/util
      */
@@ -83,6 +83,14 @@ define(['streamhub-sdk/debug', 'streamhub-sdk/jquery'], function (debug, $) {
             dateString += ' ' + date.getFullYear();
         }
         return dateString;
+    };
+
+    var idCounts = 0;
+    /**
+     * @return {string} A new unique id.
+     */
+    exports.uniqueId = function () {
+        return ++idCounts + '';
     };
 
     Object.keys = Object.keys || (function () {

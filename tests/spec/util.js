@@ -94,5 +94,10 @@ function ($, Util) {
                 expect(Util.formatDate(createdAt, relativeTo).indexOf('Dec 2012')).not.toBe(-1);
             });
         });
+        describe('uniqueId', function () {
+            it('generates unique ids', function () {
+                expect(Util.uniqueId() === Util.uniqueId()).toBe(false);
+            });
+        });
     });
 });
