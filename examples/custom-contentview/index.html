@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/src/css/style.css">
+    <style>
+    #listView {
+        width:500px;
+        overflow: hidden;
+    }
+    </style>
+    <style>
+    .custom-rss-content-view .content-actions {
+        margin-right: 20px;
+    }
+    </style>
+    <script id="custom-content-template" type="text/html">
+        <div class="content-header">
+        <div class="content-header-inner">
+            {{#author.avatar}}
+                <a class="content-author-avatar">
+                    <img src="{{ author.avatar }}" />
+                </a>
+            {{/author.avatar}}
+            <div class="content-byline">
+                {{#author.url}}
+                    <a class="content-author-name" href="{{ author.url }}" target="_blank">{{ author.displayName }}</a>
+                {{/author.url}}
+                {{^author.url}}
+                    <span class="content-author-name">{{ author.displayName }}</span>
+                {{/author.url}}
+            </div>
+        </div>
+        </div>
+
+        <div class="content-attachments"></div>
+
+        <div class="content-body">
+            {{{ body }}}
+        </div>
+
+        {{#featured}}
+            <div class="content-featured">Featured</div>
+        {{/featured}}
+
+        <ul class="content-actions">
+            <li class="content-action" data-content-action="share">
+                <a class="hub-tooltip-link content-action-share" href="#" title="Share">
+                    <span>Share</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="content-meta">
+            {{#formattedCreatedAt}}
+            <div class="content-created-at">{{{formattedCreatedAt}}}</div>
+            {{/formattedCreatedAt}}
+        </div>
+    </script>
+</head>
+    <body>
+        <h1>Custom ContentViews</h1>
+        <p>RSS Items are using a custom ContentView</p>
+        <div id="listView"></div>
+
+        <script src="../../lib/requirejs/require.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+        requirejs.config({
+            baseUrl: '../../'
+        });
+        require([
+            'streamhub-sdk/content/views/content-list-view',
+            'streamhub-sdk/content/views/content-view',
+            'streamhub-sdk/collection',
+            'streamhub-sdk/content',
+            'streamhub-sdk/content/types/livefyre-content',
+            'inherits',
+            'hogan'
+        ],function (ListView, ContentView, Collection, Content, LivefyreContent,
+            inherits, hogan) {
+            var opts = {
+                "network": "coxnews.fyre.co",
+                "siteId": "347553",
+                "articleId": "custom-1386267756372"
+            };
+            var listView = window.view = new ListView({
+                initial: 3,
+                showMore: 5,
+                el: document.getElementById("listView")
+            });
+
+            HasCustomRssContentView.call(listView);
+
+            /**
+             * A Custom RSS ContentView
+             */
+            function CustomRssContentView (opts) {
+                ContentView.apply(this, arguments);
+            }
+            inherits(CustomRssContentView, ContentView);
+
+            CustomRssContentView.prototype.elClass += ' custom-rss-content-view';
+
+            /**
+             * It has a custom template, which we've stored in a script element
+             * above
+             */
+            var mustacheTemplate = document.getElementById('custom-content-template').innerHTML,
+                compiledTemplate = hogan.compile(mustacheTemplate);
+            CustomRssContentView.prototype.template = function (context) {
+                // remove this later, but here you can see what
+                // variables you can use in your template
+                // meta.content.feedEntry will contain some data
+                // from the RSS Feed
+                console.log("Rendering template for custom ContentView", context);
+
+                return compiledTemplate.render(context);
+            };
+
+            /**
+             * Mixin to a ContentListView such that it will render a
+             * CustomRssContentView for RSS Content
+             */
+            function HasCustomRssContentView () {
+                /**
+                 * Override ListView#createContentView to create a special ContentView
+                 * class for RSS Items
+                 */
+                var ogCreateContentView = this.createContentView;
+                this.createContentView = function (content) {
+                    if (content.source === 'feed') {
+                        return makeCustomContentView(content);
+                    }
+                    return ogCreateContentView.apply(this, arguments);
+                }
+
+                /**
+                 * Create a rendered custom ContentView for the provided content
+                 */
+                function makeCustomContentView (content) {
+                    var contentView = new CustomRssContentView({
+                        content: content
+                    });
+                    contentView.render();
+                    return contentView;
+                }
+            }
+
+            var collection = window.collection =  new Collection(opts);
+
+            collection.pipe(listView);
+        });
+        </script>
+    </body>
+</html>
