@@ -24,6 +24,7 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
      *     StreamHub environment the Collection resides on
      * @param [opts.bootstrapClient] {LivefyreBootstrapClient} A Client object
      *     that can request StreamHub's Bootstrap web service
+     * @param [opts.replies=false] {boolean} Whether to read out reply Content
      */
     var CollectionArchive = function (opts) {
         opts = opts || {};
@@ -32,6 +33,7 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
 
         this._bootstrapClient = opts.bootstrapClient || new BootstrapClient();
         this._contentIdsInHeadDocument = [];
+        this._replies = opts.replies || false;
 
         Readable.call(this, opts);
     };
@@ -138,7 +140,7 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
         bootstrapDoc = bootstrapDoc || {};
         var self = this,
             states = bootstrapDoc.content || [],
-            stateToContent = new StateToContent(bootstrapDoc),
+            stateToContent = this._createStateToContent(bootstrapDoc),
             state,
             content,
             contents = [];
@@ -161,6 +163,16 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
 
         log("created contents from bootstrapDoc", contents);
         return contents;
+    };
+
+    /**
+     * Create a StateToContent Transform that will have states written in,
+     * and should read out Content instances
+     */
+    CollectionArchive.prototype._createStateToContent = function (opts) {
+        opts = opts || {};
+        opts.replies = this._replies;
+        return new StateToContent(opts);
     };
 
 

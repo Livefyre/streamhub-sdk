@@ -30,11 +30,12 @@
                 "network": "labs-t402.fyre.co",
                 "siteId": "303827",
                 "articleId": "xbox-0",
-                "environment": "t402.livefyre.com"
+                "environment": "t402.livefyre.com",
+                "replies": true
             };
             var listView = window.view = new ListView({
-                initial: 3,
-                showMore: 5,
+                initial: 50,
+                showMore: 50,
                 el: document.getElementById("listView")
             });
 

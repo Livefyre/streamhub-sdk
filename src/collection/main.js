@@ -21,6 +21,8 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
 
     /**
      * An Object that represents a hosted StreamHub Collection
+     * @param [opts.replies=false] {boolean} Whether to stream out reply Content
+     * from the Archives and Updaters
      */
     var Collection = function (opts) {
         opts = opts || {};
@@ -29,9 +31,11 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         this.siteId = opts.siteId;
         this.articleId = opts.articleId;
         this.environment = opts.environment;
+
         this._collectionMeta = opts.collectionMeta;
         this._signed = opts.signed;
         this._autoCreate = opts.autoCreate || true;
+        this._replies = opts.replies || false;
 
         this._bootstrapClient = opts.bootstrapClient || new LivefyreBootstrapClient();
         this._createClient = opts.createClient || new LivefyreCreateClient();
@@ -59,7 +63,8 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         opts = opts || {};
         return new CollectionArchive({
             collection: this,
-            bootstrapClient: opts.bootstrapClient || this._bootstrapClient
+            bootstrapClient: opts.bootstrapClient || this._bootstrapClient,
+            replies: this._replies
         });
     };
 
@@ -72,7 +77,8 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         opts = opts || {};
         return new CollectionUpdater({
             collection: this,
-            streamClient: opts.streamClient
+            streamClient: opts.streamClient,
+            replies: this._replies
         });
     };
 

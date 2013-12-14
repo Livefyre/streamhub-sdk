@@ -26,12 +26,14 @@ StateToContent, debug) {
      *     can request StreamHub's Stream web service
      * @param [opts.bootstrapClient] {LivefyreBootstrapClient} A Client object
      *     that can request StreamHub's Bootstrap web service
+     * @param [opts.replies=false] {boolean} Whether to read out reply Content
      */
     var CollectionUpdater = function (opts) {
         opts = opts || {};
         this._collection = opts.collection;
         this._streamClient = opts.streamClient || new StreamClient();
         this._request = null;
+        this._replies = opts.replies || false;
         Readable.call(this, opts);
     };
 
@@ -139,19 +141,23 @@ StateToContent, debug) {
      * @return {Content[]} An Array of Content models
      */
     CollectionUpdater.prototype._contentsFromStreamData = function (streamData) {
-        var states = streamData.states,
+        var self = this,
+            stateToContent = this._createStateToContent(streamData),
+            states = streamData.states,
             state,
-            transformedContent,
+            content,
             contents = [];
 
+        stateToContent.on('data', function (content) {
+            contents.push(content);
+        });
+
         for (var contentId in states) {
-            if (states.hasOwnProperty(contentId)) {
-                state = states[contentId];
-                transformedContent = StateToContent.transform(state, streamData.authors);
-                if (transformedContent && transformedContent.length) {
-                    contents.push.apply(contents, transformedContent);
-                }
+            if ( ! states.hasOwnProperty(contentId)) {
+                continue;
             }
+            state = states[contentId];
+            stateToContent.write(state);
         }
 
         return contents;
@@ -173,6 +179,15 @@ StateToContent, debug) {
         };
     };
 
+    /**
+     * Create a StateToContent Transform that will have states written in,
+     * and should read out Content instances
+     */
+    CollectionUpdater.prototype._createStateToContent = function (opts) {
+        opts = opts || {};
+        opts.replies = this._replies;
+        return new StateToContent(opts);
+    };
 
     return CollectionUpdater;
 });

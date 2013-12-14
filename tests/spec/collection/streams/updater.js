@@ -18,7 +18,6 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $) {
 
             beforeEach(function () {
                 streamClient = new MockLivefyreStreamClient();
-                StateToContent.Storage.cache = {};
                 updater = new CollectionUpdater({
                     collection: new MockCollection(),
                     streamClient: streamClient
@@ -28,6 +27,7 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $) {
 
             afterEach(function () {
                 updater.pause();
+                StateToContent.Storage.cache = {};
             });
 
             it('is instanceof CollectionUpdater', function () {
@@ -237,6 +237,17 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $) {
                     expect(contents.length).toBe(1);
                 });
             });
+        });
+
+        it('reads out replies when constructed with opts.replies = true', function () {
+            var streamClient = new MockLivefyreStreamClient();
+            var updater = new CollectionUpdater({
+                collection: new MockCollection(),
+                streamClient: streamClient,
+                replies: true
+            });
+            var stateToContent = updater._createStateToContent();
+            expect(stateToContent._replies).toBe(true);
         });
     });
 });

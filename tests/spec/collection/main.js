@@ -74,12 +74,22 @@ Auth, Writable, Readable) {
                     var archive = collection.createArchive();
                     expect(archive instanceof CollectionArchive).toBe(true);
                 });
+                it('archive._replies mirrors collection._replies', function () {
+                    var collection = new Collection({ replies: true });
+                    var archive = collection.createArchive();
+                    expect(archive._replies).toBe(true);
+                });
             });
 
             describe('.createUpdater', function () {
                 it('returns a readable CollectionUpdater Stream', function () {
                     var updater = collection.createUpdater();
                     expect(updater instanceof CollectionUpdater).toBe(true);
+                });
+                it('updater._replies mirrors collection._replies', function () {
+                    var collection = new Collection({ replies: true });
+                    var updater = collection.createUpdater();
+                    expect(updater._replies).toBe(true);
                 });
             });
 
