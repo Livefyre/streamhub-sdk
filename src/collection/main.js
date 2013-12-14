@@ -177,7 +177,9 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
 
     Collection.prototype.initFromBootstrap = function (errback) {
         var self = this;
-        this.once('_initFromBootstrap', errback);
+        if (errback) {
+            this.once('_initFromBootstrap', errback);
+        }
         if (this._isInitingFromBootstrap) {
             return;
         }
@@ -187,7 +189,7 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
             if (err === 'Not Found' && this._autoCreate) {
                 this._createCollection(function (err) {
                     if (!err) {
-                        self.initFromBootstrap(errback);
+                        self.initFromBootstrap();
                     }
                 });
                 return;
@@ -230,14 +232,14 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
             errback.call(self, err, data);
         });
     };
-    
-    
+
+
     /**
      * @callback optionalObjectCallback
-     * @param [error] {Object} 
+     * @param [error] {Object}
      */
-    
-    
+
+
     /**
      * Request the Create endpoint to create an entirely new collection. This
      * gets called when Bootstrap initialization fails.
@@ -250,7 +252,7 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
             throw 'Attempting to create a collection more than once.';
         }
         this._isCreatingCollection = true;
-        
+
         var self = this;
         this._autoCreate = false;
         this.once('_createCollection', errback);
