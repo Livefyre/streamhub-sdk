@@ -332,6 +332,10 @@ function ($, ContentListView, Content, ContentView) {
                     expect(listView.createContentView.mostRecentCall.args[0]).toBe(content);
                 });
 
+                it("renders the ContentView", function () {
+                    expect(newContentView.el.childNodes.length).toBeGreaterThan(0);
+                });
+
                 it("is returned later by .getExistingContentView", function () {
                     content.id = '11';
                     var contentView = listView.getContentView(content);

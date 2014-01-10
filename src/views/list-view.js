@@ -137,6 +137,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
             this.views.sort(this.comparator);
         }
 
+        newView.render();
         // Add to DOM
         this._insert(newView);
 

@@ -245,11 +245,6 @@ function(
      */
     ContentListView.prototype.createContentView = function (content) {
         var view = this.contentViewFactory.createContentView(content);
-
-        if (view && typeof view.render === 'function') {
-            view.render();
-        }
-
         return view;
     };
 
