@@ -129,7 +129,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
      * @returns {!boolean}
      */
     ListView.prototype.isIndexedView = function(view) {
-        return (this._indexedViews[view.uid]) ? true : false;
+        return (view && view.uid && this._indexedViews[view.uid]) ? true : false;
     };
     
     /**
@@ -155,9 +155,9 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
             throw new Error("Tried to _binarySearch without this.comparator.");
         }
         
-        var low = 0, high = array.length, mid, comp;
+        var low = 0, high = array.length, mid, comp, origMid;
         while (low < high) {
-            mid = (low + high) >>> 1;
+            origMid = mid = (low + high) >>> 1;
             comp = array[mid];
             
             while (this.isIndexedView(comp) && mid > low) {
@@ -165,10 +165,15 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
             //Move lower looking for a comparable view
                 comp = array[--mid];
             }
-                
             if (this.isIndexedView(comp)) {
-            //If nothing was found, just add it to the beginning of this segment
-                high = low;
+            //If nothing was found...
+                if (low === 0) {
+                //...and we're at the beginning, then just add it to the beginning
+                    high = low;
+                } else {
+                //...and we aren't at the beginning, continue to move towards the end
+                    low = origMid + 1;
+                }
             } else {
             //Set new low or high and start again
                 if (this.comparator(comp, newView) < 0) {
