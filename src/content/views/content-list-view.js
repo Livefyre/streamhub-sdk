@@ -110,12 +110,11 @@ function($, ListView, ContentView, ContentViewFactory, GalleryAttachmentListView
         if (!content.el && this.getContentView(content)) {
         //No double-adds
             log('already added', content);
-            return;
+            return content;
         }
         
         var contentView = content.el ? content : this.createContentView(content);
         //duck type for ContentView
-        
         if (this._bound && ! this._hasVisibleVacancy()) {
             var viewToRemove = this.views[this.views.length-1];
             
