@@ -13,7 +13,8 @@
     'streamhub-sdk/content/views/content-list-view',
     'streamhub-sdk/views/list-view',
     'streamhub-sdk/auth',
-    'streamhub-sdk/modal'
+    'streamhub-sdk/modal',
+    'streamhub-sdk/views/streams/injector'
   ],
   stubModules: ['text', 'hgn', 'json'],
   out: "../dist/streamhub-sdk.min.js",

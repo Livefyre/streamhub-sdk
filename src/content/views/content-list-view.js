@@ -10,19 +10,8 @@ define([
     'streamhub-sdk/views/show-more-button',
     'inherits',
     'streamhub-sdk/debug'],
-function(
-    $,
-    ListView,
-    ContentView,
-    ContentViewFactory,
-    GalleryAttachmentListView,
-    AttachmentGalleryModal,
-    Writable,
-    More,
-    ShowMoreButton,
-    inherits,
-    debug
-) {
+function($, ListView, ContentView, ContentViewFactory, GalleryAttachmentListView,
+        AttachmentGalleryModal, Writable, More, ShowMoreButton, inherits, debug) {
     'use strict';
 
     var log = debug('streamhub-sdk/content/views/content-list-view');
@@ -85,7 +74,7 @@ function(
             }
         }
     });
-
+    
     /**
      * Comparator function to determine ordering of ContentViews.
      * ContentView elements indexes in this.el will be ordered by this
@@ -113,33 +102,33 @@ function(
      *     render the newContentView
      *     insert the newContentView into this.el according to this.comparator
      * @param content {Content} A Content model to add to the ContentListView
+     * @param [index] {number} location for the new view
      * @returns the newly created ContentView
      */
-    ContentListView.prototype.add = function(content) {
-        var contentView = content.el ? content : this.getContentView(content); //duck type for ContentView
-
+    ContentListView.prototype.add = function(content, index) {
         log("add", content);
-
-        if (contentView) {
-            return ListView.prototype.add.call(this, contentView);
+        if (!content.el && this.getContentView(content)) {
+        //No double-adds
+            log('already added', content);
+            return content;
         }
-
-        contentView = this.createContentView(content);
-
+        
+        var contentView = content.el ? content : this.createContentView(content);
+        //duck type for ContentView
         if (this._bound && ! this._hasVisibleVacancy()) {
             var viewToRemove = this.views[this.views.length-1];
-
+            
             // Ensure .more won't let more through right away,
             // we already have more than we want.
             this.more.setGoal(0);
             // Unshift content to more stream
             this.saveForLater(viewToRemove.content);
-
+            
             // Remove non visible view
             this.remove(viewToRemove);
         }
-
-        return ListView.prototype.add.call(this, contentView);
+        
+        return ListView.prototype.add.call(this, contentView, index);
     };
 
     ContentListView.prototype._insert = function (contentView) {

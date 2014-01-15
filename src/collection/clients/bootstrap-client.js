@@ -24,7 +24,7 @@ function(LivefyreHttpClient, inherits, base64) {
      * @param opts {Object} The livefyre collection options.
      * @param opts.network {string} The name of the network in the livefyre platform
      * @param opts.siteId {string} The livefyre siteId for the conversation
-     * @param opts.articleId {string} The livefyre articleId for the conversation
+     * @param opts.articleId {string|number} The livefyre articleId for the conversation
      * @param [opts.page] {string} Livefyre page name or number to fetch from bootstrap
      *     (default "init")
      * @param [opts.environment] {string} Optional livefyre environment to use dev/prod environment
@@ -45,7 +45,7 @@ function(LivefyreHttpClient, inherits, base64) {
             "/",
             opts.siteId,
             "/",
-            btoa(opts.articleId),
+            btoa(opts.articleId.toString()),
             "/",
             typeof opts.page !== 'undefined' ? opts.page+'.json' : "init"
         ].join("");
