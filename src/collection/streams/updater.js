@@ -27,6 +27,7 @@ StateToContent, debug) {
      * @param [opts.bootstrapClient] {LivefyreBootstrapClient} A Client object
      *     that can request StreamHub's Bootstrap web service
      * @param [opts.replies=false] {boolean} Whether to read out reply Content
+     * @param [opts.createStateToContent] {function} Creates a custem Content adapter
      */
     var CollectionUpdater = function (opts) {
         opts = opts || {};
@@ -34,6 +35,9 @@ StateToContent, debug) {
         this._streamClient = opts.streamClient || new StreamClient();
         this._request = null;
         this._replies = opts.replies || false;
+        if (opts.createStateToContent) {
+            this._createStateToContent = opts.createStateToContent;
+        }
         Readable.call(this, opts);
     };
 
