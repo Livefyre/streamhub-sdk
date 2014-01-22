@@ -24,7 +24,7 @@ define([
         }
         this.body = body;
         var vis = (typeof obj.visibility === 'number') ? obj.visibility :
-            (typeof obj.vis === 'number') ? obj.vis : 1; 
+            (typeof obj.vis === 'number') ? obj.vis : 1;
         this.visibility = Content.enums.visibility[vis];
         this.attachments = obj.attachments || [];
         this.replies = obj.replies || [];
@@ -64,10 +64,11 @@ define([
     /**
      * Set some properties and emit 'change' and 'change:{property}' events
      * @param newProperties {Object} An object of properties to set on this Content
+     * @param opt_silence [boolean] Mute any events that would be fired
      * @fires Content#change
      * @fires Content#event:change:_property_
      */
-    Content.prototype.set = function (newProperties) {
+    Content.prototype.set = function (newProperties, opt_silence) {
         newProperties = newProperties || {};
         var oldProperties = {};
         var oldVal, newVal, changed;
@@ -76,16 +77,16 @@ define([
                 oldVal = oldProperties[key] = this[key];
                 newVal = this[key] = newProperties[key];
                 if (newVal !== oldVal) {
-                    this.emit('change:'+key, newVal, oldVal);//Will emit 'change:visibility'
+                    opt_silence || this.emit('change:'+key, newVal, oldVal);//Will emit 'change:visibility'
                     changed = true;
                 }
             }
         }
         if (changed) {
-            this.emit('change', newProperties, oldProperties);
+            opt_silence || this.emit('change', newProperties, oldProperties);
         }
     };
-    
+
     Content.enums = {};
     /**
      * The StreamHub APIs use enumerations to define

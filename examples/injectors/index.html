@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/src/css/style.css">
+    <style>
+    #view {
+        width:500px;
+    }
+    </style>
+    <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+</head>
+    <body>
+        <div id="view"></div>
+
+        <script src="../../lib/cajon/cajon.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+            requirejs({
+                baseUrl: "/"
+            });
+        </script>
+        <script>
+        require([
+            'streamhub-sdk/content/views/content-list-view',
+            'streamhub-sdk/content',
+            'streamhub-sdk/collection',
+            'streamhub-sdk/views/streams/injector'
+        ],function (ContentListView, Content, Collection, Injector) {
+            var opts = {
+                "network": "labs-t402.fyre.co",
+                "siteId": "303827",
+                "articleId": "xbox-0",
+                "environment": "t402.livefyre.com"
+            };
+            var featureOpts = {
+                "network": "labs-t402.fyre.co",
+                "siteId": "303827",
+                "articleId": "custom-1380083232878",
+                "environment": "t402.livefyre.com"
+            };
+            
+            var view = window.view = new ContentListView({
+                initial: 20,
+                showMore: 7,
+                el: document.getElementById("view")
+            });
+
+            var featuredCollection =  new Collection(featureOpts);
+            var featuredContents = featuredCollection.createFeaturedContents();
+            var featuredArchive = featuredContents.createArchive();
+            
+            var collection = window.collection =  new Collection(opts);
+            var archive = window.archive = collection.createArchive();
+            
+            var injector = new Injector({
+                interval: 6,
+                count: 1
+            });
+            
+            featuredArchive.pipe(injector).target(view);
+            archive.pipe(view.more);
+            
+            var count = 35;
+            setInterval(function () {
+                if (count > 0) { view.write(new Content({ body: new Date() })); }
+                count--;
+            }, 3000);
+        });
+        </script>
+    </body>
+</html>

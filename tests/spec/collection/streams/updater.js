@@ -5,22 +5,37 @@ define([
     'streamhub-sdk-tests/mocks/collection/mock-collection',
     'streamhub-sdk-tests/mocks/collection/clients/mock-bootstrap-client',
     'streamhub-sdk-tests/mocks/collection/clients/mock-stream-client',
-    'streamhub-sdk/jquery'],
+    'streamhub-sdk/jquery',
+    'streamhub-sdk/content/types/livefyre-content'],
 function (CollectionUpdater, Readable, StateToContent, MockCollection,
-MockLivefyreBootstrapClient, MockLivefyreStreamClient, $) {
+MockLivefyreBootstrapClient, MockLivefyreStreamClient, $, LivefyreContent) {
     "use strict";
 
     describe('streamhub-sdk/collection/streams/updater', function () {
 
         describe('when constructed', function () {
             var updater,
-                streamClient;
+                streamClient,
+                createStateToContent,
+                createAnnotator;
 
             beforeEach(function () {
+                createStateToContent = jasmine.createSpy('createStateToContent')
+                    .andCallFake(function(opts) {
+                        return CollectionUpdater.prototype._createStateToContent.call(this, opts);
+                    });
+
+                createAnnotator = jasmine.createSpy('createAnnotator')
+                    .andCallFake(function() {
+                        return CollectionUpdater.prototype._createAnnotator.call(this);
+                    });
+
                 streamClient = new MockLivefyreStreamClient();
                 updater = new CollectionUpdater({
                     collection: new MockCollection(),
-                    streamClient: streamClient
+                    streamClient: streamClient,
+                    createStateToContent: createStateToContent,
+                    createAnnotator: createAnnotator
                 });
                 spyOn(updater._collection._bootstrapClient, 'getContent').andCallThrough();
             });
@@ -41,6 +56,14 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $) {
 
             it('can be passed opts.streamClient', function () {
                 expect(updater._streamClient).toBe(streamClient);
+            });
+
+            it('can be passed opts.createStateToContent', function () {
+                expect(updater._createStateToContent).toEqual(createStateToContent);
+            });
+
+            it('can be passed opts.createAnnotator', function () {
+                expect(updater._createAnnotator).toEqual(createAnnotator);
             });
 
             describe('when .read() for the first time', function () {
@@ -70,6 +93,29 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $) {
                         expect(content.author).toEqual(jasmine.any(Object));
                         expect(content.author.displayName)
                             .toEqual(jasmine.any(String));
+                    });
+                });
+                it('uses opts.createStateToContent', function () {
+                    waitsFor(function () {
+                        if ( ! content) {
+                            content = updater.read();
+                        }
+                        return content;
+                    });
+                    runs(function () {
+                        expect(createStateToContent).toHaveBeenCalled();
+                    });
+                });
+
+                it('uses opts.createAnnotator', function () {
+                    waitsFor(function () {
+                        if ( ! content) {
+                            content = updater.read();
+                        }
+                        return content;
+                    });
+                    runs(function () {
+                        expect(createAnnotator).toHaveBeenCalled();
                     });
                 });
             });
@@ -235,6 +281,31 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $) {
                     // There is one attachment state and one content state in the stream,
                     // so only one content item will be emitted, but it will have an attachment
                     expect(contents.length).toBe(1);
+                });
+            });
+
+            it('can .read() annotations from the stream', function () {
+                var id = 'ContentInStorage123';
+                var content = new LivefyreContent({});
+                expect(content.getFeaturedValue()).toEqual(undefined);
+
+                StateToContent.Storage.set(id, content);
+
+                spyOn(updater, '_read').andCallThrough();
+                var contents = [];
+
+                updater.on('data', function (content) {
+                    contents.push(content);
+                });
+
+                waitsFor(function () {
+                    return contents.length;
+                });
+
+                runs(function () {
+                    updater.pause();
+                    var featuredContent = StateToContent.Storage.get(id);
+                    expect(featuredContent.getFeaturedValue()).toEqual(jasmine.any(Number));
                 });
             });
         });

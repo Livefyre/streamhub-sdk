@@ -19,8 +19,9 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
     /**
      * A simple View that displays Content in a list (`<ul>` by default).
      *
-     * @param opts {Object} A set of options to config the view with
-     * @param opts.el {HTMLElement} The element in which to render the streamed content
+     * @param [opts] {Object} A set of options to config the view with
+     * @param [opts.el] {HTMLElement} The element in which to render the streamed content
+     * @param [opts.comparator] {function(view, view): number}
      * @exports streamhub-sdk/views/list-view
      * @constructor
      */
@@ -32,6 +33,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
         View.call(this, opts);
         Writable.call(this, opts);
 
+        this.comparator = opts.comparator || this.comparator;
         this._moreAmount = opts.showMore || 50;
         this.more = opts.more || this._createMoreStream(opts);
         this.showMoreButton = opts.showMoreButton || this._createShowMoreButton(opts);
@@ -70,6 +72,14 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
      * Selector of .el child in which to render a show more button
      */
     ListView.prototype.showMoreElSelector = '.hub-list-more';
+    
+    
+    /**
+     * Keys are views that were forcibly indexed into this view.
+     * @type {Object.<string, boolean>}
+     * @private
+     */
+    ListView.prototype._indexedViews = {};
 
 
     ListView.prototype.setElement = function (element) {
@@ -106,40 +116,111 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
     /**
      * Comparator function to determine ordering of Views.
      * Your subclass should implement this if you want ordering
-     * @private
      * @param a {view}
      * @param b {view}
      * @returns {Number} < 0 if a before b, 0 if same ordering, > 0 if b before a
      */
     ListView.prototype.comparator = null;
+    
+
+    /**
+     * Returns true if the view is listed on the indexedViews list.
+     * @param view {!View}
+     * @returns {!boolean}
+     * @protected
+     */
+    ListView.prototype._isIndexedView = function(view) {
+        return (view && view.uid && this._indexedViews[view.uid]) ? true : false;
+    };
+    
+    /**
+     * Adds a view to _indexedViews
+     * @param view {!View}
+     * @private
+     */
+    ListView.prototype._recordIndexedView = function(view) {
+        this._indexedViews[view.uid] = true;
+    };
+    
+    /**
+     * Returns the index where newView should be inserted.
+     * Requires this.comparator to be defined.
+     * @private
+     * @param newView {view} View that will be added.
+     * @param [array] {[]} Array to search through. Defaults to this.views.
+     * @return {!number}
+     */
+    ListView.prototype._binarySearch = function(newView, array) {
+        array = array || this.views;
+        if (!this.comparator) {
+            throw new Error("Tried to _binarySearch without this.comparator.");
+        }
+        
+        var low = 0, high = array.length, mid, comp, origMid;
+        while (low < high) {
+            origMid = mid = (low + high) >>> 1;
+            comp = array[mid];
+            
+            while (this._isIndexedView(comp) && mid > low) {
+            //Try to get a comp that isn't indexed
+            //Move lower looking for a comparable view
+                comp = array[--mid];
+            }
+            if (this._isIndexedView(comp)) {
+            //If nothing was found...
+                if (low === 0) {
+                //...and we're at the beginning, then just add it to the beginning
+                    high = low;
+                } else {
+                //...and we aren't at the beginning, continue to move towards the end
+                    low = origMid + 1;
+                }
+            } else {
+            //Set new low or high and start again
+                if (this.comparator(comp, newView) < 0) {
+                    low = mid + 1;
+                } else {
+                    high = mid;
+                }
+            }
+        }
+        
+        return Math.max(0, low);//Incase of miscalculations, use max() to assure minimum of 0
+    };
 
 
     /**
      * Add a view to the ListView
      *     insert the newView into this.el according to this.comparator
      * @param newView {View} A View to add to the ListView
+     * @param [forcedIndex] {number} location for the new view
      * @returns the newly added View
      */
-    ListView.prototype.add = function(newView) {
-        log("add", newView);
+    ListView.prototype.add = function(newView, forcedIndex) {
+        log("add", newView, forcedIndex);
+        var index;
 
         if ( ! newView) {
             log("Called add with a falsy parameter, returning");
             return;
         }
 
-        // Push and sort. #TODO Insert in sorted order
-        if (this.views.indexOf(newView) === -1) {
-            this.views.push(newView);
+        if (typeof(forcedIndex) !== 'number' || Math.abs(forcedIndex) > this.views.length) {
+            if (this.comparator) {
+                index = this._binarySearch(newView);
+            } else {
+                index = this.views.length;
+            }
+        } else {
+            this._recordIndexedView(newView);
         }
+        
+        this.views.splice(forcedIndex || index, 0, newView);
 
-        if (this.comparator) {
-            this.views.sort(this.comparator);
-        }
-
+        newView.render();
         // Add to DOM
-        this._insert(newView);
-
+        this._insert(newView, forcedIndex);
+        this.emit('added', newView);
         return newView;
     };
 
@@ -179,15 +260,15 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
     /**
      * Insert a contentView into the ListView's .el
-     * Get insertion index based on this.comparator
-     * @private
+     * @protected
      * @param view {View} The view to add to this.el
+     * @param [forcedIndex] {number} Index of the view in this.views
      */
-    ListView.prototype._insert = function (view) {
+    ListView.prototype._insert = function (view, forcedIndex) {
         var newContentViewIndex,
             $previousEl;
 
-        newContentViewIndex = this.views.indexOf(view);
+        newContentViewIndex = forcedIndex || this.views.indexOf(view);
 
         if (newContentViewIndex === 0) {
             // Beginning!

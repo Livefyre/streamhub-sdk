@@ -192,7 +192,7 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         this._isInitingFromBootstrap = true;
         this._getBootstrapInit(function (err, initData) {
             self._isInitingFromBootstrap = false;
-            if (err === 'Not Found' && this._autoCreate) {
+            if (err && err.toLowerCase() === 'not found' && this._autoCreate) {
                 this._createCollection(function (err) {
                     if (!err) {
                         self.initFromBootstrap();

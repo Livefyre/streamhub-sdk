@@ -5,9 +5,10 @@ define([
     'streamhub-sdk/collection/clients/bootstrap-client',
     'streamhub-sdk/collection/clients/stream-client',
     'streamhub-sdk/content/state-to-content',
+    'streamhub-sdk/content/annotator',
     'streamhub-sdk/debug'],
 function (inherits, Readable, streamUtil, BootstrapClient, StreamClient,
-StateToContent, debug) {
+StateToContent, Annotator, debug) {
     'use strict';
 
 
@@ -27,6 +28,7 @@ StateToContent, debug) {
      * @param [opts.bootstrapClient] {LivefyreBootstrapClient} A Client object
      *     that can request StreamHub's Bootstrap web service
      * @param [opts.replies=false] {boolean} Whether to read out reply Content
+     * @param [opts.createStateToContent] {function} Creates a custem Content adapter
      */
     var CollectionUpdater = function (opts) {
         opts = opts || {};
@@ -34,6 +36,12 @@ StateToContent, debug) {
         this._streamClient = opts.streamClient || new StreamClient();
         this._request = null;
         this._replies = opts.replies || false;
+        if (opts.createStateToContent) {
+            this._createStateToContent = opts.createStateToContent;
+        }
+        if (opts.createAnnotator) {
+            this._createAnnotator = opts.createAnnotator;
+        }
         Readable.call(this, opts);
     };
 
@@ -141,21 +149,34 @@ StateToContent, debug) {
      * @return {Content[]} An Array of Content models
      */
     CollectionUpdater.prototype._contentsFromStreamData = function (streamData) {
-        var stateToContent = this._createStateToContent(streamData),
-            states = streamData.states,
+        var annotationDiff,
+            annotator = this._createAnnotator(),
+            annotations = streamData.annotations,
+            contentId,
+            contents = [],
             state,
-            contents = [];
+            states = streamData.states,
+            stateToContent = this._createStateToContent(streamData);
 
         stateToContent.on('data', function (content) {
             contents.push(content);
         });
 
-        for (var contentId in states) {
-            if ( ! states.hasOwnProperty(contentId)) {
-                continue;
+        for (contentId in states) {
+            if (states.hasOwnProperty(contentId)) {
+                state = states[contentId];
+                stateToContent.write(state);
             }
-            state = states[contentId];
-            stateToContent.write(state);
+        }
+
+        for (contentId in annotations) {
+            if (annotations.hasOwnProperty(contentId)) {
+                annotationDiff = annotations[contentId];
+                annotator.write({
+                    contentId: contentId,
+                    annotationDiff: annotationDiff
+                });
+            }
         }
 
         return contents;
@@ -185,6 +206,13 @@ StateToContent, debug) {
         opts = opts || {};
         opts.replies = this._replies;
         return new StateToContent(opts);
+    };
+
+    /**
+     * Create an Annotator that will mutate Content in Storage.
+     */
+    CollectionUpdater.prototype._createAnnotator = function () {
+        return new Annotator();
     };
 
     return CollectionUpdater;

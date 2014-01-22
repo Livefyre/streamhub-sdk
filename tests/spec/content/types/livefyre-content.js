@@ -70,12 +70,12 @@ function ($, LivefyreContent) {
             expect(spy.callCount).toBe(1);
             expect(content.attachments.length).toBe(1);
         });
-        
+
         it("has the specified id", function () {
             var content = new LivefyreContent({body: 'body', id: '123456'});
             expect(content.id).toBe('123456');
         });
-        
+
         it("should not allow duplicate replies to be added", function () {
             var spy = jasmine.createSpy();
             content = new LivefyreContent(mockData.livefyreStreamContent);
@@ -118,17 +118,5 @@ function ($, LivefyreContent) {
                 expect(nonFeaturedContent.getFeaturedValue()).toBe(undefined);
             });
         });
-        
-        describe('._readAnnotations', function () {
-            it('is a method on LivefyreContent', function () {
-                expect(content._readAnnotations).toEqual(jasmine.any(Function));
-            });
-
-            it('reads featuredmessage to set .featured', function () {
-                var featuredContent = new LivefyreContent(mockData.featuredBootstrapContent);
-                expect(featuredContent.featured).toBe(mockData.featuredBootstrapContent.content.annotations.featuredmessage);
-            });
-        });
-
     });
 });
