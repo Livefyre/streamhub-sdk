@@ -15,6 +15,9 @@ require.config({
     'blanket-jasmine': 'lib/blanket/dist/jasmine/blanket_jasmine'
   },
   packages: [{
+    name: "livefyre-bootstrap",
+    location: "lib/livefyre-bootstrap/src"
+  },{
     name: "streamhub-sdk",
     location: "src"
   },{
@@ -24,11 +27,17 @@ require.config({
     name: "streamhub-sdk/collection",
     location: "src/collection"
   },{
+    name: "streamhub-sdk/command",
+    location: "src/command"
+  },{
     name: "streamhub-sdk/content",
     location: "src/content"
   },{
     name: "streamhub-sdk/modal",
     location: "src/modal"
+  },{
+    name: "streamhub-sdk/upload",
+    location: "src/upload"
   },{
     name: "streamhub-sdk/jquery",
     location: "src",
