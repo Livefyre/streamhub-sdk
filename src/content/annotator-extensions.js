@@ -5,16 +5,16 @@ define([], function () {
 
     /** @enum {number} */
     voteEnums.vote = {
-        UNSET: 0,
-        UPVOTE: 1,
-        DOWNVOTE: 2
+        UNSET: '0',
+        UPVOTE: '1',
+        DOWNVOTE: '2'
     };
 
     /** @enum {number} */
     voteEnums.voteToCount = {
-        0: 0,
-        1: 1,
-        2: -1
+        '0': 0,
+        '1': 1,
+        '2': -1
     };
 
     function downVote (vote) {

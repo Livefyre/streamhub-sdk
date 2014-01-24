@@ -18,8 +18,8 @@ function (Annotator, AnnotatorExtensions, Writable, LivefyreContent, mockBootstr
         var featuredmessage = { "featuredmessage": { "rel_collectionId": "10739960", "value": 1381771896 }};
         var moderatorTrue = {"moderator": true};
         var lfContent = new LivefyreContent({});
-        var vote = {"vote": [{"collectionId": "2486003", "value": 1, "author": "default@livefyre.com"}]};
-        var downVote = {"vote": [{"collectionId": "2486003", "value": 2, "author": "default@livefyre.com"}]};
+        var vote = {"vote": [{"collectionId": "2486003", "value": "1", "author": "default@livefyre.com"}]};
+        var downVote = {"vote": [{"collectionId": "2486003", "value": "2", "author": "default@livefyre.com"}]};
 
         describe('Annotator#annotate', function () {
             it('can add featuredmessage annotations', function () {
