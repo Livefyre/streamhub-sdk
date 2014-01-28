@@ -27,7 +27,7 @@ define(['streamhub-sdk/util', 'streamhub-sdk/jquery', 'base64'], function(util, 
             "/api/v3.0/auth/?siteId=",
             opts.siteId,
             "&articleId=",
-            btoa(opts.articleId)
+            base64.btoa(opts.articleId)
         ].join("");
 
         $.ajax({
