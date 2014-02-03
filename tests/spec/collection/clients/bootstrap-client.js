@@ -142,7 +142,7 @@ function ($, LivefyreBootstrapClient, MockBootstrapClient) {
                     environment: 'qa-ext.livefyre.com'
                 });
                 var ajaxArgs = bootstrapClient._request.mostRecentCall.args[0];
-                expect(ajaxArgs.url).toBe('https://backplane-qa.bootstrap.fyre.co/bs3/qa-ext.livefyre.com/backplane-qa.fyre.co/290598/MQ==/init');
+                expect(ajaxArgs.url).toBe('https://backplane-qa.bootstrap.fyre.co/bs3/backplane-qa.fyre.co/290598/MQ==/init');
             });
             it('makes correct request when opts.environment=fyre', function () {
                 spyOn(bootstrapClient, '_request');
