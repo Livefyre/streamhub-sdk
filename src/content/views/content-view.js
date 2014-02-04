@@ -1,11 +1,12 @@
 define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/view',
+    'streamhub-sdk/ui/button/hub-button',
     'hgn!streamhub-sdk/content/templates/content',
     'streamhub-sdk/util',
     'inherits',
     'streamhub-sdk/debug'
-], function ($, View, ContentTemplate, util, inherits, debug) {
+], function ($, View, HubButton, ContentTemplate, util, inherits, debug) {
     'use strict';
 
     var log = debug('streamhub-sdk/content/views/content-view');
@@ -33,6 +34,7 @@ define([
             'left': [],
             'right': []
         };
+        this._rendered = false;
 
         View.call(this, opts);
 
@@ -175,7 +177,35 @@ define([
             this.attachmentsView.render();
         }
 
+        this._setupButtons();
+
         return this;
+    };
+
+    ContentView.prototype._setupButtons = function () {
+        if (! this._rendered) {
+            var likeButton = new HubButton(undefined, {
+                className: 'hub-content-like'
+            });
+            var replyButton = new HubButton(undefined, {
+                className: 'hub-btn-link hub-content-reply',
+                label: 'Reply'
+            });
+            var shareButton = new HubButton(undefined, {
+                className: 'hub-btn-link hub-content-share',
+                label: 'Share'
+            });
+
+            this.addButton(likeButton);
+            this.addButton(replyButton);
+            this.addButton(shareButton);
+        } else {
+            for (var i=0; i < this._controls['left'].length; i++) {
+                this.addButton(this._controls['left'][i]);
+            }
+        }
+
+        this._rendered = true;
     };
     
     /**
