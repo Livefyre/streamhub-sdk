@@ -82,7 +82,7 @@ define([
             this._attach();
         }
 
-        this._modalSubView = modalSubView;
+        this._modalSubView = modalSubView || this._modalSubView;
 
         this.render();
 

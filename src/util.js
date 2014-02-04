@@ -84,6 +84,12 @@ define(['streamhub-sdk/debug', 'streamhub-sdk/jquery'], function (debug, $) {
         }
         return dateString;
     };
+    
+    exports.abstractFunction =  function () {
+        throw 'This is an abstract function that requires developer implementation';
+    };
+    
+    exports.nullFunction = function () {};
 
     exports.objectKeys = Object.keys || (function () {
         var hasOwnProperty = Object.prototype.hasOwnProperty,
