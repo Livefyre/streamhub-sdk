@@ -1,9 +1,9 @@
 define([
     'streamhub-sdk/content/views/content-view',
-    'hgn!streamhub-sdk/content/templates/twitter',
+    'streamhub-sdk/ui/button',
     'inherits',
     'streamhub-sdk/jquery'],
-function (ContentView, TwitterContentTemplate, inherits, $) {
+function (ContentView, Button, inherits, $) {
     'use strict';
     
     /**
@@ -15,11 +15,41 @@ function (ContentView, TwitterContentTemplate, inherits, $) {
 
     var TwitterContentView = function (opts) {
         ContentView.call(this, opts);
+
+        this._rendered = false;
     };
     inherits(TwitterContentView, ContentView);
     
     TwitterContentView.prototype.elClass += ' content-tweet ';
-    TwitterContentView.prototype.template = TwitterContentTemplate;
+
+    TwitterContentView.prototype.render = function () {
+        ContentView.prototype.render.call(this);
+
+        if (! this._rendered) {
+            var replyButton = new Button(undefined, {
+                elClassPrefix: 'hub',
+                className: 'content-action content-action-reply'
+            });
+            var retweetButton = new Button(undefined, {
+                elClassPrefix: 'hub',
+                className: 'content-action content-action-retweet'
+            });
+            var favoriteButton = new Button(undefined, {
+                elClassPrefix: 'hub',
+                className: 'content-action content-action-favorite'
+            });
+
+            this.addButton(replyButton);
+            this.addButton(retweetButton);
+            this.addButton(favoriteButton);
+        } else {
+            for (var i=0; i < this._controls['left'].length; i++) {
+                this.addButton(this._controls['left'][i]);
+            }
+        }
+
+        this._rendered = true;
+    };
 
     /**
      * Gets the template rendering context. By default, returns "this.content".
@@ -30,6 +60,17 @@ function (ContentView, TwitterContentTemplate, inherits, $) {
         if (context && context.author && typeof context.author.profileUrl === 'string') {
             context.author.twitterUsername = context.author.profileUrl.split('/').pop();
         }
+        context.authorUrl = '//twitter.com/intent/user?user_id='+context.author.twitterUserId;
+        context.authorDisplayName = context.author.displayName;
+        context.authorUserName = context.author.twitterUsername;
+        context.authorUserNamePrefix = '@';
+
+        context.contentSourceName = 'twitter';
+        context.contentSourceTooltipUrl = '//twitter.com/statuses/'+context.tweetId;
+        context.contentSourceTooltipText = 'View on Twitter';
+
+        context.createdAtUrl = context.contentSourceTooltipUrl;
+
         return context;
     };
 
