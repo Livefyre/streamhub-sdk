@@ -1,9 +1,9 @@
 define([
     'streamhub-sdk/content/views/content-view',
-    'streamhub-sdk/ui/button',
+    'streamhub-sdk/ui/button/hub-button',
     'inherits',
     'streamhub-sdk/jquery'],
-function (ContentView, Button, inherits, $) {
+function (ContentView, HubButton, inherits, $) {
     'use strict';
     
     /**
@@ -22,20 +22,15 @@ function (ContentView, Button, inherits, $) {
     
     TwitterContentView.prototype.elClass += ' content-tweet ';
 
-    TwitterContentView.prototype.render = function () {
-        ContentView.prototype.render.call(this);
-
+    TwitterContentView.prototype._setupButtons = function () {
         if (! this._rendered) {
-            var replyButton = new Button(undefined, {
-                elClassPrefix: 'hub',
+            var replyButton = new HubButton(undefined, {
                 className: 'content-action content-action-reply'
             });
-            var retweetButton = new Button(undefined, {
-                elClassPrefix: 'hub',
+            var retweetButton = new HubButton(undefined, {
                 className: 'content-action content-action-retweet'
             });
-            var favoriteButton = new Button(undefined, {
-                elClassPrefix: 'hub',
+            var favoriteButton = new HubButton(undefined, {
                 className: 'content-action content-action-favorite'
             });
 
