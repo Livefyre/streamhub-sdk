@@ -1,9 +1,8 @@
 define([
     'streamhub-sdk/content/views/content-view',
-    'hgn!streamhub-sdk/content/templates/facebook',
     'inherits',
     'streamhub-sdk/jquery'],
-function (ContentView, FacebookContentTemplate, inherits, $) {
+function (ContentView, inherits, $) {
     'use strict';
 
     /**
@@ -18,7 +17,6 @@ function (ContentView, FacebookContentTemplate, inherits, $) {
     inherits(FacebookContentView, ContentView);
     
     FacebookContentView.prototype.elClass += ' content-facebook ';
-    FacebookContentView.prototype.template = FacebookContentTemplate;
 
     /**
      * Gets the template rendering context. By default, returns "this.content".
@@ -29,6 +27,16 @@ function (ContentView, FacebookContentTemplate, inherits, $) {
         if (context.attachments.length) {
             context.permalink = context.attachments[0].url;
         }
+        
+        context.authorUrl = context.author.profileUrl;
+        context.authorDisplayName = context.author.displayName;
+
+        context.contentSourceName = 'facbeook';
+        context.contentSourceTooltipUrl = context.permalink;
+        context.contentSourceTooltipText = 'View on Facebook';
+
+        context.createdAtUrl = context.permalink;
+
         return context;
     };
     

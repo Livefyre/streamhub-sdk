@@ -1,17 +1,28 @@
 <div class="content-header">
     <div class="content-header-inner">
         {{#author.avatar}}
-            <a class="content-author-avatar">
+            <a class="content-author-avatar" {{#authorAvatarUrl}}href="{{authorAvatarUrl}}" target="_blank"{{/authorAvatarUrl}}>
                 <img src="{{ author.avatar }}" />
             </a>
         {{/author.avatar}}
         <div class="content-byline">
-            {{#author.url}}
-                <a class="content-author-name" href="{{ author.url }}" target="_blank">{{ author.displayName }}</a>
-            {{/author.url}}
-            {{^author.url}}
-                <span class="content-author-name">{{ author.displayName }}</span>
-            {{/author.url}}
+            {{#contentSourceTooltipUrl}}
+                <a class="hub-tooltip-link tooltip-{{contentSourceName}} content-source-logo" {{#contentSourceTooltipUrl}}href="{{contentSourceTooltipUrl}}" target="_blank"{{/contentSourceTooltipUrl}} {{#contentSourceTooltipText}}title="{{contentSourceTooltipText}}"{{/contentSourceTooltipText}}></a>
+            {{/contentSourceTooltipUrl}}
+            {{^contentSourceTooltipUrl}}
+                <span class="content-source-logo"></span>
+            {{/contentSourceTooltipUrl}}
+            {{#authorUrl}}
+                <a class="content-author-name" href="{{ authorUrl }}" target="_blank">{{ authorDisplayName }}</a>
+            {{/authorUrl}}
+            {{^authorUrl}}
+                <span class="content-author-name">{{ authorDisplayName }}</span>
+            {{/authorUrl}}
+            {{#authorUserName}}
+                {{#authorUrl}}
+                    <a class="content-author-username" href="{{authorUrl}}" target="_blank">{{authorUserNamePrefix}}{{ authorUserName }}</a>
+                {{/authorUrl}}
+            {{/authorUserName}}
         </div>
     </div>
 </div>
@@ -26,8 +37,19 @@
     <div class="content-featured">Featured</div>
 {{/featured}}
 
-<div class="content-meta">
-    {{#formattedCreatedAt}}
-    <div class="content-created-at">{{{formattedCreatedAt}}}</div>
-    {{/formattedCreatedAt}}
+<div class="content-footer">
+    <div class="content-footer-left"></div>
+    <div class="content-footer-right">
+        {{#formattedCreatedAt}}
+            <div class="content-created-at">
+                {{#createdAtUrl}}
+                <a href="{{createdAtUrl}}" target="_blank">
+                {{/createdAtUrl}}
+                {{{formattedCreatedAt}}}
+                {{#createdAtUrl}}
+                </a>
+                {{/createdAtUrl}}
+            </div>
+        {{/formattedCreatedAt}}
+    </div>
 </div>
