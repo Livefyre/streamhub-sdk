@@ -7,7 +7,7 @@
   "dependencies": {
     "jquery": "~1.10.1",
     "bootstrap": "~3.0.3",
-    "base64": "git://github.com/ross-pfahler/Base64.js#~0.3.0",
+    "base64": "git://github.com/ross-pfahler/Base64.js#~0.3.3",
     "hogan": "latest",
     "requirejs": "~2.1.5",
     "cajon": "git://github.com/requirejs/cajon.git#~0.1.11",
