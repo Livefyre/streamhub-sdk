@@ -1,15 +1,17 @@
 define([
     'streamhub-sdk/jquery',
+    'streamhub-sdk/auth',
     'streamhub-sdk/view',
     'streamhub-sdk/ui/button/hub-button',
     'hgn!streamhub-sdk/content/templates/content',
     'streamhub-sdk/util',
     'inherits',
     'streamhub-sdk/debug'
-], function ($, View, HubButton, ContentTemplate, util, inherits, debug) {
+], function ($, Auth, View, HubButton, ContentTemplate, util, inherits, debug) {
     'use strict';
 
     var log = debug('streamhub-sdk/content/views/content-view');
+    var LF_TOKEN = 'eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJkb21haW4iOiAibGFicy10NDAyLmZ5cmUuY28iLCAiZXhwaXJlcyI6IDExMzkxNzI4ODEzLjAzOTY2LCAidXNlcl9pZCI6ICJkZW1vLTAifQ.ZJLrUcRf3MbgOqJ1tLO81pZ7ANfatsKgLie6T6S_Wi4';
 
     /**
      * Defines the base class for all content-views. Handles updates to attachments
@@ -34,6 +36,7 @@ define([
             'left': [],
             'right': []
         };
+        this._likeRequestListener = false;
         this._rendered = false;
 
         View.call(this, opts);
@@ -182,24 +185,48 @@ define([
         return this;
     };
 
+    ContentView.prototype._handleLike = function () {
+        // Lazily attach event handler for contentLike
+        if (! this._likeRequestListener) {
+            $('body').on('contentLike.hub', function (e, content) {
+                console.log('contentLike.hub');
+                Auth.setToken(LF_TOKEN);
+                this._writeClient = new LivefyreWriteClient();
+                this._writeClient.like();
+            });
+            this._likeRequestListener = true;
+        }
+        this.$el.trigger('contentLike.hub', this.content);
+    };
+
+    ContentView.prototype._handleShare = function () {
+        console.log('contentShare.hub');
+        this.$el.trigger('contentShare.hub', this.content);
+    };
+
     ContentView.prototype._setupButtons = function () {
         if (! this._rendered) {
-            var likeButton = new HubButton(undefined, {
+            var likeButton = new HubButton(this._handleLike.bind(this), {
                 className: 'hub-content-like'
             });
-            var replyButton = new HubButton(undefined, {
-                className: 'hub-btn-link hub-content-reply',
-                label: 'Reply'
-            });
-            var shareButton = new HubButton(undefined, {
-                className: 'hub-btn-link hub-content-share',
-                label: 'Share'
-            });
-
             this.addButton(likeButton);
+
             //TODO(ryanc): Wait until we have replies on SDK
+            //var replyCommand = new Command(function () {
+            //    self.$el.trigger('contentReply.hub');
+            //});
+            //var replyButton = new HubButton(replyCommand, {
+            //    className: 'hub-btn-link hub-content-reply',
+            //    label: 'Reply'
+            //});
             //this.addButton(replyButton);
-            this.addButton(shareButton);
+
+            //TODO(ryanc): Wait until we have likes finished first
+            //var shareButton = new HubButton(this._handleShare.bind(this), {
+            //    className: 'hub-btn-link hub-content-share',
+            //    label: 'Share'
+            //});
+            //this.addButton(shareButton);
         } else {
             for (var i=0; i < this._controls['left'].length; i++) {
                 this.addButton(this._controls['left'][i]);
