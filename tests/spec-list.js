@@ -37,7 +37,10 @@ define(function () {
         'tests/spec/content/views/gallery-attachment-list-view',
         'tests/spec/content/views/content-list-view',
         'tests/spec/modal/main',
-        'tests/spec/modal/views/attachment-gallery-modal'
+        'tests/spec/modal/views/attachment-gallery-modal',
+        'tests/spec/ui/button/main',
+        'tests/spec/ui/command/main',
+        'tests/spec/ui/command/auth-required-command'
     ];
     return specs;
 });
