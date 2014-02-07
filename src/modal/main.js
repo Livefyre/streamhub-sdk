@@ -72,6 +72,7 @@ define([
             modal.hide();
         });
 
+        this._oldOverflow = $('body').css('overflow');
         $('body').css({
             'overflow': 'hidden'
         });
@@ -96,6 +97,9 @@ define([
         this.$el.hide();
         this._detach();
         this.visible = false;
+        $('body').css({
+            'overflow': this._oldOverflow || 'scroll'
+        });
     };
 
 
