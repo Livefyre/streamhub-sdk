@@ -7,8 +7,9 @@ var inherits = require('inherits');
  * Does work
  * @constructor
  * @param fn {function} The work to do
+ * @param [opts] {Object}
  */
-function Command (fn) {
+function Command (fn, opts) {
     this._execute = fn;
     this._canExecute = true;
     EventEmitter.call(this);
