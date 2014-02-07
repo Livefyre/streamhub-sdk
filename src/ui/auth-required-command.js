@@ -106,7 +106,7 @@ AuthRequiredCommand.prototype._changeCanExecute = function (canExecute) {
  * Enable the Command
  * @override
  */
-Command.prototype.enable = function () {
+AuthRequiredCommand.prototype.enable = function () {
     this._command._changeCanExecute(true);
 };
 
@@ -114,7 +114,7 @@ Command.prototype.enable = function () {
  * Disable the Command, discouraging its Execution
  * @override
  */
-Command.prototype.disable = function () {
+AuthRequiredCommand.prototype.disable = function () {
     this._command._changeCanExecute(false);
 };
 
