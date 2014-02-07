@@ -250,8 +250,9 @@ function (
 
         describe('Like button', function () {
 
-            it("only appears for non-Twitter content items", function () {
+            it("only renders for non-Twitter content items", function () {
                 var contentViewFactory = new ContentViewFactory();
+
                 var twitterContent = new LivefyreTwitterContent({
                     id: 'tweet-1234@twitter.com',
                     body: 'tweet i am',
@@ -260,47 +261,45 @@ function (
                     }
                 });
                 var twitterContentView = contentViewFactory.createContentView(twitterContent);
-
                 twitterContentView.render();
 
                 expect(twitterContentView.$el.find('.hub-content-like')).toHaveLength(0);
 
                 var lfContent = new LivefyreContent({ body: 'lf content' });
                 var lfContentView = contentViewFactory.createContentView(lfContent);
-
                 lfContentView.render();
 
                 expect(lfContentView.$el.find('.hub-content-like')).toHaveLength(1);
-
             });
 
-            //describe('when Like button clicked', function () {
-            //    var content,
-            //        contentView;
+            describe('when Like button clicked', function () {
+                var content,
+                    contentView,
+                    likeButtonEl;
 
-            //    beforeEach(function () {
-            //        content = new Content({ body: 'what' });
-            //        contentView = new ContentView({ content: content, attachmentsView: attachmentListView });
-            //    });
+                beforeEach(function () {
+                    content = new Content({ body: 'what' });
+                    contentView = new ContentView({ content: content });
+                    contentView.render();
+                    likeButtonEl = contentView.$el.find('.hub-content-like');
+                });
 
+                afterEach(function () {
+                    $('body').off();
+                });
 
-            //    it("triggers the 'contentLike.hub' event on the DOM", function () {
+                it("lazily attaches an event listener for 'contentLike.hub' event on body element", function () {
+                    expect($._data($('body')[0], 'events')).toBe(undefined);
+                    likeButtonEl.trigger('click');
+                    expect($._data($('body')[0], 'events').contentLike.length).toBe(1);
+                });
 
-            //    });
-
-            //    it("lazily attaches an event listener for 'contentLike.hub' event on body element", function () {
-
-            //    });
-
-            //    it("updates content instance's like property", function () {
-
-            //    });
-
-            //    it("sets #_likeRequestListener flag to true", function () {
-
-            //    });
-
-            //});
+                it("sets #_likeRequestListener flag to true", function () {
+                    expect(contentView._likeRequestListener).toBe(false);
+                    likeButtonEl.trigger('click');
+                    expect(contentView._likeRequestListener).toBe(true);
+                });
+            });
 
             //describe("body element 'contentLike.hub' listener", function () {
 
