@@ -2,6 +2,7 @@ define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/auth',
     'streamhub-sdk/view',
+    'streamhub-sdk/content/types/livefyre-content',
     'streamhub-sdk/ui/button/hub-button',
     'streamhub-sdk/ui/button/hub-toggle-button',
     'streamhub-sdk/collection/clients/write-client',
@@ -9,7 +10,7 @@ define([
     'streamhub-sdk/util',
     'inherits',
     'streamhub-sdk/debug'
-], function ($, Auth, View, HubButton, HubToggleButton, LivefyreWriteClient, ContentTemplate, util, inherits, debug) {
+], function ($, Auth, View, LivefyreContent, HubButton, HubToggleButton, LivefyreWriteClient, ContentTemplate, util, inherits, debug) {
     'use strict';
 
     var log = debug('streamhub-sdk/content/views/content-view');
@@ -223,6 +224,9 @@ define([
     };
 
     ContentView.prototype._setupButtons = function () {
+        if (! (this.content instanceof LivefyreContent)) {
+            return;
+        }
         if (! this._rendered) {
             var likeCount = this.content.getLikeCount();
             var likeButton = new HubToggleButton(this._handleLikeClick.bind(this), {
