@@ -280,7 +280,7 @@ function (
                     likeButtonEl;
 
                 beforeEach(function () {
-                    content = new Content({ body: 'what' });
+                    content = new LivefyreContent({ body: 'what' });
                     contentView = new ContentView({ content: content });
                     contentView.render();
                     likeButtonEl = contentView.$el.find('.hub-content-like');
