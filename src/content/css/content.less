@@ -153,10 +153,10 @@
             background-image: data-uri('../images/like.png');
             background-repeat: no-repeat;
             background-position: 0px 4px;
-
-            &:active {
-                background-image: data-uri('../images/like_liked.png');
-            }
+        }
+        .hub-content-like:active,
+        .hub-content-like.hub-btn-toggle-on {
+            background-image: data-uri('../images/like_liked.png');
         }
 
         .hub-content-reply {

@@ -2,8 +2,9 @@ define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/content',
     'streamhub-sdk/content/annotator',
+    'streamhub-sdk/content/types/livefyre-opine',
     'inherits'],
-function($, Content, Annotator, inherits) {
+function($, Content, Annotator, LivefyreOpine, inherits) {
     'use strict';
 
     /**
@@ -37,6 +38,7 @@ function($, Content, Annotator, inherits) {
         this.parentId = json.content.parentId;
         this.meta = json;
 
+        this._likes = 0;
         this._annotator = opts.annotator || this._createAnnotator();
         this._annotator.annotate(this, {
             added: json.content.annotations
@@ -54,7 +56,7 @@ function($, Content, Annotator, inherits) {
     /**
      * Attach an Oembed to the Content while first checking for an existing attachment.
      * @param obj {Oembed} An Oembed Content instance to attach
-     * @fires Content#addAttachment
+     * @fires Content#attachment
      */
     LivefyreContent.prototype.addAttachment = function(obj) {
         var found = false;
@@ -74,7 +76,7 @@ function($, Content, Annotator, inherits) {
     /**
      * Add a reply to the Content while first checking for an existing reply.
      * @param obj {Content} A piece of Content in reply to this one
-     * @fires Content#addReply
+     * @fires Content#reply
      */
     LivefyreContent.prototype.addReply = function(obj) {
         var found = false;
@@ -89,6 +91,42 @@ function($, Content, Annotator, inherits) {
             this.replies.push(obj);
             this.emit('reply', obj);
         }
+    };
+
+    /**
+     * Add a opine to the Content while first checking for an existing opine.
+     * @param obj {Content} A piece of Content in reply to this one
+     * @fires Content#opine
+     */
+    LivefyreContent.prototype.addOpine = function(obj) {
+        var found = false;
+        if (obj.id) {
+            for (var i in this.opines) {
+                if (this.opines[i].id === obj.id) {
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            this.opines.push(obj);
+            if (obj.relType === LivefyreOpine.enums.type.indexOf('LIKE')) {
+                this._likes++;
+            }
+            this.emit('opine', obj);
+        }
+    };
+
+    LivefyreContent.prototype.getLikeCount = function () {
+        return this._likes;
+    };
+
+    LivefyreContent.prototype.isLiked = function (authorId) {
+        for (var i=0; i < this.opines.length; i++) {
+            if (authorId === this.opines[i].author.id) {
+                return true;
+            }
+        }
+        return false;
     };
 
     /**

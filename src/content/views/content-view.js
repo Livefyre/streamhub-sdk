@@ -3,15 +3,18 @@ define([
     'streamhub-sdk/auth',
     'streamhub-sdk/view',
     'streamhub-sdk/ui/button/hub-button',
+    'streamhub-sdk/ui/button/hub-toggle-button',
+    'streamhub-sdk/collection/clients/write-client',
     'hgn!streamhub-sdk/content/templates/content',
     'streamhub-sdk/util',
     'inherits',
     'streamhub-sdk/debug'
-], function ($, Auth, View, HubButton, ContentTemplate, util, inherits, debug) {
+], function ($, Auth, View, HubButton, HubToggleButton, LivefyreWriteClient, ContentTemplate, util, inherits, debug) {
     'use strict';
 
     var log = debug('streamhub-sdk/content/views/content-view');
     var LF_TOKEN = 'eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJkb21haW4iOiAibGFicy10NDAyLmZ5cmUuY28iLCAiZXhwaXJlcyI6IDExMzkxNzI4ODEzLjAzOTY2LCAidXNlcl9pZCI6ICJkZW1vLTAifQ.ZJLrUcRf3MbgOqJ1tLO81pZ7ANfatsKgLie6T6S_Wi4';
+    var USER_ID = 'demo-0@labs-t402.fyre.co';
 
     /**
      * Defines the base class for all content-views. Handles updates to attachments
@@ -185,17 +188,32 @@ define([
         return this;
     };
 
-    ContentView.prototype._handleLike = function () {
+    ContentView.prototype._handleLikeClick = function () {
         // Lazily attach event handler for contentLike
         if (! this._likeRequestListener) {
+            var self = this;
             $('body').on('contentLike.hub', function (e, content) {
-                console.log('contentLike.hub');
                 Auth.setToken(LF_TOKEN);
-                this._writeClient = new LivefyreWriteClient();
-                this._writeClient.like();
+
+                var writeClient = new LivefyreWriteClient();
+
+                var likeIntent;
+                if (! content.isLiked(USER_ID)) {
+                    likeIntent = writeClient.like;
+                } else {
+                    likeIntent = writeClient.unlike;
+                }
+                likeIntent.call(writeClient, {
+                    network: content.collection.network,
+                    siteId: content.collection.siteId,
+                    collectionId: content.collection.id,
+                    lftoken: LF_TOKEN,
+                    contentId: content.id
+                });
             });
             this._likeRequestListener = true;
         }
+
         this.$el.trigger('contentLike.hub', this.content);
     };
 
@@ -206,8 +224,11 @@ define([
 
     ContentView.prototype._setupButtons = function () {
         if (! this._rendered) {
-            var likeButton = new HubButton(this._handleLike.bind(this), {
-                className: 'hub-content-like'
+            var likeCount = this.content.getLikeCount();
+            var likeButton = new HubToggleButton(this._handleLikeClick.bind(this), {
+                className: 'hub-content-like',
+                on: this.content.isLiked(USER_ID), //TODO(ryanc): Get user id from auth
+                label: likeCount
             });
             this.addButton(likeButton);
 
