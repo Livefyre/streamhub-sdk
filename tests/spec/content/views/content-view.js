@@ -6,6 +6,7 @@ define([
     'streamhub-sdk/content/types/livefyre-twitter-content',
     'streamhub-sdk/content/views/content-view',
     'streamhub-sdk/content/content-view-factory',
+    'streamhub-sdk/collection/clients/write-client',
     'streamhub-sdk/content/views/tiled-attachment-list-view'],
 function (
     $,
@@ -15,6 +16,7 @@ function (
     LivefyreTwitterContent,
     ContentView,
     ContentViewFactory,
+    LivefyreWriteClient,
     TiledAttachmentListView) {
     'use strict';
 
@@ -301,9 +303,31 @@ function (
                 });
             });
 
-            //describe("body element 'contentLike.hub' listener", function () {
+            describe("body element 'contentLike.hub' listener", function () {
+                var content,
+                    contentView,
+                    likeButtonEl;
 
-            //});
+                beforeEach(function () {
+                    content = new Content({ body: 'what' });
+                    contentView = new ContentView({ content: content });
+                    contentView.render();
+                    likeButtonEl = contentView.$el.find('.hub-content-like');
+                });
+
+                afterEach(function () {
+                    $('body').off();
+                });
+
+                //it('creates a LivefyreWriteClient instance', function () {
+                //    expect(this._writeClient).toBeUndefined();
+                //    likeButtonEl.trigger('click');
+                //    expect($._data($('body')[0], 'events').contentLike.length).toBe(1);
+                //    console.log($._data($('body')[0], 'events'));
+                //    expect(this._writeClient).not.toBeUndefined();
+                //    expect(this._writeClient instanceof LivefyreWriteClient).toBe(true);
+                //});
+            });
         });
 
     });

@@ -5,7 +5,9 @@ var Command = require('streamhub-sdk/ui/command');
 var inherits = require('inherits');
 
 function HubButton (fnOrCommand, opts) {
-    opts.elClassPrefix = 'hub';
+    opts = opts || {};
+    opts.elClassPrefix = opts.elClassPrefix || '';
+    opts.elClassPrefix += ' hub';
 
     var command;
     if (typeof(fnOrCommand) === 'function') {
