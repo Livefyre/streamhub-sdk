@@ -1,21 +1,14 @@
 define([
     'streamhub-sdk/jquery',
-    'streamhub-sdk/auth',
     'streamhub-sdk/view',
-    'streamhub-sdk/content/types/livefyre-content',
-    'streamhub-sdk/ui/button/hub-button',
-    'streamhub-sdk/ui/button/hub-toggle-button',
-    'streamhub-sdk/collection/clients/write-client',
     'hgn!streamhub-sdk/content/templates/content',
     'streamhub-sdk/util',
     'inherits',
     'streamhub-sdk/debug'
-], function ($, Auth, View, LivefyreContent, HubButton, HubToggleButton, LivefyreWriteClient, ContentTemplate, util, inherits, debug) {
+], function ($, View, ContentTemplate, util, inherits, debug) {
     'use strict';
 
     var log = debug('streamhub-sdk/content/views/content-view');
-    var LF_TOKEN = 'eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJkb21haW4iOiAibGFicy10NDAyLmZ5cmUuY28iLCAiZXhwaXJlcyI6IDExMzkxNzI4ODEzLjAzOTY2LCAidXNlcl9pZCI6ICJkZW1vLTAifQ.ZJLrUcRf3MbgOqJ1tLO81pZ7ANfatsKgLie6T6S_Wi4';
-    var USER_ID = 'demo-0@labs-t402.fyre.co';
 
     /**
      * Defines the base class for all content-views. Handles updates to attachments
@@ -36,12 +29,6 @@ define([
         this.createdAt = new Date();
         this.template = opts.template || this.template;
         this.attachmentsView = opts.attachmentsView;
-        this._controls = {
-            'left': [],
-            'right': []
-        };
-        this._likeRequestListener = false;
-        this._rendered = false;
 
         View.call(this, opts);
 
@@ -184,81 +171,7 @@ define([
             this.attachmentsView.render();
         }
 
-        this._setupButtons();
-
         return this;
-    };
-
-    ContentView.prototype._handleLikeClick = function () {
-        // Lazily attach event handler for contentLike
-        if (! this._likeRequestListener) {
-            var self = this;
-            $('body').on('contentLike.hub', function (e, content) {
-                Auth.setToken(LF_TOKEN);
-
-                var writeClient = new LivefyreWriteClient();
-
-                var likeIntent;
-                if (! content.isLiked(USER_ID)) {
-                    likeIntent = writeClient.like;
-                } else {
-                    likeIntent = writeClient.unlike;
-                }
-                likeIntent.call(writeClient, {
-                    network: content.collection.network,
-                    siteId: content.collection.siteId,
-                    collectionId: content.collection.id,
-                    lftoken: LF_TOKEN,
-                    contentId: content.id
-                });
-            });
-            this._likeRequestListener = true;
-        }
-
-        this.$el.trigger('contentLike.hub', this.content);
-    };
-
-    ContentView.prototype._handleShare = function () {
-        console.log('contentShare.hub');
-        this.$el.trigger('contentShare.hub', this.content);
-    };
-
-    ContentView.prototype._setupButtons = function () {
-        if (! (this.content instanceof LivefyreContent)) {
-            return;
-        }
-        if (! this._rendered) {
-            var likeCount = this.content.getLikeCount();
-            var likeButton = new HubToggleButton(this._handleLikeClick.bind(this), {
-                className: 'hub-content-like',
-                on: this.content.isLiked(USER_ID), //TODO(ryanc): Get user id from auth
-                label: likeCount
-            });
-            this.addButton(likeButton);
-
-            //TODO(ryanc): Wait until we have replies on SDK
-            //var replyCommand = new Command(function () {
-            //    self.$el.trigger('contentReply.hub');
-            //});
-            //var replyButton = new HubButton(replyCommand, {
-            //    className: 'hub-btn-link hub-content-reply',
-            //    label: 'Reply'
-            //});
-            //this.addButton(replyButton);
-
-            //TODO(ryanc): Wait until we have likes finished first
-            //var shareButton = new HubButton(this._handleShare.bind(this), {
-            //    className: 'hub-btn-link hub-content-share',
-            //    label: 'Share'
-            //});
-            //this.addButton(shareButton);
-        } else {
-            for (var i=0; i < this._controls['left'].length; i++) {
-                this.addButton(this._controls['left'][i]);
-            }
-        }
-
-        this._rendered = true;
     };
     
     /**
@@ -295,7 +208,7 @@ define([
         this.$el.trigger('removeContentView.hub', { contentView: this });
         this.$el.detach();
     };
-    
+
     /**
      * Handles changes to the model's visibility.
      * @param ev
@@ -320,21 +233,6 @@ define([
     ContentView.prototype.destroy = function () {
         View.prototype.destroy.call(this);
         this.content = null;
-    };
-
-    ContentView.prototype.addButton = function (button) {
-        this._controls['left'].push(button);
-
-        var footerLeft = this.$el.find(this.footerLeftSelector);
-        var buttonContainerEl = $('<div></div>');
-        footerLeft.append(buttonContainerEl);
-
-        button.setElement(buttonContainerEl);
-        button.render();
-    };
-
-    ContentView.prototype.removeButton = function (button) {
-        button.destroy();
     };
     
     return ContentView;

@@ -1,24 +1,24 @@
 define([
-    'streamhub-sdk/content/views/content-view',
+    'streamhub-sdk/content/views/livefyre-content-view',
     'streamhub-sdk/ui/button/hub-button',
     'inherits',
     'streamhub-sdk/jquery'],
-function (ContentView, HubButton, inherits, $) {
+function (LivefyreContentView, HubButton, inherits, $) {
     'use strict';
     
     /**
      * A view for rendering twitter content into an element.
-     * @param opts {Object} The set of options to configure this view with (See ContentView).
+     * @param opts {Object} The set of options to configure this view with (See LivefyreContentView).
      * @exports streamhub-sdk/content/views/twitter-content-view
      * @constructor
      */
 
     var TwitterContentView = function (opts) {
-        ContentView.call(this, opts);
+        LivefyreContentView.call(this, opts);
 
         this._rendered = false;
     };
-    inherits(TwitterContentView, ContentView);
+    inherits(TwitterContentView, LivefyreContentView);
     
     TwitterContentView.prototype.elClass += ' content-tweet ';
 
@@ -51,7 +51,7 @@ function (ContentView, HubButton, inherits, $) {
      * @return {Content} The content object this view was instantiated with.
      */
     TwitterContentView.prototype.getTemplateContext = function () {
-        var context = ContentView.prototype.getTemplateContext.call(this);
+        var context = LivefyreContentView.prototype.getTemplateContext.call(this);
         if (context && context.author && typeof context.author.profileUrl === 'string') {
             context.author.twitterUsername = context.author.profileUrl.split('/').pop();
         }
