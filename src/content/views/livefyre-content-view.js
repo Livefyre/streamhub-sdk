@@ -50,6 +50,20 @@ define([
     inherits(LivefyreContentView, ContentView);
 
     LivefyreContentView.prototype.footerLeftSelector = '.content-footer-left';
+    LivefyreContentView.handleLikeClick = function (e, content) {
+        var liker = new Liker();
+        var userUri = Auth.getUserUri();
+
+        if (! content.isLiked(userUri)) {
+            liker.like(content, function () {
+                $('body').trigger('contentLike.hub');
+            });
+        } else {
+            liker.unlike(content, function () {
+                $('body').trigger('contentUnlike.hub');
+            });
+        }
+    };
 
     /**
      * Render the content inside of the LivefyreContentView's element.
@@ -58,7 +72,6 @@ define([
     LivefyreContentView.prototype.render = function () {
         ContentView.prototype.render.call(this);
         this._renderButtons();
-
         return this;
     };
 
@@ -66,21 +79,14 @@ define([
         // Lazily attach event handler for contentLike
         if (! LIKE_REQUEST_LISTENER) {
             var self = this;
-            $('body').on('contentLike.hub', function (e, content) {
-                var liker = new Liker();
-                var userUri = Auth.getUserUri();
-
-                if (! content.isLiked(userUri)) {
-                    liker.like(content);
-                } else {
-                    liker.unlike(content);
-                }
+            $('body').on('contentLike.hub contentUnlike.hub', function () {
                 self._renderButtons();
             });
+            $('body').on('likeClick.hub', LivefyreContentView.handleLikeClick);
             LIKE_REQUEST_LISTENER = true;
         }
 
-        this.$el.trigger('contentLike.hub', this.content);
+        this.$el.trigger('likeClick.hub', this.content);
     };
 
     LivefyreContentView.prototype._handleShare = function () {

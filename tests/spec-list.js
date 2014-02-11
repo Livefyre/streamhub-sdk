@@ -10,6 +10,7 @@ define(function () {
         'tests/spec/views/streams/more',
         'tests/spec/views/streams/injector',
         'tests/spec/collection/main',
+        'tests/spec/collection/liker',
         'tests/spec/collection/clients/stream-client',
         'tests/spec/collection/clients/bootstrap-client',
         'tests/spec/collection/clients/create-client',
