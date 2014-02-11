@@ -15,7 +15,6 @@ var util = require('streamhub-sdk/util');
  * @param [opts] {Object}
  * @param [opts.authCmd] {Command} Command called to authenticate a user who
  *      hasn't already authenticated.
- * @param [opts.disable] {boolean} Set to disable this command on construction.
  * @constructor
  * @extends {Command}
  */
@@ -44,10 +43,6 @@ var AuthRequiredCommand = function (command, opts) {
     if (opts.authCmd) {
         this.setAuthCommand(opts.authCmd);
     }
-    
-    if (opts.disable) {
-        this.disable();
-    };
     
     //Emit potential canExecute change whenever token is set
     Auth.on('token', this._handleCanExecuteChange);

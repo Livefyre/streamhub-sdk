@@ -7,21 +7,23 @@ function ($, util) {
     describe('streamhub-sdk/util', function () {
         describe('abstractFunction', function () {
             it('is a function', function () {
-                throw 'TODO (joao) Implement this.';
+                expect(typeof(util.abstractFunction)).toBe('function');
             });
             
             it('thows when invoked', function () {
-                throw 'TODO (joao) Implement this.';
+                expect(function () {
+                    util.abstractFunction();
+                }).toThrow('This is an abstract function that requires developer implementation');
             });
         });
         
         describe('nullFunction', function () {
             it('is a function', function () {
-                throw 'TODO (joao) Implement this.';
+                expect(typeof(util.nullFunction)).toBe('function');
             });
             
             it('returns nothing', function () {
-                throw 'TODO (joao) Implement this.';
+                expect(util.nullFunction()).toBeUndefined();
             });
         })
         
