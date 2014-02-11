@@ -120,7 +120,7 @@ define([
     };
 
     LivefyreContentView.prototype.addButton = function (button) {
-        for (var i=0; i < this._control.left.length; i++) {
+        for (var i=0; i < this._controls.left.length; i++) {
             if (this._controls.left[i] !== button) {
                 this._controls.left.push(button);
             }
