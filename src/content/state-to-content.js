@@ -188,6 +188,7 @@ inherits) {
         if ('OEMBED' === StateToContent.enums.type[state.type]) {
             return new LivefyreOembed(state);
         } else if ('OPINE' === StateToContent.enums.type[state.type]) {
+            console.log(state);
             return new LivefyreOpine(state);
         } else if (sourceName === 'twitter') {
             return new LivefyreTwitterContent(state);

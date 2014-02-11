@@ -22,7 +22,7 @@ function (LivefyreContentView, HubButton, inherits, $) {
     
     TwitterContentView.prototype.elClass += ' content-tweet ';
 
-    TwitterContentView.prototype._setupButtons = function () {
+    TwitterContentView.prototype._renderButtons = function () {
         if (! this._rendered) {
             var replyButton = new HubButton(undefined, {
                 className: 'content-action content-action-reply'
