@@ -30,6 +30,7 @@ inherits) {
         opts = opts || {};
         this._authors = opts.authors || {};
         this._replies = opts.replies;
+        this._collection = opts.collection;
         this._storage = opts.storage || Storage;
         Transform.call(this, opts);
     };
@@ -41,7 +42,8 @@ inherits) {
         var contents;
         try {
             contents = this.transform(state, this._authors, {
-                replies: this._replies
+                replies: this._replies,
+                collection: this._collection
             });
         } catch (err) {
             this.emit('error transforming state-to-content', err);
@@ -148,6 +150,10 @@ inherits) {
         // Don't return replies if not explicitly specified
         if (isReply && ! opts.replies) {
             return;
+        }
+
+        if (opts.collection) {
+            content.collection = opts.collection;
         }
 
         if (opts.replies) {

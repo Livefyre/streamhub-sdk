@@ -149,9 +149,6 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
             if (opts.isHead && content.id) {
                 self._contentIdsInHeadDocument.push(content.id);
             }
-            if (self._collection) {
-                content.collection = self._collection;
-            }
             contents.push(content);
         });
 
