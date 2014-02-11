@@ -155,11 +155,15 @@ inherits) {
         bootstrapDoc = bootstrapDoc || {};
         var self = this,
             states = bootstrapDoc.content || [],
-            stateToContent = this._createStateToContent(bootstrapDoc),
             state,
             stateContentId,
             content,
             contents = [];
+
+        if (this._collection) {
+            bootstrapDoc.collection = this._collection;
+        }
+        var stateToContent = this._createStateToContent(bootstrapDoc);
 
         stateToContent.on('data', function (content) {
             if (! content ||
@@ -168,9 +172,6 @@ inherits) {
             }
             if (opts.isHead && content.id) {
                 self._contentIdsInHeadDocument.push(content.id);
-            }
-            if (self._collection) {
-                content.collection = self._collection;
             }
             contents.push(content);
         });

@@ -30,6 +30,7 @@ inherits) {
         opts = opts || {};
         this._authors = opts.authors || {};
         this._replies = opts.replies;
+        this._collection = opts.collection;
         this._storage = opts.storage || Storage;
         Transform.call(this, opts);
     };
