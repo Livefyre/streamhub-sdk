@@ -359,6 +359,7 @@ mockBootstrapData) {
 
                 var myStateToContent = new CustomStateToContent();
                 myStateToContent.write(state);
+                myStateToContent.read();
                 // The test state here has two attachments, so 1+2 Content
                 // objects will be created
                 expect(customCreateContent.callCount).toBe(3);
@@ -378,6 +379,8 @@ mockBootstrapData) {
                 // getUpdatedProperties is used
                 myStateToContent.write(state);
                 myStateToContent.write(state);
+                myStateToContent.read();
+                myStateToContent.read();
                 // The test state here has two attachments, so 1+2 Content
                 // objects will be created
                 expect(customGetUpdatedProperties.callCount).toBe(1);
