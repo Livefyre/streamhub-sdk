@@ -5,54 +5,53 @@ var Command = require('streamhub-sdk/ui/command');
 var Button = require('streamhub-sdk/ui/button');
 
 describe('streamhub-sdk/ui/button', function () {
-    var button;
-    beforeEach(function () {
-        button = new Button();
-    });
-
     it('is a constructor that subclasses View', function () {
-        throw 'TODO (joao) Implement this.';
+        expect(typeof(Button)).toBe('function');
         var button = new Button();
-        expect(button).to.be.instanceof(Button);
-        expect(button).to.be.instanceof(View);
+        expect(button instanceof Button).toBe(true);
+        expect(button instanceof View).toBe(true);
     });
 
     it('can be constructed without a command', function () {
-        throw 'TODO (joao) Implement this.';
         expect(function () {
             new Button();
-        }).not.to.throw();
+        }).not.toThrow();
     });
-
+    
     it('can be constructed with a command', function () {
-        throw 'TODO (joao) Implement this.';
+        var button;
+        var cmd;
         expect(function () {
-            var cmd = new Command(function () {});
-            new Button(cmd);
+            cmd = new Command(function () {});
+            button = new Button(cmd);
+        }).not.toThrow();
+        expect(button._command).toBe(cmd);
+    });
+    
+    describe('when constructed with a command', function () {
+        var button;
+        var cmd;
+        beforeEach(function () {
+            cmd = new Command(jasmine.createSpy('Command'));
+            button = new Button(cmd);
         });
-    });
-
-    it('executes the command when clicked', function () {
-        throw 'TODO (joao) Implement this.';
-        var spy = sinon.spy();
-        var cmd = new Command(spy);
-        var button = new Button(cmd);
-        button.$el.click();
-        expect(spy).to.have.been.called;
-    });
-
-    it('has .disabled CSS when Command is disabled', function () {
-        throw 'TODO (joao) Implement this.';
-        var spy = sinon.spy();
-        var cmd = new Command(spy);
-        var button = new Button(cmd);
-        // enabled by default
-        expect(button.$el.hasClass(button.disabledClass)).to.be.false;
-        // reflects disabling
-        cmd.disable();
-        expect(button.$el.hasClass(button.disabledClass)).to.be.true;
-        // reflects re-enabling
-        cmd.enable();
-        expect(button.$el.hasClass(button.disabledClass)).to.be.false;
+        
+        it('executes the command when clicked', function () {
+            button.$el.click();
+            expect(cmd._execute).toHaveBeenCalled();
+        });
+        
+        it('uses .disabledClass to reflect Command.disable/enable', function () {
+            // enabled by default
+            expect(button.$el.hasClass(button.disabledClass)).toBe(false);
+            
+            // reflects disabling
+            cmd.disable();
+            expect(button.$el.hasClass(button.disabledClass)).toBe(true);
+            
+            // reflects re-enabling
+            cmd.enable();
+            expect(button.$el.hasClass(button.disabledClass)).toBe(false);
+        });
     });
 });

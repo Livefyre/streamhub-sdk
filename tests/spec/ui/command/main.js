@@ -1,56 +1,84 @@
 'use strict';
 
 var Command = require('streamhub-sdk/ui/command');
+var EventEmitter = require('event-emitter');
 
 describe('streamhub-sdk/ui/command', function () {
-    var cmd;
-    beforeEach(function () {
-        cmd = new Command(function () {});
+    it('is a constructor and subclass of EventEmitter', function () {
+        expect(typeof(Command)).toBe('function');
+        var cmd = new Command(function () {});
+        expect(cmd instanceof Command).toBe(true);
+        expect(cmd instanceof EventEmitter).toBe(true);
     });
-
-    it('is a function', function () {
-        throw 'TODO (joao) Implement this.';
-        expect(cmd).to.be.instanceof(Command);
+    
+    it('can\'t be constructed without a specified function', function () {
+        expect(function () {
+            new Command();
+        }).toThrow();
     });
-
-    describe('canExecute()', function () {
-        it('defaults to true', function () {
-            throw 'TODO (joao) Implement this.';
-            expect(cmd.canExecute()).to.equal(true);
+    
+    describe('when constructed', function () {
+        var cmd;
+        var fn;
+        beforeEach(function () {
+            fn = jasmine.createSpy('command function');
+            cmd = new Command(fn);
         });
-    });
-
-    describe('.execute()', function () {
-        it('executes the function passed to the constructor', function () {
-            throw 'TODO (joao) Implement this.';
-            var spy = sinon.spy();
-            var cmd = new Command(spy);
+        
+        it('.canExecute() by default', function () {
+            expect(cmd.canExecute()).toBe(true);
+        });
+        
+        it('.execute()s the function passed to the constructor', function () {
             cmd.execute();
-            expect(spy.callCount).to.equal(1);
+            expect(fn).toHaveBeenCalled();
         });
-    });
-
-    describe('.enable()', function () {
-        it('causes .canExecute() to be true', function () {
-            throw 'TODO (joao) Implement this.';
-            cmd.disable();
-            cmd.enable();
-            expect(cmd.canExecute()).to.equal(true);
-        });
-        it('fires the change:canExecute event with true', function () {
-            throw 'TODO (joao) Implement this.';
-            var spy = sinon.spy();
+        
+        it('can be .disable()\'d and emits change:canExecute, false', function () {
+            var spy = jasmine.createSpy('change:canExecute');
             cmd.on('change:canExecute', spy);
-            cmd.enable();
-            expect(spy).to.have.been.called;
-        });
-    });
-
-    describe('.disable()', function () {
-        it('causes .canExecute() to be false', function () {
-            throw 'TODO (joao) Implement this.';
             cmd.disable();
-            expect(cmd.canExecute()).to.equal(false);
+            
+            expect(cmd.canExecute()).toBe(false);
+            expect(spy).toHaveBeenCalledWith(false);
+        });
+        
+        describe('and disabled', function () {
+            beforeEach(function () {
+                cmd.disable();
+            });
+            
+            it('.canExecute() is false', function () {
+                expect(cmd.canExecute()).toBe(false);
+            });
+            
+            it('can\'t .execute()', function () {
+                cmd.execute();
+                expect(fn).not.toHaveBeenCalled();
+            });
+            
+            it('can be .enable()\'d and emits change:canExecute, true', function () {
+                var spy = jasmine.createSpy('change:canExecute');
+                cmd.on('change:canExecute', spy);
+                cmd.enable();
+                
+                expect(cmd.canExecute()).toBe(true);
+                expect(spy).toHaveBeenCalledWith(true);
+            });
+        });
+        
+        describe('with opts', function () {
+            var opts;
+            beforeEach(function () {
+                opts = {
+                    enable: false
+                };
+                cmd = new Command(fn, opts);
+            });
+            
+            it('is disabled for enable: false', function () {
+                expect(cmd.canExecute()).toBe(false);
+            });
         });
     });
 });

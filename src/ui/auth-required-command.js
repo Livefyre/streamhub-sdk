@@ -20,8 +20,22 @@ var util = require('streamhub-sdk/util');
  * @extends {Command}
  */
 var AuthRequiredCommand = function (command, opts) {
+    if (!command || !command instanceof Command) {
+        throw 'A command needs to be specified when constructing an AuthRequiredCommand';
+    }
+    
     opts = opts || {};
     Command.call(this, executeFn, opts);
+    
+    var self = this;
+    function executeFn () {
+        self._command.execute();
+    }
+    
+    this._handleCanExecuteChange = function () {
+        //TODO (joao) Make this smart and only emitChange when it has changed for 'this'
+        self._emitChangeCanExecute();
+    };
     
     this._command = command;
     this._command.on('change:canExecute', this._handleCanExecuteChange);
@@ -35,13 +49,8 @@ var AuthRequiredCommand = function (command, opts) {
         this.disable();
     };
     
-    var self = this;
-    function executeFn () {
-        self._command.execute();
-    }
-    
     //Emit potential canExecute change whenever token is set
-    Auth.on('token', this._emitChange);
+    Auth.on('token', this._handleCanExecuteChange);
 };
 inherits(AuthRequiredCommand, Command);
 
@@ -50,14 +59,6 @@ inherits(AuthRequiredCommand, Command);
  * @override
  */
 AuthRequiredCommand.prototype.execute = function () {
-    if (this.canExecute()) {
-        if (!Auth.getToken()) {
-            this._authenticate(authRequiredCallback);
-        } else {
-            authRequiredCallback.apply(this, arguments);
-        }
-    }
-    
     var self = this;
     /**
      * This callback executes this command, wrapped so that it can be passed
@@ -65,6 +66,14 @@ AuthRequiredCommand.prototype.execute = function () {
      */
     function authRequiredCallback() {
         Auth.getToken() && Command.prototype.execute.apply(self, arguments);
+    }
+    
+    if (this.canExecute()) {
+        if (!Auth.getToken()) {
+            this._authenticate(authRequiredCallback);
+        } else {
+            authRequiredCallback.apply(this, arguments);
+        }
     }
 };
 
@@ -138,7 +147,7 @@ AuthRequiredCommand.prototype._authCmd = (
  * @param cmd {!Command}
  */
 AuthRequiredCommand.prototype.setAuthCommand = function (cmd) {
-    this._authCmd.removeListener('change:canExecute', this._emitChange);
+    this._authCmd.removeListener('change:canExecute', this._emitChangeCanExecute);
     this._authCmd = cmd;
     this._authCmd.on('change:canExecute', this._handleCanExecuteChange);
 };
@@ -148,20 +157,8 @@ AuthRequiredCommand.prototype.setAuthCommand = function (cmd) {
  */
 AuthRequiredCommand.prototype._handleCanExecuteChange = function () {
     //TODO (joao) Make this smart and only emitChange when it has changed for 'this'
-    this._emitChange();
+    this._emitChangeCanExecute();
 };
-
-/**
- * This is the listener placed on this._authCmd for 'change:canExecute' and Auth
- * for 'token' to emit the possibility of a changed to canExecute for this command.
- * @protected
- */
-AuthRequiredCommand.prototype._emitChange = (function () {
-    var self = this;
-    return function (v) {
-        self.emit('change:canExecute', self.canExecute());
-    };
-})();
 
 /**
  * Checks if this._authCmd can be executed, then executes it.
@@ -181,8 +178,8 @@ AuthRequiredCommand.prototype._authenticate = function (callback) {
  * Prepares this command for trash collection.
  */
 AuthRequiredCommand.prototype.destroy = function () {
-    Auth.off('token', this._emitChange);
-    this._authCmd.off('change:canExecute', this._emitChange);
+    Auth.removeListener('token', this._emitChangeCanExecute);
+    this._authCmd.removeListener('change:canExecute', this._emitChangeCanExecute);
     this._authCmd = null;
     this._command = null;
     this._execute = null;//Command

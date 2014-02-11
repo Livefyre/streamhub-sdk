@@ -8,10 +8,15 @@ var inherits = require('inherits');
  * @constructor
  * @param fn {function} The work to do
  * @param [opts] {Object}
+ * @param [opts.enable] {boolean} Set false to disable this command be default.
  */
 function Command (fn, opts) {
+    opts = opts || {};
+    if (!fn) {
+        throw 'A function needs to be specified to construct a Command';
+    }
     this._execute = fn;
-    this._canExecute = true;
+    this._canExecute = (opts.enable !== false) ? true : false;
     EventEmitter.call(this);
 }
 inherits(Command, EventEmitter);
@@ -44,6 +49,14 @@ Command.prototype.disable = function () {
  */
 Command.prototype._changeCanExecute = function (canExecute) {
     this._canExecute = canExecute;
+    this._emitChangeCanExecute();
+};
+
+/**
+ * Emits a change of whether the Command can be executed
+ * @protected
+ */
+Command.prototype._emitChangeCanExecute = function () {
     this.emit('change:canExecute', this.canExecute());
 };
 
