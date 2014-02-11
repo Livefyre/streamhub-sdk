@@ -6,7 +6,7 @@ define([
 
     var Liker = function (opts) {
         opts = opts || {};
-        this._writeClient = new LivefyreWriteClient();
+        this._writeClient = opts.writeClient || new LivefyreWriteClient();
     };
 
     Liker.prototype.like = function (content) {
