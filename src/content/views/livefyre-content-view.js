@@ -102,7 +102,7 @@ define([
         var likeCount = this.content.getLikeCount();
         var likeButton = new HubToggleButton(this._handleLikeClick.bind(this), {
             className: 'hub-content-like',
-            on: this.content.isLiked(Auth.getUserUri()), //TODO(ryanc): Get user id from auth
+            enabled: this.content.isLiked(Auth.getUserUri()), //TODO(ryanc): Get user id from auth
             label: likeCount
         });
         this.addButton(likeButton);
