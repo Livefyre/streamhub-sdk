@@ -1,17 +1,16 @@
 'use strict';
 
 var HubButton = require('streamhub-sdk/ui/button/hub-button');
-var Command = require('streamhub-sdk/ui/command');
 var inherits = require('inherits');
 
 function HubToggleButton (fnOrCommand, opts) {
-    var opts = opts || {};
+    opts = opts || {};
     opts.elClassPrefix = opts.elClassPrefix || '';
     this._on = opts.on || false;
     opts.elClassPrefix += this._on ? ' hub-btn-toggle-on' : 'hub-btn-toggle-off';
 
     HubButton.call(this, fnOrCommand, opts);
-};
+}
 inherits(HubToggleButton, HubButton);
 
 HubToggleButton.prototype._execute = function () {

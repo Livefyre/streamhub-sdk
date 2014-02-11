@@ -38,8 +38,8 @@ function (LivefyreContentView, HubButton, inherits, $) {
             this.addButton(retweetButton);
             this.addButton(favoriteButton);
         } else {
-            for (var i=0; i < this._controls['left'].length; i++) {
-                this.addButton(this._controls['left'][i]);
+            for (var i=0; i < this._controls.left.length; i++) {
+                this.addButton(this._controls.left[i]);
             }
         }
 

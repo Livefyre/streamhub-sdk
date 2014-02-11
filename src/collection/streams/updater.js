@@ -163,7 +163,8 @@ StateToContent, Annotator, debug) {
             contents = [],
             state,
             states = streamData.states,
-            stateToContent = this._createStateToContent(streamData);
+            stateToContent = this._createStateToContent(streamData),
+            self = this;
 
         stateToContent.on('data', function (content) {
             if (self._collection) {

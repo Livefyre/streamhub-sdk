@@ -1,10 +1,10 @@
+'use strict';
+
 var Auth = require('streamhub-sdk/auth');
 var Command = require('streamhub-sdk/command');
 var inherits = require('inherits');
 var log = require('streamhub-sdk/debug')
         ('streamhub-sdk/command/auth-required-command');
-
-'use strict';
 
 /**
  * @param [fn] {function} Option function to replace the default function.
@@ -25,7 +25,7 @@ var AuthRequiredCommand = function (fn, opts) {
     
     if (opts.disable) {
         this.disable();
-    };
+    }
     
     //Emit potential canExecute change whenever token is set
     Auth.on('token', this._emitChange);

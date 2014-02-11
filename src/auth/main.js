@@ -1,5 +1,5 @@
-define(['inherits', 'base64', 'event-emitter', 'streamhub-sdk/debug'],
-function (inherits, base64, EventEmitter, debug) {
+define(['inherits', 'streamhub-sdk/jquery', 'base64', 'event-emitter', 'streamhub-sdk/debug'],
+function (inherits, $, base64, EventEmitter, debug) {
     'use strict';
 
 
