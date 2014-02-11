@@ -14,7 +14,6 @@ define([
 ], function ($, Auth, ContentView, LivefyreContent, LivefyreOpine, HubButton, HubToggleButton, Liker, ContentTemplate, util, inherits, debug) {
     'use strict';
 
-    var log = debug('streamhub-sdk/content/views/livefyre-content-view');
     var LIKE_REQUEST_LISTENER = false;
 
     /**
@@ -37,7 +36,7 @@ define([
         };
         this._rendered = false;
 
-        ContentView.call(this, opts)
+        ContentView.call(this, opts);
 
         if (this.content) {
             this.content.on("opine", function(content) {
@@ -46,7 +45,7 @@ define([
             this.content.on("removeOpine", function(content) {
                 this._renderButtons();
             }.bind(this));
-        };
+        }
     };
     inherits(LivefyreContentView, ContentView);
 
@@ -85,7 +84,6 @@ define([
     };
 
     LivefyreContentView.prototype._handleShare = function () {
-        console.log('contentShare.hub');
         this.$el.trigger('contentShare.hub', this.content);
     };
 
@@ -122,9 +120,9 @@ define([
     };
 
     LivefyreContentView.prototype.addButton = function (button) {
-        for (var i=0; i < this._controls['left'].length; i++) {
-            if (this._controls['left'][i] != button) {
-                this._controls['left'].push(button);
+        for (var i=0; i < this._control.left.length; i++) {
+            if (this._controls.left[i] !== button) {
+                this._controls.left.push(button);
             }
         }
 
