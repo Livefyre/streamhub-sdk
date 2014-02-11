@@ -29,6 +29,7 @@ define(function () {
         'tests/spec/content/types/livefyre-oembed',
         'tests/spec/content/content-view-factory',
         'tests/spec/content/views/content-view',
+        'tests/spec/content/views/livefyre-content-view',
         'tests/spec/content/views/oembed-view',
         'tests/spec/content/views/attachment-list-view',
         'tests/spec/content/views/tiled-attachment-list-view',
