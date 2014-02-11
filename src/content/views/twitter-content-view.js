@@ -1,6 +1,6 @@
 define([
     'streamhub-sdk/content/views/livefyre-content-view',
-    'streamhub-sdk/ui/button/hub-button',
+    'streamhub-sdk/ui/hub-button',
     'inherits',
     'streamhub-sdk/jquery'],
 function (LivefyreContentView, HubButton, inherits, $) {
