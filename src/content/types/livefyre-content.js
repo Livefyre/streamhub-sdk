@@ -99,6 +99,11 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
      * @fires Content#opine
      */
     LivefyreContent.prototype.addOpine = function(obj) {
+        if (obj.vis === 0) {
+            this.removeOpine(obj);
+            return;
+        }
+
         var found = false;
         if (obj.id) {
             for (var i in this.opines) {
@@ -114,6 +119,27 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
             }
             this.emit('opine', obj);
         }
+    };
+
+    /**
+     * Remove an Opine from the LivefyreContent
+     * @param obj {Oembed} An LivefyreOpine instance to remove
+     * @fires Content#removeOpine
+     */
+    LivefyreContent.prototype.removeOpine = function(obj) {
+        var indexToRemove = null;
+        for (var i=0; i < this.opines.length; i++) {
+            if (obj.id === this.opines[i].id) {
+                indexToRemove = i;
+                break;
+            }
+        }
+        if (indexToRemove === null) {
+            return;
+        }
+        this.opines.splice(indexToRemove, 1);
+        this._likes--;
+        this.emit('removeOpine', obj);
     };
 
     LivefyreContent.prototype.getLikeCount = function () {

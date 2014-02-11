@@ -3,19 +3,19 @@ define([
     'streamhub-sdk/auth',
     'streamhub-sdk/content/views/content-view',
     'streamhub-sdk/content/types/livefyre-content',
+    'streamhub-sdk/content/types/livefyre-opine',
     'streamhub-sdk/ui/button/hub-button',
     'streamhub-sdk/ui/button/hub-toggle-button',
-    'streamhub-sdk/collection/clients/write-client',
+    'streamhub-sdk/collection/liker',
     'hgn!streamhub-sdk/content/templates/content',
     'streamhub-sdk/util',
     'inherits',
     'streamhub-sdk/debug'
-], function ($, Auth, ContentView, LivefyreContent, HubButton, HubToggleButton, LivefyreWriteClient, ContentTemplate, util, inherits, debug) {
+], function ($, Auth, ContentView, LivefyreContent, LivefyreOpine, HubButton, HubToggleButton, Liker, ContentTemplate, util, inherits, debug) {
     'use strict';
 
     var log = debug('streamhub-sdk/content/views/livefyre-content-view');
-    var LF_TOKEN = 'eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJkb21haW4iOiAibGFicy10NDAyLmZ5cmUuY28iLCAiZXhwaXJlcyI6IDExMzkxNzI4ODEzLjAzOTY2LCAidXNlcl9pZCI6ICJkZW1vLTAifQ.ZJLrUcRf3MbgOqJ1tLO81pZ7ANfatsKgLie6T6S_Wi4';
-    var USER_ID = 'demo-0@labs-t402.fyre.co';
+    var LIKE_REQUEST_LISTENER = false;
 
     /**
      * Defines the base class for all content-views. Handles updates to attachments
@@ -35,13 +35,22 @@ define([
             'left': [],
             'right': []
         };
-        this._likeRequestListener = false;
         this._rendered = false;
 
-        ContentView.call(this, opts);
+        ContentView.call(this, opts)
+
+        if (this.content) {
+            this.content.on("opine", function(content) {
+                this._renderButtons();
+            }.bind(this));
+            this.content.on("removeOpine", function(content) {
+                this._renderButtons();
+            }.bind(this));
+        };
     };
     inherits(LivefyreContentView, ContentView);
 
+    LivefyreContentView.prototype.footerLeftSelector = '.content-footer-left';
 
     /**
      * Render the content inside of the LivefyreContentView's element.
@@ -49,35 +58,27 @@ define([
      */
     LivefyreContentView.prototype.render = function () {
         ContentView.prototype.render.call(this);
-        this._setupButtons();
+        this._renderButtons();
 
         return this;
     };
 
     LivefyreContentView.prototype._handleLikeClick = function () {
         // Lazily attach event handler for contentLike
-        if (! this._likeRequestListener) {
+        if (! LIKE_REQUEST_LISTENER) {
             var self = this;
             $('body').on('contentLike.hub', function (e, content) {
-                Auth.setToken(LF_TOKEN);
+                var liker = new Liker();
+                var userUri = Auth.getUserUri();
 
-                var writeClient = new LivefyreWriteClient();
-
-                var likeIntent;
-                if (! content.isLiked(USER_ID)) {
-                    likeIntent = writeClient.like;
+                if (! content.isLiked(userUri)) {
+                    liker.like(content);
                 } else {
-                    likeIntent = writeClient.unlike;
+                    liker.unlike(content);
                 }
-                likeIntent.call(writeClient, {
-                    network: content.collection.network,
-                    siteId: content.collection.siteId,
-                    collectionId: content.collection.id,
-                    lftoken: LF_TOKEN,
-                    contentId: content.id
-                });
+                self._renderButtons();
             });
-            this._likeRequestListener = true;
+            LIKE_REQUEST_LISTENER = true;
         }
 
         this.$el.trigger('contentLike.hub', this.content);
@@ -88,46 +89,44 @@ define([
         this.$el.trigger('contentShare.hub', this.content);
     };
 
-    LivefyreContentView.prototype._setupButtons = function () {
+    LivefyreContentView.prototype._renderButtons = function () {
+        this.$el.find(this.footerLeftSelector).empty();
+
         if (! (this.content instanceof LivefyreContent)) {
             return;
         }
-        if (! this._rendered) {
-            var likeCount = this.content.getLikeCount();
-            var likeButton = new HubToggleButton(this._handleLikeClick.bind(this), {
-                className: 'hub-content-like',
-                on: this.content.isLiked(USER_ID), //TODO(ryanc): Get user id from auth
-                label: likeCount
-            });
-            this.addButton(likeButton);
+        var likeCount = this.content.getLikeCount();
+        var likeButton = new HubToggleButton(this._handleLikeClick.bind(this), {
+            className: 'hub-content-like',
+            on: this.content.isLiked(Auth.getUserUri()), //TODO(ryanc): Get user id from auth
+            label: likeCount
+        });
+        this.addButton(likeButton);
 
-            //TODO(ryanc): Wait until we have replies on SDK
-            //var replyCommand = new Command(function () {
-            //    self.$el.trigger('contentReply.hub');
-            //});
-            //var replyButton = new HubButton(replyCommand, {
-            //    className: 'hub-btn-link hub-content-reply',
-            //    label: 'Reply'
-            //});
-            //this.addButton(replyButton);
+        //TODO(ryanc): Wait until we have replies on SDK
+        //var replyCommand = new Command(function () {
+        //    self.$el.trigger('contentReply.hub');
+        //});
+        //var replyButton = new HubButton(replyCommand, {
+        //    className: 'hub-btn-link hub-content-reply',
+        //    label: 'Reply'
+        //});
+        //this.addButton(replyButton);
 
-            //TODO(ryanc): Wait until we have likes finished first
-            //var shareButton = new HubButton(this._handleShare.bind(this), {
-            //    className: 'hub-btn-link hub-content-share',
-            //    label: 'Share'
-            //});
-            //this.addButton(shareButton);
-        } else {
-            for (var i=0; i < this._controls['left'].length; i++) {
-                this.addButton(this._controls['left'][i]);
-            }
-        }
-
-        this._rendered = true;
+        //TODO(ryanc): Wait until we have likes finished first
+        //var shareButton = new HubButton(this._handleShare.bind(this), {
+        //    className: 'hub-btn-link hub-content-share',
+        //    label: 'Share'
+        //});
+        //this.addButton(shareButton);
     };
 
     LivefyreContentView.prototype.addButton = function (button) {
-        this._controls['left'].push(button);
+        for (var i=0; i < this._controls['left'].length; i++) {
+            if (this._controls['left'][i] != button) {
+                this._controls['left'].push(button);
+            }
+        }
 
         var footerLeft = this.$el.find(this.footerLeftSelector);
         var buttonContainerEl = $('<div></div>');
