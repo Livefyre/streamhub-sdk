@@ -27,10 +27,16 @@ var AuthRequiredCommand = function (command, opts) {
     Command.call(this, executeFn, opts);
     
     var self = this;
+    /**
+     * A function that executes _command
+     */
     function executeFn () {
         self._command.execute();
     }
     
+    /**
+     * Handles changes in canExecute() from referenced commands.
+     */
     this._handleCanExecuteChange = function () {
         //TODO (joao) Make this smart and only emitChange when it has changed for 'this'
         self._emitChangeCanExecute();
@@ -44,7 +50,7 @@ var AuthRequiredCommand = function (command, opts) {
         this.setAuthCommand(opts.authCmd);
     }
     
-    //Emit potential canExecute change whenever token is set
+    //Emit potential canExecute change whenever token is set or unset
     Auth.on('token', this._handleCanExecuteChange);
 };
 inherits(AuthRequiredCommand, Command);
@@ -103,23 +109,7 @@ AuthRequiredCommand.prototype.canExecute = function () {
  * @override
  */
 AuthRequiredCommand.prototype._changeCanExecute = function (canExecute) {
-    this._command._canExecute(canExecute);
-};
-
-/**
- * Enable the Command
- * @override
- */
-AuthRequiredCommand.prototype.enable = function () {
-    this._command._changeCanExecute(true);
-};
-
-/**
- * Disable the Command, discouraging its Execution
- * @override
- */
-AuthRequiredCommand.prototype.disable = function () {
-    this._command._changeCanExecute(false);
+    this._command._changeCanExecute(canExecute);
 };
 
 /**
@@ -130,9 +120,7 @@ AuthRequiredCommand.prototype.disable = function () {
 AuthRequiredCommand.prototype._authCmd = (
     /** @returns {!Command} */
         function () {
-    var cmd = new Command(function () {
-        log('Default authentication command executed.');
-    });
+    var cmd = new Command(util.nullFunction);
     cmd.disable();
     return cmd;
 })();
@@ -148,24 +136,11 @@ AuthRequiredCommand.prototype.setAuthCommand = function (cmd) {
 };
 
 /**
- * Handles changes in canExecute() from referenced commands.
- */
-AuthRequiredCommand.prototype._handleCanExecuteChange = function () {
-    //TODO (joao) Make this smart and only emitChange when it has changed for 'this'
-    this._emitChangeCanExecute();
-};
-
-/**
  * Checks if this._authCmd can be executed, then executes it.
  * @param [callback] {function}
  * @protected
  */
 AuthRequiredCommand.prototype._authenticate = function (callback) {
-    if (!this._authCmd.canExecute()) {
-        log('Attempt to _authenticate() thwarted by !_authCmd.canExecute()', this);
-        return;
-    }
-    
     this._authCmd.execute.apply(this._authCmd, arguments);
 };
 
