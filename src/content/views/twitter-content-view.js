@@ -25,13 +25,16 @@ function (LivefyreContentView, HubButton, inherits, $) {
     TwitterContentView.prototype._renderButtons = function () {
         if (! this._rendered) {
             var replyButton = new HubButton(undefined, {
-                className: 'content-action content-action-reply'
+                className: 'content-action content-action-reply',
+                buttonUrl: 'https://twitter.com/intent/tweet?in_reply_to=' + this.content.tweetId
             });
             var retweetButton = new HubButton(undefined, {
-                className: 'content-action content-action-retweet'
+                className: 'content-action content-action-retweet',
+                buttonUrl: 'https://twitter.com/intent/retweet?tweet_id=' + this.content.tweetId
             });
             var favoriteButton = new HubButton(undefined, {
-                className: 'content-action content-action-favorite'
+                className: 'content-action content-action-favorite',
+                buttonUrl: 'https://twitter.com/intent/favorite?tweet_id=' + this.content.tweetId
             });
 
             this.addButton(replyButton);
