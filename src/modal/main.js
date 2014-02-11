@@ -130,7 +130,6 @@ define([
 
         this.$el.on('hideModal.hub', function (e) {
             self.hide();
-            $('body').css('overflow', 'auto');
         });
 
         this.$el.on('click', this.closeButtonSelector, function (e) {
