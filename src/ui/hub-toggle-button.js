@@ -1,6 +1,6 @@
 'use strict';
 
-var HubButton = require('streamhub-sdk/ui/button/hub-button');
+var HubButton = require('streamhub-sdk/ui/hub-button');
 var inherits = require('inherits');
 
 function HubToggleButton (fnOrCommand, opts) {
