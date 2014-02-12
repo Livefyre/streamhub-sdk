@@ -4,8 +4,16 @@ define([
     'streamhub-sdk/content',
     'streamhub-sdk/content/types/livefyre-content',
     'streamhub-sdk/content/views/content-view',
+    'streamhub-sdk/content/content-view-factory',
     'streamhub-sdk/content/views/tiled-attachment-list-view'],
-function ($, util, Content, LivefyreContent, ContentView, TiledAttachmentListView) {
+function (
+    $,
+    util,
+    Content,
+    LivefyreContent,
+    ContentView,
+    ContentViewFactory,
+    TiledAttachmentListView) {
     'use strict';
 
     describe('Default ContentView', function () {
@@ -237,5 +245,6 @@ function ($, util, Content, LivefyreContent, ContentView, TiledAttachmentListVie
                 });
             });
         });
+
     });
 });

@@ -35,12 +35,10 @@ function(LivefyreHttpClient, inherits, base64) {
         opts = opts || {};
         callback = callback || function() {};
         var environment = opts.environment = opts.environment || 'livefyre.com';
-        var includeEnvironment = (environment !== 'livefyre.com') && (environment !== 'fyre');
 
         var url = [
             this._getUrlBase(opts),
             "/bs3/",
-            includeEnvironment ? opts.environment + "/" : "",
             opts.network,
             "/",
             opts.siteId,
