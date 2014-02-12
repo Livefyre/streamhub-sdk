@@ -21,7 +21,8 @@ function (Writable, LivefyreWriteClient, Auth, inherits) {
             collection = this._collection,
             token = Auth.getToken(),
             post = this._writeClient.postContent,
-            numAttachments = content.attachments && content.attachments.length;
+            numAttachments = content.attachments && content.attachments.length,
+            attachment;
 
         if ( ! token) {
             throw new Auth.UnauthorizedError("Collection cannot write until streamhub-sdk/auth.setToken has been called");
@@ -44,7 +45,11 @@ function (Writable, LivefyreWriteClient, Auth, inherits) {
         if (numAttachments) {
             postParams.media = [];
             for (var i=0; i < numAttachments; i++) {
-                postParams.media.push(content.attachments[i]);
+                attachment = content.attachments[i];
+                if (typeof attachment.toJSON === 'function') {
+                    attachment = attachment.toJSON();
+                }
+                postParams.media.push(attachment);
             }
         }
 
