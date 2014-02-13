@@ -25,10 +25,10 @@ define(['streamhub-sdk/jquery'], function($) {
      * @param [opts.method=GET] {string} HTTP Method
      * @param opts.url {string} URL to request
      * @param opts.dataType {string} Data type to expect in response
-     * @param opt_callback {function=} A callback to pass (err, data) to
+     * @param callback {function=} A callback to pass (err, data) to
      */
-    LivefyreHttpClient.prototype._request = function (opts, opt_callback) {
-        var callback = opt_callback || function() {};
+    LivefyreHttpClient.prototype._request = function (opts, callback) {
+        callback = callback || function() {};
         var xhr = $.ajax({
             type: opts.method || 'GET',
             url: opts.url,
