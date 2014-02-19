@@ -66,6 +66,16 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $, LivefyreContent) {
                 expect(updater._createAnnotator).toEqual(createAnnotator);
             });
 
+            it('can set the collections initial event value', function () {
+                var ev = '123';
+                var coll = new  MockCollection();
+                coll.settings.initEvent = ev;
+                var collUpdater = new CollectionUpdater({
+                    collection: coll
+                });
+                expect(collUpdater._latestEvent).toEqual(ev);
+            });
+
             describe('when .read() for the first time', function () {
                 var content;
                 beforeEach(function () {

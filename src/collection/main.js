@@ -31,6 +31,7 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         this.siteId = opts.siteId;
         this.articleId = opts.articleId;
         this.environment = opts.environment;
+        this.settings = {};
 
         this._collectionMeta = opts.collectionMeta;
         this._signed = opts.signed;
@@ -206,7 +207,10 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
                 throw 'Fatal collection connection error';
             }
             var collectionSettings = initData.collectionSettings;
-            self.id = collectionSettings && collectionSettings.collectionId;
+            if (collectionSettings) {
+                self.id = collectionSettings.collectionId;
+                self.settings.initEvent = collectionSettings.event;
+            }
             self.emit('_initFromBootstrap', err, initData);
         });
     };

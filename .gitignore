@@ -9,4 +9,4 @@ streamhub-sdk.min*
 *.log
 /docs/api
 /tmp
-
+npm-debug.log

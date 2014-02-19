@@ -193,6 +193,12 @@ Auth, Writable, Readable) {
                     expect(collection._bootstrapClient.getContent.calls.length).toEqual(1);
                     expect(collection._createClient.createCollection.calls.length).toEqual(1);
                 });
+
+                it('sets the initial event value', function () {
+                    spyOn(collection._bootstrapClient, "getContent").andCallFake(fnSuccessfulInit);
+                    collection.initFromBootstrap(fnCallback);
+                    expect(collection.settings.initEvent).toEqual(mockInitResponse.collectionSettings.event);
+                });
             });
 
             describe('.createFeaturedContents', function () {
