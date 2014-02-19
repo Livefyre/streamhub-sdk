@@ -23,11 +23,13 @@ inherits) {
      * into streamhub-sdk Content instances
      * @param authors {object} A mapping of authorIds to author information
      * @param [replies=false] {boolean} Whether to read out reply Content
+     * @param storage {Storage} A storage mechanism that supports get/set functions.
      */
     var StateToContent = function (opts) {
         opts = opts || {};
         this._authors = opts.authors || {};
         this._replies = opts.replies;
+        this._storage = opts.storage || Storage;
         Transform.call(this, opts);
     };
 
@@ -83,7 +85,7 @@ inherits) {
         // Store content with IDs in case we later get
         // replies or attachments targeting it
         if (content && content.id) {
-            var stored = Storage.get(content.id);
+            var stored = this._storage.get(content.id);
             if (stored) {
                 // If existing content, update properties on existing instance
                 if (isContent) {
@@ -96,9 +98,9 @@ inherits) {
                 content = stored;
                 // Don't handle attachment updating.
             } else {
-                Storage.set(content.id, content);
+                this._storage.set(content.id, content);
             }
-            childContent = Storage.get('children_'+content.id) || [];
+            childContent = this._storage.get('children_'+content.id) || [];
         }
 
         // Get child states (replies and attachments)
@@ -244,7 +246,7 @@ inherits) {
 
 
     StateToContent.prototype._attachOrStore = function (attachment, targetId) {
-        var target = Storage.get(targetId);
+        var target = this._storage.get(targetId);
         if (target) {
             log('attaching attachment', arguments);
             target.addAttachment(attachment);
@@ -257,7 +259,7 @@ inherits) {
     StateToContent._attachOrStore = StateToContent.prototype._attachOrStore;
 
     StateToContent.prototype._addReplyOrStore = function (reply, parentId) {
-        var parent = Storage.get(parentId);
+        var parent = this._storage.get(parentId);
         if (parent) {
             log('adding reply', arguments);
             parent.addReply(reply);
@@ -273,9 +275,9 @@ inherits) {
     StateToContent.prototype._storeChild = function (child, parentId) {
         //TODO (joao) Make this smart enough to not push duplicates
         var childrenKey = 'children_' + parentId,
-            children = Storage.get(childrenKey) || [];
+            children = this._storage.get(childrenKey) || [];
         children.push(child);
-        Storage.set(childrenKey, children);
+        this._storage.set(childrenKey, children);
     };
     // Keep static for legacy API compatibility
     StateToContent._storeChild = StateToContent.prototype._storeChild;
