@@ -13,7 +13,9 @@
                 <div class="content-author-name">
                     <a href="{{ author.profileUrl }}" target="_blank">{{ author.displayName }}</a>
                 </div>
-                <a class="content-author-username" href="https://twitter.com/intent/user?user_id={{author.twitterUserId}}" target="_blank">@{{ author.twitterUsername }}</a>
+                {{#author.twitterUserId}}
+                	<a class="content-author-username" href="https://twitter.com/intent/user?user_id={{author.twitterUserId}}" target="_blank">@{{ author.twitterUsername }}</a>
+                {{/author.twitterUserId}}
             {{/author.profileUrl}}
             {{^author.profileUrl}}
                 <span class="content-author-name">{{ author.displayName }}</span>
