@@ -175,5 +175,51 @@ function(LivefyreHttpClient, inherits) {
         }, callback);
     };
 
+    LivefyreWriteClient.prototype.feature = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/collection/',
+            opts.collectionId,
+            '/feature/',
+            opts.contentId
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            dataType: 'json',
+            data: postData
+        });
+    };
+
+    LivefyreWriteClient.prototype.unfeature = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/collection/',
+            opts.collectionId,
+            '/unfeature/',
+            opts.contentId
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            dataType: 'json',
+            data: postData
+        });
+    };
+
     return LivefyreWriteClient;
 });
