@@ -195,7 +195,7 @@ function(LivefyreHttpClient, inherits) {
             url: url,
             dataType: 'json',
             data: postData
-        });
+        }, callback);
     };
 
     LivefyreWriteClient.prototype.unfeature = function (opts, callback) {
@@ -218,7 +218,7 @@ function(LivefyreHttpClient, inherits) {
             url: url,
             dataType: 'json',
             data: postData
-        });
+        }, callback);
     };
 
     return LivefyreWriteClient;
