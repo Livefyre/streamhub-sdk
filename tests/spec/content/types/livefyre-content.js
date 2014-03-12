@@ -86,6 +86,49 @@ function ($, LivefyreContent) {
             expect(spy.callCount).toBe(1);
             expect(content.replies.length).toBe(1);
         });
+        
+        it('returns a parent when getParent()', function () {
+            var parent = {};
+            content = new LivefyreContent(mockData.livefyreStreamContent);
+            content._parent = parent;
+            
+            expect(content.getParent()).toBe(parent);
+        });
+        
+        it('returns null if its parent hasn\'t been provided or undefined if it doesn\'t have a parentId when getParent()', function () {
+            content = new LivefyreContent(mockData.livefyreStreamContent);
+            expect(content.getParent()).not.toBeDefined();
+            content.parentId = '12345';
+            expect(content.getParent()).toBeNull();
+        });
+        
+        it('can setParent(), but only when not already set and when IDs are matching', function () {
+            var parent = new LivefyreContent(mockData.livefyreStreamContent);
+            var reply = new LivefyreContent(mockData.livefyreStreamContent);
+            
+            reply.setParent(parent);
+            expect(reply._parent).not.toBeDefined();
+            
+            reply.parentId = parent.id;
+            reply.setParent(parent);
+            expect(reply._parent).toBe(parent);
+            
+            var other = new LivefyreContent(mockData.livefyreStreamContent);
+            other.id = parent.id;
+            reply.setParent(other);
+            expect(reply._parent).toBe(parent);
+        })
+        
+        it('calls setParent() when addReply()', function () {
+            var reply = {
+                id: '12345',
+                setParent: jasmine.createSpy('setParent')
+            };
+            content = new LivefyreContent(mockData.livefyreStreamContent);
+            
+            content.addReply(reply);
+            expect(reply.setParent).toHaveBeenCalledWith(content);
+        });
 
         describe('.isFeatured()', function () {
             it('is a method on LivefyreContent', function () {

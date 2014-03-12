@@ -31,7 +31,7 @@ var AuthRequiredCommand = function (command, opts) {
      * A function that executes _command
      */
     function executeFn () {
-        self._command.execute();
+        self._command.execute.apply(self._command, arguments);
     }
     
     /**
@@ -61,12 +61,13 @@ inherits(AuthRequiredCommand, Command);
  */
 AuthRequiredCommand.prototype.execute = function () {
     var self = this;
+    var args = arguments;
     /**
      * This callback executes this command, wrapped so that it can be passed
      * to an authenticating command to be called after authentication.
      */
     function authRequiredCallback() {
-        Auth.getToken() && Command.prototype.execute.apply(self, arguments);
+        Auth.getToken() && Command.prototype.execute.apply(self, args);
     }
     
     if (this.canExecute()) {
