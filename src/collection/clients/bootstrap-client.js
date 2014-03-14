@@ -53,5 +53,23 @@ function(LivefyreHttpClient, inherits, base64) {
         }, callback);
     };
 
+    LivefyreBootstrapClient.prototype.getAuthorContent = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function() {};
+        var environment = opts.environment = opts.environment || 'livefyre.com';
+
+        var url = [
+            this._getUrlBase(opts),
+            "/api/v3.1",
+            "/author/",
+            opts.authorId,
+            "/content/",
+        ].join("");
+
+        this._request({
+            url: url
+        }, callback);
+    };
+
     return LivefyreBootstrapClient;
 });
