@@ -86,6 +86,10 @@ inherits) {
 
         content = this._createContent(state, authors);
 
+        if (content && opts.collection) {
+            content.collection = opts.collection;
+        }
+
         // Store content with IDs in case we later get
         // replies or attachments targeting it
         if (content && content.id) {
@@ -152,13 +156,10 @@ inherits) {
             return;
         }
 
-        if (opts.collection) {
-            content.collection = opts.collection;
-        }
-
         if (opts.replies) {
             return [content].concat(descendantContent);
         }
+
         return [content];
     };
 
@@ -245,6 +246,9 @@ inherits) {
         }
         if (content.body) {
             updatedProperties.body = content.body;
+        }
+        if (content.title) {
+            updatedProperties.title = content.title;
         }
         if (content.author) {
             updatedProperties.author = content.author;

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/src/css/style.css">
+    <style>
+    #listView {
+        width:500px;
+        overflow: hidden;
+    }
+    </style>
+</head>
+    <body>
+        <div>
+        <a href="javascript:void();" onclick="window.streamManager.get('main').start()">Start</a>
+        <a href="javascript:void();" onclick="window.streamManager.get('main').stop()">Stop</a>
+        </div>
+        <div id="listView"></div>
+
+        <script src="../../lib/cajon/cajon.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+        requirejs.config({
+            baseUrl: '../../'
+        });
+        require([
+            'streamhub-sdk/auth',
+            'streamhub-sdk/content/views/content-list-view',
+            'streamhub-sdk/collection',
+            'streamhub-sdk/collection/streams/archive',
+            'streamhub-sdk/content'
+        ],function (Auth, ListView, Collection, CollectionArchive, Content) {
+            var opts = {
+                "network": "labs-t402.fyre.co",
+                "siteId": "303827",
+                "articleId": "xbox-0",
+                "environment": "t402.livefyre.com",
+                "replies": true
+            };
+
+            Auth.setToken('eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJkb21haW4iOiAibGFicy10NDAyLmZ5cmUuY28iLCAiZXhwaXJlcyI6IDExMzkxNzI4ODEzLjAzOTY2LCAidXNlcl9pZCI6ICJkZW1vLTAifQ.ZJLrUcRf3MbgOqJ1tLO81pZ7ANfatsKgLie6T6S_Wi4');
+            var listView = window.view = new ListView({
+                initial: 50,
+                showMore: 50,
+                el: document.getElementById("listView"),
+                comparator: function (cvA, cvB) {
+                    return cvA.content.createdAt - cvB.content.createdAt;
+                }
+            });
+
+            var collection = window.collection =  new Collection(opts);
+            var oldestFirst = collection.createArchive({
+                comparator: CollectionArchive.comparators.CREATED_AT_ASCENDING
+            });
+            oldestFirst.pipe(listView.more);
+
+        });
+        </script>
+    </body>
+</html>

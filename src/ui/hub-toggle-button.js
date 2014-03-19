@@ -7,7 +7,7 @@ function HubToggleButton (fnOrCommand, opts) {
     opts = opts || {};
     opts.elClassPrefix = opts.elClassPrefix || '';
     this._enabled = opts.enabled || false;
-    opts.elClassPrefix += this._enabled ? ' hub-btn-toggle-on' : 'hub-btn-toggle-off';
+    opts.elClass += this._enabled ? ' btn-toggle-on' : 'btn-toggle-off';
 
     HubButton.call(this, fnOrCommand, opts);
 }

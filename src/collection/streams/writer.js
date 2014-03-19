@@ -36,9 +36,11 @@ function (Writable, LivefyreWriteClient, Auth, inherits) {
         
         var postParams = {
             body: content.body,
+            title: content.title,
             network: collection.network,
             environment: collection.environment,
             collectionId: collection.id,
+            contentId: content.id,
             lftoken: Auth.getToken()
         };
 
@@ -63,7 +65,16 @@ function (Writable, LivefyreWriteClient, Auth, inherits) {
             postParams.tweetId = content.tweetId;
         }
 
-        post.call(this._writeClient, postParams, done);
+        post.call(this._writeClient, postParams, function (err, response) {
+            if (err) {
+                return done(err);
+            }
+            content.set({
+                collection: this._collection,
+                id: response.data.messages[0].content.id
+            });
+            done();
+        }.bind(this));
     };
 
 

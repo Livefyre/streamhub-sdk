@@ -16,6 +16,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
     var log = debug('streamhub-sdk/views/list-view');
 
+    // HTML attribute applied to ListView#el when there is more data to be shown
+    // and the show more button is visible.
+    var HAS_MORE_DATA_ATTR = 'data-hub-has-more';
+
     /**
      * A simple View that displays Content in a list (`<ul>` by default).
      *
@@ -35,7 +39,7 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
         this.comparator = opts.comparator || this.comparator;
         this._moreAmount = opts.showMore || 50;
-        this.more = opts.more || this._createMoreStream(opts);
+        this._setMoreStream(opts.more || this._createMoreStream(opts));
         this.showMoreButton = opts.showMoreButton || this._createShowMoreButton(opts);
         this.showMoreButton.setMoreStream(this.more);
 
@@ -50,8 +54,10 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
 
     ListView.prototype.events = View.prototype.events.extended({
         // .showMoreButton will trigger showMore.hub when it is clicked
-        'showMore.hub': function () {
+        'showMore.hub': function (e) {
             this.showMore();
+            this.$el.removeAttr(HAS_MORE_DATA_ATTR);
+            e.stopPropagation();
         },
         // When a subview .remove()s itself, it should fire this event
         'removeView.hub': function (event, view) {
@@ -99,6 +105,27 @@ debug, Writable, ContentView, More, ShowMoreButton, ListViewTemplate) {
         this.showMoreButton.render();
     };
 
+    /**
+     * Set the More stream for this listView
+     */
+    ListView.prototype._setMoreStream = function (moreStream) {
+        if (this.more) {
+            // Remove listener on old more
+            this.more.removeListener('hold', this._onHeldMore);
+        }
+        this.more = moreStream;
+        this.more.on('hold', this._onHeldMore.bind(this));
+        return this.more;
+    };
+
+    /**
+     * Called when we find out there is more data behind the show more button
+     */
+    ListView.prototype._onHeldMore = function () {
+        if (this.$el) {
+            this.$el.attr(HAS_MORE_DATA_ATTR, true);
+        }
+    };
 
     /**
      * Called automatically by the Writable base class when .write() is called

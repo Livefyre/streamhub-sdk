@@ -61,6 +61,9 @@ StateToContent, Annotator, debug) {
             // Get the latest event and/or collection ID by initing
             // the collection from bootstrap
             return this._collection.initFromBootstrap(function (err, initData) {
+                if (err) {
+                    return self.emit('error', err);
+                }
                 var collectionSettings = initData.collectionSettings,
                     latestEvent = collectionSettings && collectionSettings.event;
                 if ( ! self._collection.id) {
@@ -88,7 +91,7 @@ StateToContent, Annotator, debug) {
             streamClientOpts = this._getStreamClientOptions();
 
         var request = streamClient.getContent(streamClientOpts, function (err, data) {
-            if (err === 'abort') {
+            if (err && err.type === 'abort') {
                 log('stream request aborted');
                 self.push();
                 return;
@@ -205,6 +208,7 @@ StateToContent, Annotator, debug) {
     CollectionUpdater.prototype._createStateToContent = function (opts) {
         opts = opts || {};
         opts.replies = this._replies;
+        opts.collection = this._collection;
         return new StateToContent(opts);
     };
 

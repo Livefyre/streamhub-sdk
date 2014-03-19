@@ -1,8 +1,9 @@
 define([
     'streamhub-sdk/storage',
     'stream/writable',
-    'inherits'
-], function (Storage, Writable, inherits) {
+    'inherits',
+    'streamhub-sdk/jquery'
+], function (Storage, Writable, inherits, $) {
     'use strict';
 
     /**
@@ -98,6 +99,24 @@ define([
 
     Annotator.prototype.removed.moderator = function(changeSet) {
         changeSet.moderator = false;
+    };
+
+    // Content Extensions
+    Annotator.prototype.added.extension = function (changeSet, addedExtensions, content) {
+        var existingExtensions = content.extensions || {};
+        changeSet.extensions = $.extend(existingExtensions, addedExtensions);
+    };
+    Annotator.prototype.updated.extension = function (changeSet, annotation, content) {
+        changeSet.extensions = annotation;
+    };
+    Annotator.prototype.removed.extension = function (changeSet, annotation, content) {
+        var extensions = content.extensions || {};
+        Object.keys(annotation).forEach(function (extensionName) {
+            if (extensions.hasOwnProperty(extensionName)) {
+                delete extensions[extensionName];
+            }
+        });
+        changeSet.extensions = extensions;
     };
 
     return Annotator;

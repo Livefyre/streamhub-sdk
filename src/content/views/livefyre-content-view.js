@@ -16,6 +16,11 @@ define([
 
     var LIKE_REQUEST_LISTENER = false;
 
+    var DEFAULT_LABELS = {
+        like: 'Like',
+        liked: 'Liked'
+    };
+
     /**
      * Defines the base class for all content-views. Handles updates to attachments
      * and loading of images.
@@ -35,6 +40,7 @@ define([
             'right': []
         };
         this._rendered = false;
+        this._labels = $.extend({}, DEFAULT_LABELS, opts.labels || {});
 
         ContentView.call(this, opts);
 
@@ -50,17 +56,34 @@ define([
     inherits(LivefyreContentView, ContentView);
 
     LivefyreContentView.prototype.footerLeftSelector = '.content-footer-left';
+    LivefyreContentView.prototype.footerRightSelector = '.content-footer-right';
+
+    LivefyreContentView.prototype.events = ContentView.prototype.events.extended({
+        'contentLiked.hub': function (e) {
+            this._likeButton.updateLabel(this._labels.liked);
+        },
+        'contentUnliked.hub': function (e) {
+            this._likeButton.updateLabel(this._labels.like);
+        }
+    });
+
     LivefyreContentView.handleLikeClick = function (e, content) {
         var liker = new Liker();
         var userUri = Auth.getUserUri();
 
         if (! content.isLiked(userUri)) {
-            liker.like(content, function () {
-                $('body').trigger('contentLike.hub');
+            liker.like(content, function (err, response) {
+                if (err) {
+                    throw err;
+                }
+                $(e.target).trigger('contentLiked.hub', response);
             });
         } else {
-            liker.unlike(content, function () {
-                $('body').trigger('contentUnlike.hub');
+            liker.unlike(content, function (err, response) {
+                if (err) {
+                    throw err;
+                }
+                $(e.target).trigger('contentUnliked.hub', response);
             });
         }
     };
@@ -78,10 +101,6 @@ define([
     LivefyreContentView.prototype._handleLikeClick = function () {
         // Lazily attach event handler for contentLike
         if (! LIKE_REQUEST_LISTENER) {
-            var self = this;
-            $('body').on('contentLike.hub contentUnlike.hub', function () {
-                self._renderButtons();
-            });
             $('body').on('likeClick.hub', LivefyreContentView.handleLikeClick);
             LIKE_REQUEST_LISTENER = true;
         }
@@ -95,17 +114,14 @@ define([
 
     LivefyreContentView.prototype._renderButtons = function () {
         this.$el.find(this.footerLeftSelector).empty();
+        this.$el.find(this.footerRightSelector).empty();
 
         if (! (this.content instanceof LivefyreContent)) {
             return;
         }
-        var likeCount = this.content.getLikeCount();
-        var likeButton = new HubToggleButton(this._handleLikeClick.bind(this), {
-            className: 'hub-content-like',
-            enabled: this.content.isLiked(Auth.getUserUri()), //TODO(ryanc): Get user id from auth
-            label: likeCount
-        });
-        this.addButton(likeButton);
+
+        this._likeButton = this._createLikeButton();
+        this.addButton(this._likeButton);
 
         //TODO(ryanc): Wait until we have replies on SDK
         //var replyCommand = new Command(function () {
@@ -125,16 +141,36 @@ define([
         //this.addButton(shareButton);
     };
 
-    LivefyreContentView.prototype.addButton = function (button) {
-        for (var i=0; i < this._controls.left.length; i++) {
-            if (this._controls.left[i] !== button) {
-                this._controls.left.push(button);
+    /**
+     * Create a Button to be used for Liking functionality
+     * @protected
+     */
+    LivefyreContentView.prototype._createLikeButton = function () {
+        var likeCount = this.content.getLikeCount();
+        var likeButton = new HubToggleButton(this._handleLikeClick.bind(this), {
+            className: 'content-like',
+            enabled: this.content.isLiked(Auth.getUserUri()), //TODO(ryanc): Get user id from auth
+            label: likeCount.toString()
+        });
+        return likeButton;
+    };
+
+    LivefyreContentView.prototype.addButton = function (button, opts) {
+        opts = opts || {};
+        opts.side = opts.side === 'right' ? 'right' : 'left';
+
+        var controlSet = this._controls[opts.side];
+
+        for (var i=0; i < controlSet.length; i++) {
+            if (controlSet[i] !== button) {
+                controlSet.push(button);
             }
         }
 
-        var footerLeft = this.$el.find(this.footerLeftSelector);
+        var footerSelector = opts.side === 'left' ? this.footerLeftSelector : this.footerRightSelector;
+        var footerSideEl = this.$el.find(footerSelector);
         var buttonContainerEl = $('<div></div>');
-        footerLeft.append(buttonContainerEl);
+        footerSideEl.append(buttonContainerEl);
 
         button.setElement(buttonContainerEl);
         button.render();

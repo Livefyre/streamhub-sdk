@@ -39,8 +39,7 @@ define(function () {
         'tests/spec/modal/main',
         'tests/spec/modal/views/attachment-gallery-modal',
         'tests/spec/ui/button',
-        'tests/spec/ui/command',
-        'tests/spec/ui/auth-required-command'
+        'tests/spec/ui/command'
     ];
     return specs;
 });
