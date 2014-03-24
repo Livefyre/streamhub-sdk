@@ -4,13 +4,14 @@ define([
     'streamhub-sdk/content/types/livefyre-facebook-content',
     'streamhub-sdk/content/types/oembed',
     'streamhub-sdk/content/types/livefyre-oembed',
+    'streamhub-sdk/content/types/livefyre-opine',
     'streamhub-sdk/content/types/livefyre-instagram-content',
     'streamhub-sdk/storage',
     'streamhub-sdk/debug',
     'stream/transform',
     'inherits'
 ], function (LivefyreContent, LivefyreTwitterContent, LivefyreFacebookContent,
-Oembed, LivefyreOembed, LivefyreInstagramContent, Storage, debug, Transform,
+Oembed, LivefyreOembed, LivefyreOpine, LivefyreInstagramContent, Storage, debug, Transform,
 inherits) {
     'use strict';
 
@@ -21,14 +22,16 @@ inherits) {
     /**
      * An Object that transforms state objects from Livefyre APIs
      * into streamhub-sdk Content instances
-     * @param authors {object} A mapping of authorIds to author information
-     * @param [replies=false] {boolean} Whether to read out reply Content
-     * @param storage {Storage} A storage mechanism that supports get/set functions.
+     * @param [opts.authors] {object} A mapping of authorIds to author information
+     * @param [opts.collection] {Collection}
+     * @param [opts.replies=false] {boolean} Whether to read out reply Content
+     * @param [opts.storage] {Storage} A storage mechanism that supports get/set functions.
      */
     var StateToContent = function (opts) {
         opts = opts || {};
         this._authors = opts.authors || {};
         this._replies = opts.replies;
+        this._collection = opts.collection;
         this._storage = opts.storage || Storage;
         Transform.call(this, opts);
     };
@@ -40,7 +43,8 @@ inherits) {
         var contents;
         try {
             contents = this.transform(state, this._authors, {
-                replies: this._replies
+                replies: this._replies,
+                collection: this._collection
             });
         } catch (err) {
             this.emit('error transforming state-to-content', err);
@@ -71,12 +75,13 @@ inherits) {
             type = StateToContent.enums.type[state.type],
             isAttachment = ('OEMBED' === type),
             isContent = ('CONTENT' === type),
+            isOpine = ('OPINE' === type),
             childStates = state.childContent || [],
             content,
             childContent = [],
             descendantContent = [];
 
-        if ( ! (isAttachment || isContent)) {
+        if ( ! (isAttachment || isContent || isOpine)) {
             return;
         }
 
@@ -127,6 +132,10 @@ inherits) {
         if (isReply) {
             this._addReplyOrStore(content, state.content.parentId);
         }
+        // Add opines to their parent, or store for later
+        if (isOpine) {
+            this._addOpineOrStore(content, state.content.targetId);
+        }
 
         // Never return non-Content items or non-public items
         // But note, this is at the end of the recursive function,
@@ -142,6 +151,10 @@ inherits) {
         // Don't return replies if not explicitly specified
         if (isReply && ! opts.replies) {
             return;
+        }
+
+        if (opts.collection) {
+            content.collection = opts.collection;
         }
 
         if (opts.replies) {
@@ -164,6 +177,8 @@ inherits) {
                 content.addAttachment(child);
             } else if (child instanceof LivefyreContent) {
                 content.addReply(child);
+            } else if (child instanceof LivefyreOpine) {
+                content.addOpine(child);
             }
         }
     };
@@ -179,6 +194,8 @@ inherits) {
 
         if ('OEMBED' === StateToContent.enums.type[state.type]) {
             return new LivefyreOembed(state);
+        } else if ('OPINE' === StateToContent.enums.type[state.type]) {
+            return new LivefyreOpine(state);
         } else if (sourceName === 'twitter') {
             return new LivefyreTwitterContent(state);
         } else if (sourceName === 'facebook') {
@@ -270,6 +287,17 @@ inherits) {
     };
     // Keep static for legacy API compatibility
     StateToContent._addReplyOrStore = StateToContent.prototype._addReplyOrStore;
+
+    StateToContent.prototype._addOpineOrStore = function (opine, targetId) {
+        var target = this._storage.get(targetId);
+        if (target) {
+            log('attaching attachment', arguments);
+            target.addOpine(opine);
+        } else {
+            log('storing attachment', arguments);
+            this._storeChild(opine, targetId);
+        }
+    };
 
 
     StateToContent.prototype._storeChild = function (child, parentId) {

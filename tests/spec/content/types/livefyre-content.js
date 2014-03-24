@@ -86,6 +86,49 @@ function ($, LivefyreContent) {
             expect(spy.callCount).toBe(1);
             expect(content.replies.length).toBe(1);
         });
+        
+        it('returns a parent when getParent()', function () {
+            var parent = {};
+            content = new LivefyreContent(mockData.livefyreStreamContent);
+            content._parent = parent;
+            
+            expect(content.getParent()).toBe(parent);
+        });
+        
+        it('returns null if its parent hasn\'t been provided or undefined if it doesn\'t have a parentId when getParent()', function () {
+            content = new LivefyreContent(mockData.livefyreStreamContent);
+            expect(content.getParent()).not.toBeDefined();
+            content.parentId = '12345';
+            expect(content.getParent()).toBeNull();
+        });
+        
+        it('can setParent(), but only when not already set and when IDs are matching', function () {
+            var parent = new LivefyreContent(mockData.livefyreStreamContent);
+            var reply = new LivefyreContent(mockData.livefyreStreamContent);
+            
+            reply.setParent(parent);
+            expect(reply._parent).not.toBeDefined();
+            
+            reply.parentId = parent.id;
+            reply.setParent(parent);
+            expect(reply._parent).toBe(parent);
+            
+            var other = new LivefyreContent(mockData.livefyreStreamContent);
+            other.id = parent.id;
+            reply.setParent(other);
+            expect(reply._parent).toBe(parent);
+        })
+        
+        it('calls setParent() when addReply()', function () {
+            var reply = {
+                id: '12345',
+                setParent: jasmine.createSpy('setParent')
+            };
+            content = new LivefyreContent(mockData.livefyreStreamContent);
+            
+            content.addReply(reply);
+            expect(reply.setParent).toHaveBeenCalledWith(content);
+        });
 
         describe('.isFeatured()', function () {
             it('is a method on LivefyreContent', function () {
@@ -117,12 +160,6 @@ function ($, LivefyreContent) {
                 var nonFeaturedContent = new LivefyreContent(mockData.livefyreBootstrapContent);
                 expect(nonFeaturedContent.getFeaturedValue()).toBe(undefined);
             });
-        });
-
-        it('has a geocode property if a geocode annotation is present on the json', function () {
-            var json = {"vis":1,"collectionId":"58203273","content":{"parentId":"","bodyHtml":"Two things I can't live without: #thebay and my chuck t's :)","id":"instagram-653589918757055868_223369762@instagram.com","authorId":"223369762@instagram.com","updatedAt":1392134048,"annotations":{"geocode":{"latitude":37.673845177,"longitude":-122.14884498}},"createdAt":1392134011},"source":19,"type":0,"event":1392134048988712,"childContent":[{"content":{"targetId":"instagram-653589918757055868_223369762@instagram.com","authorId":"-","link":"http://distilleryimage9.s3.amazonaws.com/6a5b7310933411e3b0fd12440ac5900d_8.jpg","oembed":{"provider_url":"http://instagram.com","title":"Two things I can't live without: #thebay and my chuck t's :)","url":"http://distilleryimage9.s3.amazonaws.com/6a5b7310933411e3b0fd12440ac5900d_8.jpg","thumbnail_width":150,"height":640,"width":640,"version":"1.0","author_name":"babyyyyy_cakessssss","provider_name":"Instagram","thumbnail_url":"http://distilleryimage9.s3.amazonaws.com/6a5b7310933411e3b0fd12440ac5900d_5.jpg","type":"photo","thumbnail_height":150,"author_url":"http://www.instagram.com/babyyyyy_cakessssss"},"position":0,"id":"instagram-653589918757055868_223369762@instagram.com.http://distilleryimage9.s3.amazonaws.com/6a5b7310933411e3b0fd12440ac5900d_8.jpg"},"vis":1,"type":3,"event":1392134048988712,"source":0}]};
-            var content = new LivefyreContent(json);
-            expect(content.geocode).toEqual(json.content.annotations.geocode)
         });
     });
 });
