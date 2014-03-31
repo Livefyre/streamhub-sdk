@@ -25,9 +25,10 @@ define(['streamhub-sdk/jquery'], function($) {
      * @param [opts.method=GET] {string} HTTP Method
      * @param opts.url {string} URL to request
      * @param opts.dataType {string} Data type to expect in response
-     * @param callback {function} A callback to pass (err, data) to
+     * @param callback {function=} A callback to pass (err, data) to
      */
     LivefyreHttpClient.prototype._request = function (opts, callback) {
+        callback = callback || function() {};
         var xhr = $.ajax({
             type: opts.method || 'GET',
             url: opts.url,
@@ -47,10 +48,9 @@ define(['streamhub-sdk/jquery'], function($) {
                 // going away anyway.
                 return;
             }
-            if ( ! err) {
-                err = "LivefyreHttpClient Error";
-            }
-            callback(err);
+            var errorMessage = err || 'LivefyreHttpClient Error';
+            var httpError = createHttpError(errorMessage, jqXhr.status, status);
+            callback(httpError);
         });
 
         return xhr;
@@ -98,6 +98,20 @@ define(['streamhub-sdk/jquery'], function($) {
         }
         return host;
     };
+
+    /**
+     * Create an Error object representing a failure to complete an HTTP request
+     * @param message {string} a developer friendly error message
+     * @param statusCode {number} HTTP status code of response, if available
+     * @param errType {string} 'error' or 'abort' if the request was aborted by
+     *     the user-agent
+     */
+    function createHttpError (message, statusCode, errType) {
+        var err = new Error(message);
+        err.statusCode = statusCode;
+        err.type = errType;
+        return err;
+    }
 
     // Keep track of whether the page is unloading, so we don't throw exceptions
     // if the XHR fails just because of that.

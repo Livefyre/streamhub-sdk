@@ -1,5 +1,5 @@
-define(['inherits', 'event-emitter', 'streamhub-sdk/debug'],
-function (inherits, EventEmitter, debug) {
+define(['inherits', 'streamhub-sdk/jquery', 'base64', 'event-emitter', 'streamhub-sdk/debug'],
+function (inherits, $, base64, EventEmitter, debug) {
     'use strict';
 
 
@@ -32,6 +32,34 @@ function (inherits, EventEmitter, debug) {
 		return this._token;
 	};
 
+    /**
+     * Set the Auth delegate
+     * @param authDelegate {AuthDelegate} A auth delegate instance
+     */
+    Auth.setDelegate = function (authDelegate) {
+        this._delegate = authDelegate;
+        this.emit('delegate', authDelegate);
+    };
+
+	/**
+	 * Get the Auth delegate
+	 * @return An auth delegate, if one has been set, else undefined
+	 */
+    Auth.getDelegate = function () {
+        return this._delegate;
+    };
+
+
+    /**
+     * Get the user id for from the Auth token
+     */
+    Auth.getUserUri = function () {
+        if (! this._token) {
+            return;
+        }
+        var userInfo = $.parseJSON(base64.atob(this._token.split('.')[1]));
+        return userInfo.user_id + '@' + userInfo.domain;
+    };
 
 	/**
 	 * An Error that represents that an operation could not be performed

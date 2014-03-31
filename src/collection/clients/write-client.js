@@ -24,11 +24,13 @@ function(LivefyreHttpClient, inherits) {
      * @param opts.lftoken {string} The livefyre user auth token
      * @param opts.body {string} The content's body html with the following allowed tags:
      *     a, img, span, label, p, br, strong, em, u, blockquote, ul, li, ol, pre
+     * @param opts.title {string} The content's title
+     * @param opts.parent_id {string}
      * @param opts.media {array} An Array of oEmbed JSON Objects to attach to the posted Content
      * @param callback {function} A callback that is called upon success/failure of the
      *     write request. Callback signature is "function(error, data)".
      */
-    LivefyreWriteClient.prototype.postContent = function(opts, callback) {
+    LivefyreWriteClient.prototype.postContent = function (opts, callback) {
         opts = opts || {};
         callback = callback || function() {};
         var url = [
@@ -40,6 +42,7 @@ function(LivefyreHttpClient, inherits) {
 
         var postData = {
             body: opts.body,
+            title: opts.title,
             lftoken: opts.lftoken
         };
 
@@ -48,13 +51,80 @@ function(LivefyreHttpClient, inherits) {
         }
 
         if (opts.media) {
-            postData.media = JSON.stringify(opts.media);
+            postData.attachments = JSON.stringify(opts.media);
         }
 
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
+            data: postData
+        }, callback);
+    };
+
+    /**
+     * Updates an existing piece of content in a Livefyre collection.
+     * @param opts {Object} Update content options
+     * @param opts.body {string} The body to update the content with
+     * @param opts.contentId {string} The ID of the content to update
+     * @param opts.collectionId {string} The collection ID of the content
+     * @param opts.siteId {string} The site ID of the content
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon sucess/failure
+     *     of the update request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.updateContent = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            "/api/v3.0/message/",
+            opts.contentId,
+            "/edit/"
+        ].join("");
+
+        var postData = {
+            'body': opts.body,
+            'collection_id': opts.collectionId,
+            'site_id': opts.siteId,
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };    
+
+    /**
+     * Updates an existing piece of content in a Livefyre collection.
+     * @param opts {Object} Update content options
+     * @param opts.contentId {string} The ID of the content to trash
+     * @param opts.collectionId {string} The collection ID of the content
+     * @param opts.siteId {string} The site ID of the content
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon sucess/failure
+     *     of the update request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.trashContent = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            "/api/v3.0/message/",
+            opts.contentId,
+            "/hide/"
+        ].join("");
+
+        var postData = {
+            'collection_id': opts.collectionId,
+            'site_id': opts.siteId,
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
             data: postData
         }, callback);
     };
@@ -69,7 +139,7 @@ function(LivefyreHttpClient, inherits) {
      * @param callback {function} A callback that is called upon success/failure of the
      *     write request. Callback signature is "function(error, data)".
      */
-    LivefyreWriteClient.prototype.postTweet = function(opts, callback) {
+    LivefyreWriteClient.prototype.postTweet = function (opts, callback) {
         opts = opts || {};
         callback = callback || function() {};
         var url = [
@@ -84,12 +154,19 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
             data: postData
         }, callback);
     };
 
-    LivefyreWriteClient.prototype.follow = function(opts, callback) {
+    /**
+     * Follow a conversation
+     * @param opts {Object} The livefyre collection options.
+     * @param opts.collectionId {string} The livefyre collectionId for the conversation to follow
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon success/failure of the
+     *     write request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.follow = function (opts, callback) {
         opts = opts || {};
         callback = callback || function() {};
         var url = [
@@ -104,12 +181,19 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
             data: postData
         }, callback);
     };
 
-    LivefyreWriteClient.prototype.unfollow = function(opts, callback) {
+    /**
+     * Unfollow a conversation
+     * @param opts {Object} The livefyre collection options.
+     * @param opts.collectionId {string} The livefyre collectionId for the conversation to unfollow
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon success/failure of the
+     *     write request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.unfollow = function (opts, callback) {
         opts = opts || {};
         callback = callback || function() {};
         var url = [
@@ -124,10 +208,171 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
             data: postData
         }, callback);
     };
+
+    /**
+     * Like a piece of content
+     * @param opts {Object} The livefyre collection options.
+     * @param opts.contentId {string} The ID of the content to like
+     * @param opts.collectionId {string} The livefyre collectionId for the conversation
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon success/failure of the
+     *     write request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.like = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/message/',
+            opts.contentId,
+            '/like/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken,
+            collection_id:  opts.collectionId
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
+    /**
+     * Unlike a piece of content
+     * @param opts {Object} The livefyre collection options.
+     * @param opts.contentId {string} The ID of the content to unlike
+     * @param opts.collectionId {string} The livefyre collectionId for the conversation
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon success/failure of the
+     *     write request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.unlike = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/message/',
+            opts.contentId,
+            '/unlike/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken,
+            collection_id:  opts.collectionId
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
+    /**
+     * Flag a piece of content
+     * @param opts {Object} The livefyre collection options.
+     * @param opts.flagType {string} The flag type
+     *     (e.g. 'offensive', 'spam', 'disagree', 'off-topic')
+     * @param opts.contentId {string} The ID of the content to flag
+     * @param opts.collectionId {string} The livefyre collectionId for the conversation
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon success/failure of the
+     *     write request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.flag = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/message/',
+            opts.contentId,
+            '/flag/',
+            opts.flagType,
+            '/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken,
+            collection_id:  opts.collectionId
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
+    /**
+     * Feature a piece of content
+     * @param opts {Object} The livefyre collection options.
+     * @param opts.contentId {string} The ID of the content to feature
+     * @param opts.collectionId {string} The livefyre collectionId for the conversation
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon success/failure of the
+     *     write request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.feature = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/collection/',
+            opts.collectionId,
+            '/feature/',
+            opts.contentId,
+            '/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
+    /**
+     * Unfeature a piece of content
+     * @param opts {Object} The livefyre collection options.
+     * @param opts.contentId {string} The ID of the content to unfeature
+     * @param opts.collectionId {string} The livefyre collectionId for the conversation
+     * @param opts.lftoken {string} The livefyre user auth token
+     * @param callback {function} A callback that is called upon success/failure of the
+     *     write request. Callback signature is "function(error, data)".
+     */
+    LivefyreWriteClient.prototype.unfeature = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/collection/',
+            opts.collectionId,
+            '/unfeature/',
+            opts.contentId,
+            '/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
 
     return LivefyreWriteClient;
 });

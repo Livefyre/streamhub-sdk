@@ -11,7 +11,7 @@ inherits) {
     "use strict";
 
 
-    var log = debug('streamhub-sdk/streams/collection-archive');
+    var log = debug('streamhub-sdk/collection/streams/archive');
 
 
     /**
@@ -27,6 +27,9 @@ inherits) {
      * @param [opts.bootstrapClient] {LivefyreBootstrapClient} A Client object
      *     that can request StreamHub's Bootstrap web service
      * @param [opts.replies=false] {boolean} Whether to read out reply Content
+     * @param [opts.comparator] Indicate the order in which you'd like to read
+     *     the archive. Default is CollectionArchive.comparators.CREATED_AT_DESCENDING
+     *     (newest first). You can also pass other values of CollectionArchive.comparators
      */
     var CollectionArchive = function (opts) {
         opts = opts || {};
@@ -36,12 +39,21 @@ inherits) {
         this._bootstrapClient = opts.bootstrapClient || new BootstrapClient();
         this._contentIdsInHeadDocument = [];
         this._replies = opts.replies || false;
+        this._comparator = opts.comparator || CollectionArchive.comparators.CREATED_AT_DESCENDING;
 
         Readable.call(this, opts);
     };
 
     inherits(CollectionArchive, Readable);
 
+    /**
+     * Comparators that determine the order in which to get data out of the
+     * archive
+     */
+    CollectionArchive.comparators = {
+        CREATED_AT_ASCENDING: 'CREATED_AT_ASCENDING',
+        CREATED_AT_DESCENDING: 'CREATED_AT_DESCENDING'
+    };
 
     /**
      * Called by Readable base class. Do not call directly
@@ -49,41 +61,11 @@ inherits) {
      * @private
      */
     CollectionArchive.prototype._read = function () {
-        var self = this;
-
         log('_read', 'Buffer length is ' + this._readableState.buffer.length);
-
         // The first time this is called, we first need to get Bootstrap init
         // to know what the latest page of data
         if (typeof this._nextPage === 'undefined') {
-            return this._collection.initFromBootstrap(function (err, initData) {
-                var headDocument = initData.headDocument,
-                    collectionSettings = initData.collectionSettings,
-                    archiveInfo = collectionSettings && collectionSettings.archiveInfo,
-                    numPages = archiveInfo && archiveInfo.nPages;
-
-                var contents = self._contentsFromBootstrapDoc(headDocument, {
-                    isHead: true
-                });
-
-                // Bootstrap pages are zero-based. Store the highest 
-                self._nextPage = numPages - 1;
-
-                // If we couldn't create any Content from the headDocument
-                // e.g. they were all premodded, push nothing and read again
-                // soon
-                if ( ! contents.length) {
-                    // Push nothing for now.
-                    self.push();
-                    // But trigger another _read cycle ASAP
-                    // This gives the internals a chance to check paused state
-                    streamUtil.nextTick(function () {
-                        self.read(0);
-                    });
-                    return;
-                }
-                self.push.apply(self, contents);
-            });
+            return this._readFirstPage();
         }
         // After that, request the latest page
         // unless there are no more pages, in which case we're done
@@ -95,6 +77,57 @@ inherits) {
         }
     };
 
+    /**
+     * Read the first page of data from the archive.
+     * Depending on the comparator, this will either be the 0th page or the
+     * init page
+     * Then set the appropriate ._nextPage value
+     * @private
+     */
+    CollectionArchive.prototype._readFirstPage = function () {
+        var self = this;
+        // If ascending, we start at page 0 and will go up from there
+        if (this._comparator === CollectionArchive.comparators.CREATED_AT_ASCENDING) {
+            this._nextPage = 0;
+            this._readNextPage();
+            return;
+        }
+        // Otherwise, we need to get the first page of data from the init document
+        // and note the total number of pages, and work our way down to 0 from there
+        return this._collection.initFromBootstrap(function (err, initData) {
+            var headDocument = initData.headDocument,
+                collectionSettings = initData.collectionSettings,
+                archiveInfo = collectionSettings && collectionSettings.archiveInfo,
+                numPages = archiveInfo && archiveInfo.nPages;
+
+            if (numPages === 0) {
+                self.push(null);
+                return;
+            }
+
+            var contents = self._contentsFromBootstrapDoc(headDocument, {
+                isHead: true
+            });
+
+            // Bootstrap pages are zero-based. Store the highest 
+            self._nextPage = numPages - 1;
+
+            // If we couldn't create any Content from the headDocument
+            // e.g. they were all premodded, push nothing and read again
+            // soon
+            if ( ! contents.length) {
+                // Push nothing for now.
+                self.push();
+                // But trigger another _read cycle ASAP
+                // This gives the internals a chance to check paused state
+                streamUtil.nextTick(function () {
+                    self.read(0);
+                });
+                return;
+            }
+            self.push.apply(self, contents);
+        });
+    };
 
     /**
      * Read the next Page of data from the Collection
@@ -105,12 +138,15 @@ inherits) {
     CollectionArchive.prototype._readNextPage = function () {
         var self = this,
             bootstrapClientOpts = this._getBootstrapClientOptions();
-        this._nextPage = this._nextPage - 1;
-        if (this._nextPage < 0) {
-            // No more pages
-            this._nextPage = null;
-        }
+        this._nextPage = this._getNextPageName();
         this._bootstrapClient.getContent(bootstrapClientOpts, function (err, data) {
+            var requestedPage = bootstrapClientOpts.page;
+            if (err && err.statusCode === 404) {
+                log('404 when requesting page '+requestedPage+'. Must be end of archive');
+                self._nextPage = null;
+                self._read();
+                return;
+            }
             if (err || ! data) {
                 self.emit('error', new Error('Error requesting Bootstrap page '+bootstrapClientOpts.page));
                 return;
@@ -126,6 +162,28 @@ inherits) {
         });
     };
 
+    /**
+     * Get the value to pass as the `page` param to the bootstrapClient
+     * To get the next page of data
+     * It should increment or decrement from the last page value, depending
+     * on this Archive's comparator
+     */
+    CollectionArchive.prototype._getNextPageName = function () {
+        var curPage = this._nextPage;
+        var nextPage;
+        switch (this._comparator) {
+            case CollectionArchive.comparators.CREATED_AT_ASCENDING:
+                nextPage = curPage + 1;
+                break;
+            case CollectionArchive.comparators.CREATED_AT_DESCENDING:
+                nextPage = curPage - 1;
+                if (nextPage < 0) {
+                    nextPage = null;
+                }
+                break;
+        }
+        return nextPage;
+    };
 
     /**
      * Get options to pass to this._bootstrapClient methods to specify
@@ -155,11 +213,15 @@ inherits) {
         bootstrapDoc = bootstrapDoc || {};
         var self = this,
             states = bootstrapDoc.content || [],
-            stateToContent = this._createStateToContent(bootstrapDoc),
             state,
             stateContentId,
             content,
             contents = [];
+
+        if (this._collection) {
+            bootstrapDoc.collection = this._collection;
+        }
+        var stateToContent = this._createStateToContent(bootstrapDoc);
 
         stateToContent.on('data', function (content) {
             if (! content ||
@@ -184,8 +246,31 @@ inherits) {
             content = stateToContent.write(state);
         }
 
+        contents = this._sortContents(contents);
         log("created contents from bootstrapDoc", contents);
         return contents;
+    };
+
+    /**
+     * Sort an array of Contents in the ideal order for this archive's
+     * comparator.
+     */
+    CollectionArchive.prototype._sortContents = function (contentList) {
+        var contentListComparator;
+        var sortedContentList;
+        if (this._comparator === CollectionArchive.comparators.CREATED_AT_ASCENDING) {
+            contentListComparator = function (contentA, contentB) {
+                return contentA.createdAt - contentB.createdAt;
+            };
+        } else {
+            // Must be descending. That's the default.
+            // Change this if there are ever 3 comparator options
+            contentListComparator = function (contentA, contentB) {
+                return contentB.createdAt - contentA.createdAt;
+            };
+        }
+        sortedContentList = contentList.sort(contentListComparator);
+        return sortedContentList;
     };
 
     /**

@@ -3,9 +3,19 @@ define([
     'streamhub-sdk/util',
     'streamhub-sdk/content',
     'streamhub-sdk/content/types/livefyre-content',
+    'streamhub-sdk/content/types/livefyre-twitter-content',
     'streamhub-sdk/content/views/content-view',
+    'streamhub-sdk/content/content-view-factory',
     'streamhub-sdk/content/views/tiled-attachment-list-view'],
-function ($, util, Content, LivefyreContent, ContentView, TiledAttachmentListView) {
+function (
+    $,
+    util,
+    Content,
+    LivefyreContent,
+    LivefyreTwitterContent,
+    ContentView,
+    ContentViewFactory,
+    TiledAttachmentListView) {
     'use strict';
 
     describe('Default ContentView', function () {
@@ -237,5 +247,31 @@ function ($, util, Content, LivefyreContent, ContentView, TiledAttachmentListVie
                 });
             });
         });
+
+        describe('Like button', function () {
+
+            it("only renders for non-Twitter content items", function () {
+                var contentViewFactory = new ContentViewFactory();
+
+                var twitterContent = new LivefyreTwitterContent({
+                    id: 'tweet-1234@twitter.com',
+                    body: 'tweet i am',
+                    author: {
+                        id: 'jimmy@twitter.com'
+                    }
+                });
+                var twitterContentView = contentViewFactory.createContentView(twitterContent);
+                twitterContentView.render();
+
+                expect(twitterContentView.$el.find('.hub-content-like')).toHaveLength(0);
+
+                var lfContent = new LivefyreContent({ body: 'lf content' });
+                var lfContentView = contentViewFactory.createContentView(lfContent);
+                lfContentView.render();
+
+                expect(lfContentView.$el.find('.hub-content-like')).toHaveLength(1);
+            });
+        });
+
     });
 });

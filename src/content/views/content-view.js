@@ -1,11 +1,12 @@
 define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/view',
+    'streamhub-sdk/ui/hub-button',
     'hgn!streamhub-sdk/content/templates/content',
     'streamhub-sdk/util',
     'inherits',
     'streamhub-sdk/debug'
-], function ($, View, ContentTemplate, util, inherits, debug) {
+], function ($, View, HubButton, ContentTemplate, util, inherits, debug) {
     'use strict';
 
     var log = debug('streamhub-sdk/content/views/content-view');
@@ -29,6 +30,11 @@ define([
         this.createdAt = new Date();
         this.template = opts.template || this.template;
         this.attachmentsView = opts.attachmentsView;
+        this._controls = {
+            'left': [],
+            'right': []
+        };
+        this._rendered = false;
 
         View.call(this, opts);
 
@@ -56,6 +62,7 @@ define([
     ContentView.prototype.headerElSelector = '.content-header';
     ContentView.prototype.avatarSelector = '.content-author-avatar';
     ContentView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
+    ContentView.prototype.footerLeftSelector = '.content-footer-left';
     ContentView.prototype.template = ContentTemplate;
     ContentView.prototype.formatDate = util.formatDate;
 
@@ -170,7 +177,36 @@ define([
             this.attachmentsView.render();
         }
 
+        this._setupButtons();
+
         return this;
+    };
+
+    ContentView.prototype._setupButtons = function () {
+        if (! this._rendered) {
+            var likeButton = new HubButton(undefined, {
+                className: 'hub-content-like'
+            });
+            var replyButton = new HubButton(undefined, {
+                className: 'hub-btn-link hub-content-reply',
+                label: 'Reply'
+            });
+            var shareButton = new HubButton(undefined, {
+                className: 'hub-btn-link hub-content-share',
+                label: 'Share'
+            });
+
+            this.addButton(likeButton);
+            //TODO(ryanc): Wait until we have replies on SDK
+            //this.addButton(replyButton);
+            this.addButton(shareButton);
+        } else {
+            for (var i=0; i < this._controls['left'].length; i++) {
+                this.addButton(this._controls['left'][i]);
+            }
+        }
+
+        this._rendered = true;
     };
     
     /**
@@ -207,7 +243,7 @@ define([
         this.$el.trigger('removeContentView.hub', { contentView: this });
         this.$el.detach();
     };
-    
+
     /**
      * Handles changes to the model's visibility.
      * @param ev
@@ -232,6 +268,21 @@ define([
     ContentView.prototype.destroy = function () {
         View.prototype.destroy.call(this);
         this.content = null;
+    };
+
+    ContentView.prototype.addButton = function (button) {
+        this._controls['left'].push(button);
+
+        var footerLeft = this.$el.find(this.footerLeftSelector);
+        var buttonContainerEl = $('<div></div>');
+        footerLeft.append(buttonContainerEl);
+
+        button.setElement(buttonContainerEl);
+        button.render();
+    };
+
+    ContentView.prototype.removeButton = function (button) {
+        button.destroy();
     };
     
     return ContentView;
