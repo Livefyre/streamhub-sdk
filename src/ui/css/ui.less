@@ -1,0 +1,14 @@
+@import (reference) "./buttons";
+@import (reference) "../../lib/bootstrap/less/mixins.less";
+
+.hub-btn {
+    .lf-btn();
+
+    &:active {
+        .box-shadow(none);
+    }
+}
+
+.hub-btn-link {
+    .lf-btn-link();
+}

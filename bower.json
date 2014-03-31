@@ -6,6 +6,7 @@
   ],
   "dependencies": {
     "jquery": "~1.10.1",
+    "bootstrap": "~3.0.3",
     "base64": "git://github.com/ross-pfahler/Base64.js#~0.3.0",
     "hogan": "latest",
     "requirejs": "~2.1.5",

@@ -1,4 +1,4 @@
-define(['streamhub-sdk/util', 'streamhub-sdk/jquery', 'base64'], function(util, $) {
+define(['streamhub-sdk/util', 'streamhub-sdk/jquery', 'base64'], function(util, $, base64) {
     'use strict';
 
     /**
