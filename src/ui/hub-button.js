@@ -21,7 +21,7 @@ function HubButton (fnOrCommand, opts) {
         command = fnOrCommand;
     }
     Button.call(this, command, opts);
-}
+};
 inherits(HubButton, Button);
 
 HubButton.prototype.getTemplateContext = function () {

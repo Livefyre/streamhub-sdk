@@ -136,7 +136,10 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
         bootstrapDoc = bootstrapDoc || {};
         var self = this,
             states = bootstrapDoc.content || [],
-            stateToContent = new StateToContent(bootstrapDoc),
+            stateToContent = new StateToContent({
+                authors: bootstrapDoc.authors,
+                collection: this._collection
+            }),
             state,
             content,
             contents = [];

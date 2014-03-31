@@ -63,7 +63,7 @@ function (
                 it("lazily attaches an event listener for 'contentLike.hub' event on body element", function () {
                     expect($._data($('body')[0], 'events')).toBe(undefined);
                     likeButtonEl.trigger('click');
-                    expect($._data($('body')[0], 'events').contentLike.length).toBe(1);
+                    expect($._data($('body')[0], 'events').likeClick.length).toBe(1);
                 });
             });
 

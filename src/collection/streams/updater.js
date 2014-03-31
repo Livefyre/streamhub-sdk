@@ -95,7 +95,7 @@ StateToContent, Annotator, debug) {
             streamClientOpts = this._getStreamClientOptions();
 
         var request = streamClient.getContent(streamClientOpts, function (err, data) {
-            if (err === 'abort') {
+            if (err && err.type === 'abort') {
                 log('stream request aborted');
                 self.push();
                 return;
@@ -212,6 +212,7 @@ StateToContent, Annotator, debug) {
     CollectionUpdater.prototype._createStateToContent = function (opts) {
         opts = opts || {};
         opts.replies = this._replies;
+        opts.collection = this._collection;
         return new StateToContent(opts);
     };
 

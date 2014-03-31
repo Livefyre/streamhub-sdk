@@ -6,8 +6,8 @@ define([
     'use strict';
 
     var LivefyreOpine = function (json, opts) {
-       opts = opts || {};
-       Content.call(this, this);
+        opts = opts || {};
+        Content.call(this, this);
 
         if (json && json.type !== 1) {
             throw new Error("Opines must be constructed with .type == 1 ");
@@ -16,7 +16,7 @@ define([
         json = json || {};
 
         $.extend(this, json);
-
+        this.id = this.id || json.content && json.content.id;
         // TODO(ryanc): In v3.0 bootstrap, all opines are Likes,
         // this may change in v3.1 bootstrap
         // (https://github.com/Livefyre/lfpb/blob/master/src/lfpb/facts/content.proto#L227-L258)

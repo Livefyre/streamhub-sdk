@@ -1,6 +1,7 @@
 'use strict';
 
 var ButtonTemplate = require('hgn!streamhub-sdk/ui/templates/button');
+var Command = require('streamhub-sdk/ui/command');
 var inherits = require('inherits');
 var View = require('view');
 
@@ -12,21 +13,38 @@ function Button (command, opts) {
     if (opts.elClassPrefix) {
         this.elClassPrefix = opts.elClassPrefix;
     }
-    if (this.elClassPrefix) {
-        this.elClass = this.elClassPrefix + '-' + this.elClass;
-    }
     if (opts.className) {
         this.elClass += ' '+opts.className;
+    }
+    if (this.elClassPrefix) {
+        this.elClass = distributeClassPrefix(this.elClassPrefix, this.elClass);
     }
     this._label = opts.label || '';
 
     View.call(this, opts);
 
+    if (typeof command === 'function') {
+        command = new Command(command);
+    }
     if (command) {
         this._setCommand(command);
     }
 }
 inherits(Button, View);
+
+function distributeClassPrefix(prefix, classAttr) {
+    var classTemplate = "{prefix}-{class}";
+    var classes = classAttr
+        .split(' ')
+        .filter(function (s) { return s; })
+        .map(function (oneClass) {
+            var prefixedClass = classTemplate
+                .replace('{prefix}', prefix)
+                .replace('{class}', oneClass);
+            return prefixedClass;
+        });
+    return classes.join(' ');
+}
 
 // DOM Event Listeners
 Button.prototype.events = {
@@ -42,6 +60,11 @@ Button.prototype.template = ButtonTemplate;
  * not allowed to be executed
  */
 Button.prototype.disabledClass = 'disabled';
+
+Button.prototype.updateLabel = function (label) {
+    this._label = label;
+    this.render();
+};
 
 Button.prototype.render = function () {
     View.prototype.render.call(this);

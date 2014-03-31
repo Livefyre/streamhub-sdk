@@ -13,10 +13,10 @@
                 <span class="content-source-logo"></span>
             {{/contentSourceTooltipUrl}}
             {{#authorUrl}}
-                <a class="content-author-name" href="{{ authorUrl }}" target="_blank">{{ authorDisplayName }}</a>
+                <a class="content-author-name" href="{{ authorUrl }}" target="_blank">{{ author.displayName }}</a>
             {{/authorUrl}}
             {{^authorUrl}}
-                <span class="content-author-name">{{ authorDisplayName }}</span>
+                <span class="content-author-name">{{ author.displayName }}</span>
             {{/authorUrl}}
             {{#authorUserName}}
                 {{#authorUrl}}
