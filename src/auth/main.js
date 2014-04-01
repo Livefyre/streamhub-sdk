@@ -33,6 +33,24 @@ function (inherits, $, base64, EventEmitter, debug) {
 	};
 
     /**
+     * Set the Auth delegate
+     * @param authDelegate {AuthDelegate} A auth delegate instance
+     */
+    Auth.setDelegate = function (authDelegate) {
+        this._delegate = authDelegate;
+        this.emit('delegate', authDelegate);
+    };
+
+	/**
+	 * Get the Auth delegate
+	 * @return An auth delegate, if one has been set, else undefined
+	 */
+    Auth.getDelegate = function () {
+        return this._delegate;
+    };
+
+
+    /**
      * Get the user id for from the Auth token
      */
     Auth.getUserUri = function () {

@@ -59,7 +59,6 @@ function (LivefyreContentView, HubButton, inherits, $) {
             context.author.twitterUsername = context.author.profileUrl.split('/').pop();
         }
         context.authorUrl = '//twitter.com/intent/user?user_id='+context.author.twitterUserId;
-        context.authorDisplayName = context.author.displayName;
         context.authorUserName = context.author.twitterUsername;
         context.authorUserNamePrefix = '@';
 

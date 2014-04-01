@@ -13,45 +13,19 @@ var util = require('streamhub-sdk/util');
  * an authentication command, then the authentication command will be executed.
  * @param [command] {Command} Option function to replace the default function.
  * @param [opts] {Object}
- * @param [opts.authCmd] {Command} Command called to authenticate a user who
- *      hasn't already authenticated.
+ * @param [opts.authenticate] {function} Function that will authenticate a user,
+ *      hasn't already authenticated, then call a provided callback
  * @constructor
  * @extends {Command}
  */
 var AuthRequiredCommand = function (command, opts) {
-    if (!command || !command instanceof Command) {
-        throw 'A command needs to be specified when constructing an AuthRequiredCommand';
-    }
-    
-    opts = opts || {};
-    Command.call(this, executeFn, opts);
-    
     var self = this;
-    /**
-     * A function that executes _command
-     */
-    function executeFn () {
-        self._command.execute();
+    opts = opts || {};
+    command = command || function () {};
+    Command.call(this, command, opts);
+    if (opts.authenticate) {
+        this._authenticate = opts.authenticate;
     }
-    
-    /**
-     * Handles changes in canExecute() from referenced commands.
-     */
-    this._handleCanExecuteChange = function () {
-        //TODO (joao) Make this smart and only emitChange when it has changed for 'this'
-        self._emitChangeCanExecute();
-    };
-    
-    this._command = command;
-    this._command.on('change:canExecute', this._handleCanExecuteChange);
-    
-    this._authCmd.on('change:canExecute', this._handleCanExecuteChange);
-    if (opts.authCmd) {
-        this.setAuthCommand(opts.authCmd);
-    }
-    
-    //Emit potential canExecute change whenever token is set or unset
-    Auth.on('token', this._handleCanExecuteChange);
 };
 inherits(AuthRequiredCommand, Command);
 
@@ -61,20 +35,25 @@ inherits(AuthRequiredCommand, Command);
  */
 AuthRequiredCommand.prototype.execute = function () {
     var self = this;
+    var authDelegate = Auth.getDelegate();
+    var authUser = authDelegate && authDelegate.getUser();
+    function isAuthenticated () {
+        var authenticated = authUser ? authUser.isAuthenticated() : Auth.getToken();
+        return authenticated;
+    }
+
     /**
      * This callback executes this command, wrapped so that it can be passed
      * to an authenticating command to be called after authentication.
      */
-    function authRequiredCallback() {
-        Auth.getToken() && Command.prototype.execute.apply(self, arguments);
+    function doWorkWithAuth() {
+        Command.prototype.execute.apply(self, arguments);
     }
-    
-    if (this.canExecute()) {
-        if (!Auth.getToken()) {
-            this._authenticate(authRequiredCallback);
-        } else {
-            authRequiredCallback.apply(this, arguments);
-        }
+
+    if (isAuthenticated()) {
+        doWorkWithAuth();
+    } else {
+        this._authenticate(doWorkWithAuth);
     }
 };
 
@@ -91,48 +70,10 @@ AuthRequiredCommand.prototype.execute = function () {
  * @returns {!boolean}
  */
 AuthRequiredCommand.prototype.canExecute = function () {
-    if (!this._command.canExecute()) {
+    if ( ! Auth.getDelegate()) {
         return false;
     }
-    
-    if (Auth.getToken()) {
-        return true;
-    }
-    
-    return this._authCmd.canExecute();
-};
-
-/**
- * Change whether the Command can be executed
- * @protected
- * @param canExecute {!boolean}
- * @override
- */
-AuthRequiredCommand.prototype._changeCanExecute = function (canExecute) {
-    this._command._changeCanExecute(canExecute);
-};
-
-/**
- * Command used to initiate an authentication view or process.
- * Default is a disabled command with a function that logs it invocation.
- * @type {!Command}
- */
-AuthRequiredCommand.prototype._authCmd = (
-    /** @returns {!Command} */
-        function () {
-    var cmd = new Command(util.nullFunction);
-    cmd.disable();
-    return cmd;
-})();
-
-/**
- * Replaces the current authentication command with the new command.
- * @param cmd {!Command}
- */
-AuthRequiredCommand.prototype.setAuthCommand = function (cmd) {
-    this._authCmd.removeListener('change:canExecute', this._emitChangeCanExecute);
-    this._authCmd = cmd;
-    this._authCmd.on('change:canExecute', this._handleCanExecuteChange);
+    return Command.prototype.canExecute.apply(this, arguments);
 };
 
 /**
@@ -141,18 +82,20 @@ AuthRequiredCommand.prototype.setAuthCommand = function (cmd) {
  * @protected
  */
 AuthRequiredCommand.prototype._authenticate = function (callback) {
-    this._authCmd.execute.apply(this._authCmd, arguments);
+    var delegate = Auth.getDelegate();
+    if ( ! delegate) {
+        return false;
+    }
+    delegate.getUser().once('login', function () {
+        callback();
+    });
+    delegate.login();
 };
 
 /**
  * Prepares this command for trash collection.
  */
 AuthRequiredCommand.prototype.destroy = function () {
-    Auth.removeListener('token', this._emitChangeCanExecute);
-    this._authCmd.removeListener('change:canExecute', this._emitChangeCanExecute);
-    this._authCmd = null;
-    this._command = null;
-    this._execute = null;//Command
     this._listeners = null;//EventEmitter
 };
 

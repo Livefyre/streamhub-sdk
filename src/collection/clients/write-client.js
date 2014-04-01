@@ -24,6 +24,7 @@ function(LivefyreHttpClient, inherits) {
      * @param opts.lftoken {string} The livefyre user auth token
      * @param opts.body {string} The content's body html with the following allowed tags:
      *     a, img, span, label, p, br, strong, em, u, blockquote, ul, li, ol, pre
+     * @param opts.title {string} The content's title
      * @param opts.media {array} An Array of oEmbed JSON Objects to attach to the posted Content
      * @param callback {function} A callback that is called upon success/failure of the
      *     write request. Callback signature is "function(error, data)".
@@ -40,6 +41,7 @@ function(LivefyreHttpClient, inherits) {
 
         var postData = {
             body: opts.body,
+            title: opts.title,
             lftoken: opts.lftoken
         };
 
@@ -54,7 +56,6 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
             data: postData
         }, callback);
     };
@@ -84,7 +85,6 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
             data: postData
         }, callback);
     };
@@ -104,7 +104,6 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
             data: postData
         }, callback);
     };
@@ -124,7 +123,6 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
             data: postData
         }, callback);
     };
@@ -147,7 +145,6 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
             data: postData
         }, callback);
     };
@@ -170,7 +167,76 @@ function(LivefyreHttpClient, inherits) {
         this._request({
             method: 'POST',
             url: url,
-            dataType: 'json',
+            data: postData
+        }, callback);
+    };
+
+    LivefyreWriteClient.prototype.flag = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/message/',
+            opts.contentId,
+            '/flag/',
+            opts.flagType,
+            '/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken,
+            collection_id:  opts.collectionId
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
+    LivefyreWriteClient.prototype.feature = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/collection/',
+            opts.collectionId,
+            '/feature/',
+            opts.contentId,
+            '/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
+    LivefyreWriteClient.prototype.unfeature = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/collection/',
+            opts.collectionId,
+            '/unfeature/',
+            opts.contentId,
+            '/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
             data: postData
         }, callback);
     };

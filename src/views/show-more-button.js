@@ -31,7 +31,7 @@ function (inherits, View) {
 
     ShowMoreButton.prototype.render = function () {
         View.prototype.render.call(this);
-        this.$el.hide();
+        this.$el.css('display', 'none');
     };
 
 
@@ -56,7 +56,7 @@ function (inherits, View) {
         // When more content is held to be shown, show the button
         this._more.on('hold', function () {
             self._holding = true;
-            self.$el.show();
+            self.$el.css('display', '');
         });
     };
 

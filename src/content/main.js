@@ -29,6 +29,7 @@ define([
         this.attachments = obj.attachments || [];
         this.replies = obj.replies || [];
         this.opines = obj.opines || [];
+        this.extensions = obj.extensions || {};
     };
     inherits(Content, EventEmitter);
 

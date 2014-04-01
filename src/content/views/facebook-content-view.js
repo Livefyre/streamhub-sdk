@@ -29,7 +29,6 @@ function (LivefyreContentView, inherits, $) {
         }
         
         context.authorUrl = context.author.profileUrl;
-        context.authorDisplayName = context.author.displayName;
 
         context.contentSourceName = 'facbeook';
         context.contentSourceTooltipUrl = context.permalink;

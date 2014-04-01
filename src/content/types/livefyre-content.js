@@ -28,6 +28,7 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
         json.content = json.content || {};
         json.content.annotations = json.content.annotations || {};
         this.body = json.content.bodyHtml || "";
+        this.title = json.content.title;
         this.source = LivefyreContent.SOURCES[json.source];
         this.id = json.content.id || json.id;
         this.author = json.author;
@@ -111,7 +112,14 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
                     found = true;
                 }
             }
+        } else {
+            for (var i in this.opines) {
+                if (this.opines[i].content.id === obj.content.id) {
+                    found = true;
+                }
+            }
         }
+
         if (!found) {
             this.opines.push(obj);
             if (obj.relType === LivefyreOpine.enums.type.indexOf('LIKE')) {

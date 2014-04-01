@@ -48,10 +48,9 @@ define(['streamhub-sdk/jquery'], function($) {
                 // going away anyway.
                 return;
             }
-            if ( ! err) {
-                err = "LivefyreHttpClient Error";
-            }
-            callback(err);
+            var errorMessage = err || 'LivefyreHttpClient Error';
+            var httpError = createHttpError(errorMessage, jqXhr.status);
+            callback(httpError);
         });
 
         return xhr;
@@ -99,6 +98,12 @@ define(['streamhub-sdk/jquery'], function($) {
         }
         return host;
     };
+
+    function createHttpError (message, statusCode) {
+        var err = new Error(message);
+        err.statusCode = statusCode;
+        return err;
+    }
 
     // Keep track of whether the page is unloading, so we don't throw exceptions
     // if the XHR fails just because of that.
