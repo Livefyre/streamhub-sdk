@@ -62,6 +62,11 @@ inherits) {
                     archiveInfo = collectionSettings && collectionSettings.archiveInfo,
                     numPages = archiveInfo && archiveInfo.nPages;
 
+                if (numPages === 0) {
+                    self.push(null);
+                    return;
+                }
+
                 var contents = self._contentsFromBootstrapDoc(headDocument, {
                     isHead: true
                 });

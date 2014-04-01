@@ -34,7 +34,7 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
 
         this._collectionMeta = opts.collectionMeta;
         this._signed = opts.signed;
-        this._autoCreate = opts.autoCreate || true;
+        this._autoCreate = ('autoCreate' in opts) ? opts.autoCreate : Boolean(this._collectionMeta);
         this._maxInitAttempts = opts.maxInitAttempts || 4;
         this._replies = opts.replies || false;
 
@@ -111,10 +111,13 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
      * @param [opts.pipeArchiveToMore=true] Whether to try to pipe
      *     a CollectionArchive to writable.more, if it is also writable
      *     This is helpful when piping to a ListView
+     * @param [opts.archivePipeOpts] Options to pass to archive.pipe,
+     *     if you use it (defaults to opts param)
      */
     Collection.prototype.pipe = function (writable, opts) {
         var archive;
         opts = opts || {};
+        var archivePipeOpts = opts.archivePipeOpts || opts;
         if (typeof opts.pipeArchiveToMore === 'undefined') {
             opts.pipeArchiveToMore = true;
         }
@@ -123,7 +126,7 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         // pipe an archive to .more
         if (opts.pipeArchiveToMore && writable.more && writable.more.writable) {
             archive = this.createArchive();
-            archive.pipe(writable.more);
+            archive.pipe(writable.more, archivePipeOpts);
             this._pipedArchives.push(archive);
         }
 
