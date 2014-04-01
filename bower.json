@@ -6,7 +6,8 @@
   ],
   "dependencies": {
     "jquery": "~1.10.1",
-    "base64": "git://github.com/ross-pfahler/Base64.js#~0.3.0",
+    "bootstrap": "~3.0.3",
+    "base64": "git://github.com/ross-pfahler/Base64.js#~0.3.3",
     "hogan": "latest",
     "requirejs": "~2.1.5",
     "cajon": "git://github.com/requirejs/cajon.git#~0.1.11",
@@ -22,5 +23,8 @@
     "jasmine": "1.3.1",
     "jasmine-jquery": "1.6.0",
     "almond": "0.2.5"
+  },
+  "resolutions": {
+    "view": "~1.1"
   }
 }

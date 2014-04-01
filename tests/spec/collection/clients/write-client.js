@@ -89,7 +89,7 @@ function ($, LivefyreWriteClient) {
                 "body": "oh <strong>hi</strong> there",
                 "lftoken": "my token"
             };
-            opts.media = [{
+            opts.attachments = [{
                 version: "1.0",
                 type: "photo",
                 url: "http://distilleryimage10.instagram.com/386628d690c511e2bf9022000a1fb723_6.jpg"

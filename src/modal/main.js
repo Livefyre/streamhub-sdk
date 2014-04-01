@@ -64,7 +64,8 @@ define([
 
     /**
      * Makes the modal and its content visible
-     * @param modalSubView {View} The view to be displayed in the by the modal
+     * @param [modalSubView] {View} The view to be displayed in the by the modal.
+     *      Defaults to this._modalSubView
      */
     ModalView.prototype.show = function (modalSubView) {
         // First hide any other modals
@@ -72,6 +73,7 @@ define([
             modal.hide();
         });
 
+        this._oldOverflow = $('body').css('overflow');
         $('body').css({
             'overflow': 'hidden'
         });
@@ -81,7 +83,7 @@ define([
             this._attach();
         }
 
-        this._modalSubView = modalSubView;
+        this._modalSubView = modalSubView || this._modalSubView;
 
         this.render();
 
@@ -96,6 +98,9 @@ define([
         this.$el.hide();
         this._detach();
         this.visible = false;
+        $('body').css({
+            'overflow': this._oldOverflow || 'scroll'
+        });
     };
 
 
@@ -126,7 +131,6 @@ define([
 
         this.$el.on('hideModal.hub', function (e) {
             self.hide();
-            $('body').css('overflow', 'auto');
         });
 
         this.$el.on('click', this.closeButtonSelector, function (e) {

@@ -207,7 +207,7 @@ define([
         this.$el.trigger('removeContentView.hub', { contentView: this });
         this.$el.detach();
     };
-    
+
     /**
      * Handles changes to the model's visibility.
      * @param ev
