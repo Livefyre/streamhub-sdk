@@ -15,6 +15,13 @@ function Command (fn, opts) {
     if (!fn) {
         throw 'A function needs to be specified to construct a Command';
     }
+    // Allow for passing another command as fn
+    if (fn instanceof Command) {
+        var fnCommand = fn;
+        fn = function () {
+            fnCommand.execute()
+        }
+    }
     this._execute = fn;
     this._canExecute = (opts.enable !== false) ? true : false;
     EventEmitter.call(this);
