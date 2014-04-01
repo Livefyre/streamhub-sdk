@@ -101,7 +101,7 @@ function ($, Injector, ContentListView, Content, MockCollection) {
             
             it('initializes with ._counter = -1', function () {
                 expect(injector._counter).toBe(-1);
-            })
+            });
             
             it('returns _counter with .getCounter()', function () {
                 expect(injector.getCounter()).toBe(injector._counter);

@@ -29,6 +29,10 @@ define([
         this.createdAt = new Date();
         this.template = opts.template || this.template;
         this.attachmentsView = opts.attachmentsView;
+        this._controls = {
+            'left': [],
+            'right': []
+        };
 
         View.call(this, opts);
 
@@ -56,6 +60,7 @@ define([
     ContentView.prototype.headerElSelector = '.content-header';
     ContentView.prototype.avatarSelector = '.content-author-avatar';
     ContentView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
+    ContentView.prototype.footerLeftSelector = '.content-footer-left';
     ContentView.prototype.template = ContentTemplate;
     ContentView.prototype.formatDate = util.formatDate;
 
@@ -207,7 +212,7 @@ define([
         this.$el.trigger('removeContentView.hub', { contentView: this });
         this.$el.detach();
     };
-    
+
     /**
      * Handles changes to the model's visibility.
      * @param ev
@@ -232,6 +237,21 @@ define([
     ContentView.prototype.destroy = function () {
         View.prototype.destroy.call(this);
         this.content = null;
+    };
+
+    ContentView.prototype.addButton = function (button) {
+        this._controls['left'].push(button);
+
+        var footerLeft = this.$el.find(this.footerLeftSelector);
+        var buttonContainerEl = $('<div></div>');
+        footerLeft.append(buttonContainerEl);
+
+        button.setElement(buttonContainerEl);
+        button.render();
+    };
+
+    ContentView.prototype.removeButton = function (button) {
+        button.destroy();
     };
     
     return ContentView;

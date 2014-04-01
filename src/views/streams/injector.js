@@ -82,7 +82,7 @@ function (inherits, Writable, Readable, ContentListView, debug) {
     Injector.prototype.target = function(contentListView, opts) {
         if (this._target) {
             throw "Target already set. " +
-            		"Need to .untarget() before trying to .target().";
+                    "Need to .untarget() before trying to .target().";
         }
         
         this._target = contentListView;
