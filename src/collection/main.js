@@ -62,11 +62,10 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
      */
     Collection.prototype.createArchive = function (opts) {
         opts = opts || {};
-        return new CollectionArchive({
-            collection: this,
-            bootstrapClient: opts.bootstrapClient || this._bootstrapClient,
-            replies: this._replies
-        });
+        opts.collection = this;
+        opts.bootstrapClient = opts.bootstrapClient || this._bootstrapClient;
+        opts.replies = opts.replies || this._replies;
+        return new CollectionArchive(opts);
     };
 
 
