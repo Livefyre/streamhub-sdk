@@ -111,7 +111,14 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
                     found = true;
                 }
             }
+        } else {
+            for (var i in this.opines) {
+                if (this.opines[i].content.id === obj.content.id) {
+                    found = true;
+                }
+            }
         }
+
         if (!found) {
             this.opines.push(obj);
             if (obj.relType === LivefyreOpine.enums.type.indexOf('LIKE')) {

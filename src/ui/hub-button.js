@@ -6,8 +6,6 @@ var inherits = require('inherits');
 
 function HubButton (fnOrCommand, opts) {
     opts = opts || {};
-    opts.elClassPrefix = opts.elClassPrefix || '';
-    opts.elClassPrefix += ' hub';
 
     this._buttonUrl = opts.buttonUrl;
     if (this._buttonUrl) {
@@ -23,6 +21,8 @@ function HubButton (fnOrCommand, opts) {
     Button.call(this, command, opts);
 }
 inherits(HubButton, Button);
+
+HubButton.prototype.elClassPrefix = 'hub';
 
 HubButton.prototype.getTemplateContext = function () {
     var context = Button.prototype.getTemplateContext.call(this);
