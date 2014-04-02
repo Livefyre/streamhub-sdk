@@ -2,8 +2,9 @@ define([
     'streamhub-sdk/storage',
     'streamhub-sdk/util',
     'stream/writable',
-    'inherits'
-], function (Storage, util, Writable, inherits) {
+    'inherits',
+    'streamhub-sdk/jquery'
+], function (Storage, util, Writable, inherits, $) {
     'use strict';
 
     /**
@@ -103,6 +104,32 @@ define([
 
     Annotator.prototype.added.geocode = function (changeSet, annotationValue) {
         changeSet.geocode = annotationValue;
+
+    //likedBy
+
+    Annotator.prototype.added.likedBy = function (changeSet, annotationValue, content) {
+        for (var i=0; i < annotationValue.length; i++) {
+            content.addLike(annotationValue[i]);
+        }
+    };
+
+    Annotator.prototype.updated.likedBy = function (changeSet, annotationValue, content) {
+        this.added.likedBy.apply(this, arguments);
+    };
+
+    Annotator.prototype.removed.likedBy = function (changeSet, annotationValue, content) {
+        var likes = content.likedBy.slice(0) || [];
+        for (var i=0; i < annotationValue.length; i++) {
+            var like = annotationValue[i];
+            likes.splice(likes.indexOf(like), 1);
+            content.removeLike(like);
+        }
+    };
+
+    // Content Extensions
+    Annotator.prototype.added.extension = function (changeSet, addedExtensions, content) {
+        var existingExtensions = content.extensions || {};
+        changeSet.extensions = $.extend(existingExtensions, addedExtensions);
     };
 
     return Annotator;
