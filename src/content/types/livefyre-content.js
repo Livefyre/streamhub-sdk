@@ -38,7 +38,6 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
         this.visibility = Content.enums.visibility[json.vis];
         this.parentId = json.content.parentId;
         this.meta = json;
-        this.likedBy = [];
 
         this._likes = 0;
         this._annotator = opts.annotator || this._createAnnotator();
@@ -96,11 +95,13 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
     };
 
     LivefyreContent.prototype.addLike = function (authorId) {
-        this._likes++;
+        var opine = LivefyreOpine.adaptLikedBy(authorId, this);
+        this.addOpine(opine);
     };
 
     LivefyreContent.prototype.removeLike = function (authorId) {
-        this._likes--;
+        var opine = LivefyreOpine.adaptLikedBy(authorId, this);
+        this.removeOpine(opine);
     };
 
     /**
@@ -170,11 +171,6 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
     LivefyreContent.prototype.isLiked = function (authorId) {
         for (var i=0; i < this.opines.length; i++) {
             if (authorId === this.opines[i].author.id) {
-                return true;
-            }
-        }
-        for (var i=0; i < this.likedBy.length; i++) {
-            if (authorId === this.likedBy[i]) {
                 return true;
             }
         }

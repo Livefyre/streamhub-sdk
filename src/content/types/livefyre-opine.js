@@ -26,6 +26,19 @@ define([
     };
     inherits(LivefyreOpine, Content);
 
+    LivefyreOpine.adaptLikedBy = function (authorId, content) {
+        var opine = new LivefyreOpine({
+            id: content.id + '.' + authorId,
+            author: { id: authorId },
+            content: { author: { id: authorId } },
+            relType: LivefyreOpine.enums.type.indexOf('LIKE'),
+            source: 0,
+            type: 1,
+            vis: 1
+        });
+        return opine;
+    };
+
     LivefyreOpine.enums = {};
     LivefyreOpine.enums.type = [
         'LIKE',
