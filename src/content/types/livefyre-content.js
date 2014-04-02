@@ -94,6 +94,14 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
         }
     };
 
+    LivefyreContent.prototype.addLike = function (authorId) {
+        this._likes++;
+    };
+
+    LivefyreContent.prototype.removeLike = function (authorId) {
+        this._likes--;
+    };
+
     /**
      * Add a opine to the Content while first checking for an existing opine.
      * Using v3.0 api, so any opine is assumed to be a Like.

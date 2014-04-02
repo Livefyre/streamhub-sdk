@@ -107,23 +107,25 @@ define([
 
     //likedBy
 
-    Annotator.prototype.added.likedBy = function (changeSet, annotationValue) {
+    Annotator.prototype.added.likedBy = function (changeSet, annotationValue, content) {
+        for (var i=0; i < annotationValue.length; i++) {
+            content.addLike(annotationValue[i]);
+        }
         changeSet.likedBy = annotationValue;
-        changeSet._likes = annotationValue.length;
     };
 
-    Annotator.prototype.updated.likedBy = function (changeSet, annotationValue) {
-        changeSet.likedBy = annotationValue;
-        changeSet._likes = annotationValue.length;
+    Annotator.prototype.updated.likedBy = function (changeSet, annotationValue, content) {
+        this.added.likedBy.apply(this, arguments);
     };
 
     Annotator.prototype.removed.likedBy = function (changeSet, annotationValue, content) {
         var likes = content.likedBy.slice(0) || [];
         for (var i=0; i < annotationValue.length; i++) {
-            likes.splice(likes.indexOf(annotationValue[i]), 1);
+            var like = annotationValue[i];
+            likes.splice(likes.indexOf(like), 1);
+            content.removeLike(like);
         }
         changeSet.likedBy = likes;
-        changeSet._likes = likes.length;
     };
 
     // Content Extensions
