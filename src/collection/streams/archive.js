@@ -74,7 +74,7 @@ inherits) {
                 // soon
                 if ( ! contents.length) {
                     // Push nothing for now.
-                    self.push();
+                    self.push(null);
                     // But trigger another _read cycle ASAP
                     // This gives the internals a chance to check paused state
                     streamUtil.nextTick(function () {
