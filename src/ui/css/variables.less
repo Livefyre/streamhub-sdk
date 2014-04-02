@@ -1,0 +1,237 @@
+/**
+ * Bootstrap Variables
+ */
+@import "/lib/bootstrap/less/variables.less";
+
+
+// LF colors
+// -------------------------
+
+@lf-gray-darker:    #2F3440;
+@lf-gray-dark:      tint(@lf-gray-darker, 30%);
+@lf-gray:           tint(@lf-gray-darker, 60%);
+@lf-gray-light:     tint(@lf-gray-darker, 80%);
+@lf-gray-lighter:   tint(@lf-gray-darker, 95%);
+
+@lf-purple:    #7168A5;
+@lf-blue:      #0F98EC;
+@lf-green:     #63C685;
+@lf-yellow:    #FEB33B;
+@lf-orange:    #E65B3F;
+@lf-red:       #F53E52;
+
+@lf-purple-dark:    darken(@lf-purple, 15%);
+@lf-blue-dark:      darken(@lf-blue, 15%);
+@lf-green-dark:     darken(@lf-green, 15%);
+@lf-yellow-dark:    darken(@lf-yellow, 15%);
+@lf-orange-dark:    darken(@lf-orange, 15%);
+@lf-red-dark:       darken(@lf-red, 15%);
+
+@lf-purple-light:    darken(@lf-purple, 15%);
+@lf-blue-light:      darken(@lf-blue, 15%);
+@lf-green-light:     darken(@lf-green, 15%);
+@lf-yellow-light:    darken(@lf-yellow, 15%);
+@lf-orange-light:    darken(@lf-orange, 15%);
+@lf-red-light:       darken(@lf-red, 15%);
+
+// Brand colors
+// -------------------------
+
+@brand-primary:   #FF5E00;
+@brand-success:   @lf-green;
+@brand-warning:   @lf-yellow;
+@brand-danger:    @lf-red;
+@brand-info:      @lf-blue;
+
+// Iconography
+// -------------------------
+@icon-font-path:    "fonts/";
+@fycon-font-name:    "fycons";
+
+// Components
+// -------------------------
+@padding-base-vertical:     7px;
+@component-active-bg:       @lf-blue;
+@border-radius-xsmall:		2px;
+
+/**
+ * Links
+ */
+
+@link-color:            @lf-blue;
+@link-hover-color:      darken(@lf-blue, 15%);
+
+/**
+ * Navbar
+ */
+
+// Basics of a navbar
+@navbar-height:                    50px;
+@navbar-margin-bottom:             @line-height-computed;
+@navbar-border-radius:             0;
+@navbar-padding-horizontal:        floor(@grid-gutter-width / 2);
+@navbar-padding-vertical:          ((@navbar-height - @line-height-computed) / 2);
+
+@navbar-default-bg:                #35353a;
+@navbar-default-link-color:        #aaa;
+@navbar-default-link-hover-color:  white;
+
+// Navbar brand label
+@navbar-default-brand-color:       white;
+@navbar-default-brand-hover-color: darken(@navbar-default-brand-color, 10%);
+@navbar-default-brand-hover-bg:    transparent;
+
+// Form states and alerts
+// -------------------------
+
+@state-success-text:             #FFFFFF;
+@state-success-bg:               @lf-green;
+@state-success-border:           @lf-green;
+
+@state-info-text:                #FFFFFF;
+@state-info-bg:                  @lf-blue;
+@state-info-border:              @lf-blue;
+
+@state-warning-text:             #FFFFFF;
+@state-warning-bg:               @lf-yellow;
+@state-warning-border:           @lf-yellow;
+
+@state-danger-text:              #FFFFFF;
+@state-danger-bg:                @lf-red;
+@state-danger-border:            @lf-red;
+
+
+// Forms
+// -------------------------
+@input-bg:                      #fff;
+@input-bg-disabled:             @lf-gray-lighter;
+
+@input-color:                   @lf-gray-darker;
+@input-border:                  @lf-gray-light;
+@input-border-radius:           3px;
+@input-border-focus:            @lf-blue;
+
+@input-height-base:             (@line-height-computed + (@padding-base-vertical * 2) + 2);
+
+// Buttons
+// -------------------------
+@btn-font-weight:                500;
+
+@btn-default-color:              @lf-gray-dark;
+@btn-default-bg:                 @lf-gray-lighter;
+@btn-default-border:             @lf-gray-light;
+
+@btn-primary-color:              #fff;
+@btn-primary-bg:                 @lf-orange;
+@btn-primary-border:             @lf-orange-dark;
+
+@btn-success-color:              #fff;
+@btn-success-bg:                 @lf-green;
+@btn-success-border:             @lf-green-dark;
+
+@btn-info-color:                 #fff;
+@btn-info-bg:                    @lf-blue;
+@btn-info-border:                @lf-blue-dark;
+
+@btn-warning-color:              #fff;
+@btn-warning-bg:                 @lf-yellow;
+@btn-warning-border:             @lf-yellow-dark;
+
+@btn-danger-color:               #fff;
+@btn-danger-bg:                  @lf-red;
+@btn-danger-border:              @lf-red-dark;
+
+@btn-link-disabled-color:        @gray-light;
+
+// Labels
+// -------------------------
+@label-color:              			#ffffff;
+@label-default-bg:					@lf-gray-lighter;
+@label-primary-bg:					@lf-orange;
+@label-success-bg:					@lf-green;
+@label-info-bg:						@lf-blue;
+@label-warning-bg:					@lf-yellow;
+@label-danger-bg:					@lf-red;
+
+// Badges
+// -------------------------
+@badge-color:                 #fff;
+@badge-link-hover-color:      #fff;
+@badge-bg:                    @lf-orange;
+
+@badge-active-color:          @link-color;
+@badge-active-bg:             #fff;
+
+@badge-font-size:			  1em;
+@badge-font-weight:           500;
+@badge-line-height:           1;
+@badge-border-radius:         22px;
+
+// Tooltips
+// -------------------------
+@tooltip-max-width: 			200px;
+@tooltip-arrow-width:           5px;
+
+@tooltip-color:					#ffffff;
+@tooltip-light-color:           @lf-gray-dark;
+
+@tooltip-bg:					#232731;
+@tooltip-light-bg:              #ffffff;
+
+@tooltip-arrow-color:           @tooltip-bg;
+@tooltip-light-arrow-color:     @tooltip-light-bg;
+
+// Popovers
+// -------------------------
+@popover-bg:                          #fff;
+@popover-dark-bg:                     #232731;
+@popover-border-color:                rgba(0,0,0,.2);
+@popover-fallback-border-color:       #ccc;
+
+@popover-arrow-width:                 10px;
+@popover-arrow-outer-width:           (@popover-arrow-width + 1);
+@popover-arrow-color:                 #fff;
+@popover-arrow-outer-color:           rgba(0,0,0,.25);
+@popover-arrow-outer-fallback-color:  #999;
+
+@popover-dark-arrow-color:                 @popover-dark-bg;
+@popover-dark-arrow-outer-color:           @popover-dark-bg;
+@popover-dark-arrow-outer-fallback-color:  @popover-dark-bg;
+
+// Dropdowns
+// -------------------------
+@dropdown-bg:                    #fff;
+@dropdown-border:                transparent;
+@dropdown-link-hover-color:      #FFFFFF;
+@dropdown-link-hover-bg:         @lf-blue;
+
+// Modals
+// -------------------------
+@modal-header-bg:				#F7F7F5;
+@modal-header-border-color:		#ECECEA;
+@modal-inner-padding: 			15px;
+
+// Alerts
+// -------------------------
+@alert-padding:                 9px;
+
+@alert-success-bg:              @lf-green;
+@alert-success-border:          darken(@alert-success-bg, 15%);
+@alert-success-text:            #fff;
+
+@alert-warning-bg:              @lf-yellow;
+@alert-warning-border:          darken(@alert-warning-bg, 15%);
+@alert-warning-text:            #fff;
+
+@alert-info-bg:                 @lf-blue;
+@alert-info-border:             darken(@alert-info-bg, 15%);
+@alert-info-text:               #fff;
+
+@alert-danger-bg:              @lf-red;
+@alert-danger-border:          darken(@alert-danger-bg, 15%);
+@alert-danger-text:            #fff;
+
+// Close
+// -------------------------
+@close-color:                   @lf-gray;
+@close-height:                  32px;

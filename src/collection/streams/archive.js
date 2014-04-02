@@ -160,11 +160,15 @@ inherits) {
         bootstrapDoc = bootstrapDoc || {};
         var self = this,
             states = bootstrapDoc.content || [],
-            stateToContent = this._createStateToContent(bootstrapDoc),
             state,
             stateContentId,
             content,
             contents = [];
+
+        if (this._collection) {
+            bootstrapDoc.collection = this._collection;
+        }
+        var stateToContent = this._createStateToContent(bootstrapDoc);
 
         stateToContent.on('data', function (content) {
             if (! content ||
