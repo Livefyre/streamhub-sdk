@@ -23,10 +23,11 @@
             baseUrl: '../../'
         });
         require([
+            'streamhub-sdk/auth',
             'streamhub-sdk/content/views/content-list-view',
             'streamhub-sdk/collection',
             'streamhub-sdk/content'
-        ],function (ListView, Collection, Content) {
+        ],function (Auth, ListView, Collection, Content) {
             var opts = {
                 "network": "labs-t402.fyre.co",
                 "siteId": "303827",
@@ -34,6 +35,8 @@
                 "environment": "t402.livefyre.com",
                 "replies": true
             };
+
+            Auth.setToken('eyJhbGciOiAiSFMyNTYiLCAidHlwIjogIkpXVCJ9.eyJkb21haW4iOiAibGFicy10NDAyLmZ5cmUuY28iLCAiZXhwaXJlcyI6IDExMzkxNzI4ODEzLjAzOTY2LCAidXNlcl9pZCI6ICJkZW1vLTAifQ.ZJLrUcRf3MbgOqJ1tLO81pZ7ANfatsKgLie6T6S_Wi4');
             var listView = window.view = new ListView({
                 initial: 50,
                 showMore: 50,

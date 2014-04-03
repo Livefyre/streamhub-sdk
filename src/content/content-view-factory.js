@@ -7,6 +7,7 @@ define([
     'streamhub-sdk/content/types/twitter-content',
     'streamhub-sdk/content/views/content-view',
     'streamhub-sdk/content/views/tiled-attachment-list-view',
+    'streamhub-sdk/content/views/livefyre-content-view',
     'streamhub-sdk/content/views/twitter-content-view',
     'streamhub-sdk/content/views/facebook-content-view',
     'streamhub-sdk/content/views/instagram-content-view',
@@ -20,6 +21,7 @@ define([
     TwitterContent,
     ContentView,
     TiledAttachmentListView,
+    LivefyreContentView,
     TwitterContentView,
     FacebookContentView,
     InstagramContentView,
@@ -51,7 +53,7 @@ define([
         { type: LivefyreFacebookContent, view: FacebookContentView },
         { type: LivefyreInstagramContent, view: InstagramContentView },
         { type: TwitterContent, view: TwitterContentView },
-        { type: LivefyreContent, view: ContentView },
+        { type: LivefyreContent, view: LivefyreContentView },
         { type: Content, view: ContentView }
     ];
 
