@@ -9,9 +9,7 @@
   "version": "2.7.3",
   "dependencies": {
     "bower": "*",
-    "http-server": "*",
-    "requirejs": "2.1.9",
-    "phantom": "*"
+    "requirejs": "2.1.9"
   },
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install && ./node_modules/less/bin/lessc -ru --compress src/css/style.less src/css/style.css",
@@ -34,6 +32,7 @@
     "less": "1.6.2",
     "jshint": "~2.1.0",
     "jsdoc": "git://github.com/jsdoc3/jsdoc.git",
+    "http-server": "*",
     "ink-docstrap": "git://github.com/michaelward82/docstrap.git#line-number-alignment",
     "phantomjs": "~1.9.2-2",
     "karma": "~0.10.5",
@@ -48,6 +47,7 @@
     "karma-requirejs": "~0.2.0",
     "karma-script-launcher": "~0.1.0",
     "karma-cajon": "*",
-    "coveralls": "~2.3.0"
+    "coveralls": "~2.3.0",
+    "phantom": "~0.5.4"
   }
 }

@@ -104,9 +104,6 @@
         font-size: 12px;
         font-weight: normal;
     }
-    .content-created-at {
-        margin: 16px 0 0 20px;
-    }
 
     .content-body {
         font-family: Georgia, Times, "Times New Roman", serif;
@@ -124,6 +121,60 @@
         -webkit-hyphens: auto;
            -moz-hyphens: auto;
                 hyphens: auto;
+    }
+
+    .content-footer {
+        padding: 16px 20px 0px 20px;
+        clear: both;
+
+        & > * {
+            display: inline-block;
+            height: 22px;
+            line-height: 22px;
+            //border: 1px solid red;
+        }
+
+        .content-footer-right {
+            float: right;
+        }
+
+        .hub-btn {
+            height: 16px;
+            font-size: 12px;
+            padding: 2px 7px;
+            margin-right: 0px;
+
+            & > a {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        .hub-content-like {
+            padding-left: 23px;
+            background-image: data-uri('../images/like.png');
+            background-repeat: no-repeat;
+            background-position: 0px 4px;
+        }
+        .hub-content-like:active,
+        .hub-content-like.hub-btn-toggle-on {
+            background-image: data-uri('../images/like_liked.png');
+        }
+
+        .hub-content-reply {
+            padding-left: 27px;
+            background-image: data-uri('../images/reply.png');
+            background-repeat: no-repeat;
+            background-position: 7px 4px;
+        }
+
+        .hub-content-share {
+            padding-left: 27px;
+            background-image: data-uri('../images/share.png');
+            background-repeat: no-repeat;
+            background-position: 7px 4px;
+        }
     }
     
     .content-attachments {
@@ -356,47 +407,48 @@
         .content-source-logo {
             background-position: -24px 0;
         }
-        .content-actions .content-action a {
-            margin-right: 20px;
+        .content-action {
+            padding: 0;
+            margin-right: 5px;
             display: block;
             float: left;
             text-indent: -99999px;
-            background: no-repeat left top url('data:image/png;base64,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');
+            background-repeat: no-repeat;
             
             &.content-action-favorite {
                 width: 18px;
                 height: 18px;
-                background-position: -55px 0;
+                background-image: data-uri('../images/favorite.png');
+                margin-top: 3px;
                 &:hover {
-                    background-position: -55px -20px;
+                    background-image: data-uri('../images/favorite_hover.png');
                 }
                 &:active {
-                    background-position: -55px -40px;
+                    background-image: data-uri('../images/favorite_active.png');
                 }
             }
             &.content-action-reply {
                 width: 23px;
                 height: 16px;
-                margin-top: 2px;
-                background-position: 0 0;
+                margin-top: 4px;
+                background-image: data-uri('../images/reply.png');
                 &:hover {
-                    background-position: 0 -18px;
+                    background-image: data-uri('../images/reply_hover.png');
                 }
                 &:active {
-                    background-position: 0 -36px;
+                    background-image: data-uri('../images/reply_active.png');
                 }
             }
             &.content-action-retweet {
                 width: 27px;
                 height: 14px;
-                margin-top: 3px;
-                margin-bottom: 1px;
-                background-position: -25px -1px;
+                margin-top: 4px;
+                background-image: data-uri('../images/retweet.png');
                 &:hover {
-                    background-position: -25px -17px;
+                    background-image: data-uri('../images/retweet_hover.png');
                 }
                 &:active {
-                    background-position: -25px -33px;
+                    background-image: data-uri('../images/retweet_active.png');
                 }
             }
         }
