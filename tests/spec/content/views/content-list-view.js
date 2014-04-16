@@ -58,6 +58,21 @@ function ($, ContentListView, Content, ContentView) {
                 });
                 expect(typeof listView.modal).toBe('object');
             });
+
+            describe("with opts.sharer", function () {
+                it('passes the sharer to .contentViewFactory.createContentView on .createContentView', function () {
+                    var sharer = {
+                        share: function () {}
+                    };
+                    var list = new ContentListView({
+                        sharer: sharer
+                    });
+                    spyOn(list.contentViewFactory, 'createContentView');
+                    list.add(new Content('woah'));
+                    var createContentViewOpts = list.contentViewFactory.createContentView.mostRecentCall.args[1];
+                    expect(createContentViewOpts.sharer).toBe(sharer);
+                });
+            });
         });
 
         describe("when constructed with opts.initial", function () {
@@ -205,7 +220,6 @@ function ($, ContentListView, Content, ContentView) {
             
             it("removes content on 'removeContentView.hub'", function () {
                 contentView.remove();
-                
                 expect(list.views.length).toBe(0);
                 expect(list.$listEl[0].children.length).toBe(0);
             });

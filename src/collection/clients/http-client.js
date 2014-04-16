@@ -88,7 +88,8 @@ define(['streamhub-sdk/jquery'], function($) {
      */
     LivefyreHttpClient.prototype._getHost = function (opts) {
         var isLivefyreNetwork = (opts.network === 'livefyre.com');
-        var host = this._serviceName + '.' + (isLivefyreNetwork ? opts.environment : opts.network);
+        var environment = opts.environment || 'livefyre.com';
+        var host = this._serviceName + '.' + (isLivefyreNetwork ? environment : opts.network);
         var hostParts;
         if ( ! isLivefyreNetwork && this._protocol === 'https:') {
             hostParts = opts.network.split('.');

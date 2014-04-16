@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/src/css/style.css">
+    <style>
+    #listView {
+        width:500px;
+        float: left;
+    }
+    </style>
+    <script type="text/javascript" src="//platform.twitter.com/widgets.js"></script>
+</head>
+    <body>
+        <div>
+            <button id="auth-button">Log in</button>
+        </div>
+        <form id="write-form">
+            <p>Content body:
+                <textarea name="body"></textarea>
+            </p>
+            <p>or Tweet ID: <input name="tweet-id" type="text" /></p>
+            <p>Token: <input type="text" name="lftoken" value="" /></p>
+            <input type="submit" />
+        </form>
+        <div id="listView"></div>
+
+        <script src="../../lib/cajon/cajon.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+        requirejs.config({
+            baseUrl: '../../',
+            deps: ['examples/auth/auth-demo']
+        });
+        </script>
+    </body>
+</html>

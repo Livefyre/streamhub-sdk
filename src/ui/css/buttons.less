@@ -1,0 +1,61 @@
+@import (reference) "../../lib/bootstrap/less/buttons";
+@import (reference) "./mixins";
+@import (reference) "./variables";
+
+.lf-btn {
+    .btn();
+}
+
+.lf-btn-default {
+    .lf-button-variant(@btn-default-color; @btn-default-bg; @btn-default-border; 15%);
+}
+.lf-btn-primary {
+    .lf-button-variant(@btn-primary-color; @btn-primary-bg; @btn-primary-border; 30%);
+}
+// Warning appears as orange
+.lf-btn-warning {
+    .lf-button-variant(@btn-warning-color; @btn-warning-bg; @btn-warning-border; 30%);
+}
+// Danger and error appear as red
+.lf-btn-danger {
+  .lf-button-variant(@btn-danger-color; @btn-danger-bg; @btn-danger-border; 30%);
+}
+// Success appears as green
+.lf-btn-success {
+  .lf-button-variant(@btn-success-color; @btn-success-bg; @btn-success-border; 30%);
+}
+// Info appears as blue-green
+.lf-btn-info {
+  .lf-button-variant(@btn-info-color; @btn-info-bg; @btn-info-border; 30%);
+}
+
+/**
+ * Link buttons
+ */
+
+.lf-btn-link {
+    .lf-btn-default;
+
+    background: transparent;
+    border: 1px solid transparent;
+}
+
+// Button Sizes
+// --------------------------------------------------
+
+.lf-btn-lg {
+    .btn-lg();
+}
+.lf-btn-sm {
+    .btn-sm();
+}
+.lf-btn-xs {
+    .btn-xs();
+}
+
+// Block button
+// --------------------------------------------------
+
+.lf-btn-block {
+    .btn-block();
+}

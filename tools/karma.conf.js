@@ -23,6 +23,7 @@ module.exports = function(config) {
       {pattern: 'tests/spec/**/*.js', included: false},
       {pattern: 'tests/mocks/**/*.js', included: false},
       {pattern: 'lib/**/*.js', included: false},
+      {pattern: 'lib/**/*.json', included: false},
       {pattern: 'tests/**/*.json', included: false},
       'tests/tests-main.js',
     ],

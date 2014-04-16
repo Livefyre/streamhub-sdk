@@ -14,6 +14,11 @@ require.config({
     blanket: 'lib/blanket/dist/qunit/blanket',
     'blanket-jasmine': 'lib/blanket/dist/jasmine/blanket_jasmine'
   },
+  map: {
+    '*': {
+      'debug': 'streamhub-sdk/debug'
+    }
+  },
   packages: [{
     name: "streamhub-sdk",
     location: "src"
@@ -30,6 +35,9 @@ require.config({
     name: "streamhub-sdk/modal",
     location: "src/modal"
   },{
+    name: "streamhub-sdk/ui",
+    location: "src/ui"
+  },{
     name: "streamhub-sdk/jquery",
     location: "src",
     main: "jquery"
@@ -43,6 +51,15 @@ require.config({
     name: "view",
     location: "lib/view/src",
     main: "view"
+  },{
+    name: "auth",
+    location: "lib/auth/src"
+  },{
+    name: "auth-livefyre",
+    location: "lib/auth-livefyre/src"
+  },{
+    name: "auth-livefyre-tests",
+    location: "lib/auth-livefyre/test"
   }],
   shim: {
     jquery: {
