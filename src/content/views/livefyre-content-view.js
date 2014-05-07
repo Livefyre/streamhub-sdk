@@ -44,6 +44,8 @@ define([
         });
 
         ContentView.call(this, opts);
+
+        this._addInitialButtons();
     };
     inherits(LivefyreContentView, ContentView);
 
@@ -80,26 +82,41 @@ define([
         return this;
     };
 
-    LivefyreContentView.prototype._renderButtons = function () {
-        if (! (this.content instanceof LivefyreContent)) {
-            return;
+    /**
+     * Create and add any buttons that should be on all LivefyreContentViews.
+     * This will be invoked on construction
+     * They will be rendered by ._renderButtons later.
+     */
+    LivefyreContentView.prototype._addInitialButtons = function () {
+        // Like
+        this._likeButton = this._createLikeButton();
+        if (this._likeButton) {
+            this.addButton(this._likeButton);
         }
+        // Share
+        this._shareButton = this._createShareButton();
+        if (this._shareButton) {
+            this.addButton(this._shareButton);
+        }
+    };
 
-        this.$el.find(this.footerLeftSelector).empty();
-        this.$el.find(this.footerRightSelector).empty();
+    /**
+     * Clear out the current control list,
+     * and render all the buttons that have been added
+     */
+    LivefyreContentView.prototype._renderButtons = function () {
+        var $leftControls = this.$el.find(this.footerLeftSelector);
+        var $rightControls = this.$el.find(this.footerRightSelector);
 
-        //TODO(ryanc): Wait until we have replies on SDK
-        //var replyCommand = new Command(function () {
-        //    self.$el.trigger('contentReply.hub');
-        //});
-        //var replyButton = new HubButton(replyCommand, {
-        //    className: 'btn-link content-reply',
-        //    label: 'Reply'
-        //});
-        //this.addButton(replyButton);
+        $leftControls.empty();
+        this._controls.left.forEach(function (button) {
+            $leftControls.append(button.$el);
+        });
 
-        this._renderLikeButton();
-        this._renderShareButton();
+        $rightControls.empty();
+        this._controls.right.forEach(function (button) {
+            $rightControls.append(button.$el);
+        });
     };
 
     LivefyreContentView.prototype._updateLikeCount = function () {
@@ -111,32 +128,17 @@ define([
      * @protected
      */
     LivefyreContentView.prototype._createLikeButton = function () {
-        if (! auth.hasDelegate('login')) {
-            return; // Don't render a button when not logged in
+        // Don't render a button when no auth delegate
+        if ( ! auth.hasDelegate('login')) {
+            return;
+        }
+        // Don't render a button if this isn't actually LivefyreContent
+        if ( ! (this.content instanceof LivefyreContent)) {
+            return;
         }
         return new HubLikeButton(this._commands.like, {
             content: this.content
         });
-    };
-
-    LivefyreContentView.prototype._renderLikeButton = function () {
-        var likeButton = this._likeButton = this._createLikeButton();
-        if ( ! likeButton) {
-            return;
-        }
-        this.addButton(likeButton);
-    };
-
-    /**
-     * Render a Share Button
-     * @protected
-     */
-    LivefyreContentView.prototype._renderShareButton = function () {
-        var shareButton = this._createShareButton();
-        if ( ! shareButton) {
-            return;
-        }
-        this.addButton(shareButton);
     };
 
     /**
@@ -155,6 +157,14 @@ define([
         return shareButton;
     };
 
+    /**
+     * Add a button to this ContentView.
+     * This will re-render the buttons
+     * @param button {Button} Button to add
+     * @param [opts] {object}
+     * @param [opts.side='left'] {'right'|'left'} Which side of the footer to add
+     *     the button to
+     */
     LivefyreContentView.prototype.addButton = function (button, opts) {
         opts = opts || {};
         var footerControls;
@@ -167,22 +177,28 @@ define([
             footerSide = this.$el.find(this.footerLeftSelector);
         }
 
-        if (footerControls.length === 0) {
-            footerControls.push(button);
-        }
-        for (var i=0; i < footerControls.length; i++) {
-            if (footerControls[i] !== button) {
-                footerControls.push(button);
-            }
+        // Don't add the same button twice
+        if (footerControls.indexOf(button) !== -1) {
+            return;
         }
 
+        footerControls.push(button);
         var buttonContainerEl = $('<div></div>');
-        footerSide.append(buttonContainerEl);
-
         button.setElement(buttonContainerEl);
         button.render();
+
+        // If the footer is rendered, then re-render all buttons.
+        // If buttons are added before the ContentView is, then we shouldn't
+        // render buttons
+        if (footerSide.length) {
+            this._renderButtons();
+        }
     };
 
+    /**
+     * Remove a Button from the ContentView
+     * @param button {Button} Button to remove
+     */
     LivefyreContentView.prototype.removeButton = function (button) {
         this._controls.left.splice(this._controls.left.indexOf(button), 1);
         this._controls.right.splice(this._controls.right.indexOf(button), 1);

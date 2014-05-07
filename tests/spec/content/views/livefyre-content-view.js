@@ -48,11 +48,22 @@ function (
 
             });
 
-            it('can add a button', function () {
+            it('can add a button before render', function () {
                 var button = new Button();
+                contentView.addButton(button);
+                contentView.render();
+                expect(contentView._controls.left.length).toBe(1);
+                expect(contentView._controls.left[0]).toBe(button);
+                expect(contentView.$('.lf-btn').length).toBe(1);
+            });
+
+            it('can add a button after render', function () {
+                var button = new Button();
+                contentView.render();
                 contentView.addButton(button);
                 expect(contentView._controls.left.length).toBe(1);
                 expect(contentView._controls.left[0]).toBe(button);
+                expect(contentView.$('.lf-btn').length).toBe(1);
             });
 
             it('can remove a button', function () {
