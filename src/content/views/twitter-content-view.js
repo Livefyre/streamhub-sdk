@@ -22,31 +22,28 @@ function (LivefyreContentView, HubButton, inherits, $) {
     
     TwitterContentView.prototype.elClass += ' content-tweet ';
 
-    TwitterContentView.prototype._renderButtons = function () {
-        if (! this._rendered) {
-            var replyButton = new HubButton(undefined, {
-                className: 'content-action content-action-reply',
-                buttonUrl: 'https://twitter.com/intent/tweet?in_reply_to=' + this.content.tweetId
-            });
-            var retweetButton = new HubButton(undefined, {
-                className: 'content-action content-action-retweet',
-                buttonUrl: 'https://twitter.com/intent/retweet?tweet_id=' + this.content.tweetId
-            });
-            var favoriteButton = new HubButton(undefined, {
-                className: 'content-action content-action-favorite',
-                buttonUrl: 'https://twitter.com/intent/favorite?tweet_id=' + this.content.tweetId
-            });
+    /**
+     * Create and add any buttons that should be on all TwitterContentViews.
+     * This will be invoked on construction
+     * They will be rendered by ._renderButtons later.
+     */
+    TwitterContentView.prototype._addInitialButtons = function () {
+        var replyButton = new HubButton(undefined, {
+            className: 'content-action content-action-reply',
+            buttonUrl: 'https://twitter.com/intent/tweet?in_reply_to=' + this.content.tweetId
+        });
+        var retweetButton = new HubButton(undefined, {
+            className: 'content-action content-action-retweet',
+            buttonUrl: 'https://twitter.com/intent/retweet?tweet_id=' + this.content.tweetId
+        });
+        var favoriteButton = new HubButton(undefined, {
+            className: 'content-action content-action-favorite',
+            buttonUrl: 'https://twitter.com/intent/favorite?tweet_id=' + this.content.tweetId
+        });
 
-            this.addButton(replyButton);
-            this.addButton(retweetButton);
-            this.addButton(favoriteButton);
-        } else {
-            for (var i=0; i < this._controls.left.length; i++) {
-                this.addButton(this._controls.left[i]);
-            }
-        }
-
-        this._rendered = true;
+        this.addButton(replyButton);
+        this.addButton(retweetButton);
+        this.addButton(favoriteButton);
     };
 
     /**

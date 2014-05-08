@@ -22,27 +22,30 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
     var LivefyreContent = function(json, opts) {
         opts = opts || {};
         Content.call(this);
-        if ( ! json) {
-            return this;
-        }
-        json.content = json.content || {};
-        json.content.annotations = json.content.annotations || {};
-        this.body = json.content.bodyHtml || "";
-        this.source = LivefyreContent.SOURCES[json.source];
-        this.id = json.content.id || json.id;
-        this.author = json.author;
-        this.createdAt = new Date(1000 * json.content.createdAt);
-        this.updatedAt = new Date(1000 * json.content.updatedAt);
-        this.lastVisibility = Content.enums.visibility[json.lastVis];
-        this.visibility = Content.enums.visibility[json.vis];
-        this.parentId = json.content.parentId;
-        this.meta = json;
 
         this._likes = 0;
         this._annotator = opts.annotator || this._createAnnotator();
-        this._annotator.annotate(this, {
-            added: json.content.annotations
-        }, true);  // Silently add b/c this is new Content.
+
+        // Set state from Livefyre API JSON if provided
+        if (json) {
+            json.content = json.content || {};
+            json.content.annotations = json.content.annotations || {};
+
+            this.id = json.content.id || json.id;
+            this.author = json.author;
+            this.createdAt = new Date(1000 * json.content.createdAt);
+            this.updatedAt = new Date(1000 * json.content.updatedAt);
+            this.lastVisibility = Content.enums.visibility[json.lastVis];
+            this.visibility = Content.enums.visibility[json.vis];
+            this.parentId = json.content.parentId;
+            this.meta = json;
+            this._annotator.annotate(this, {
+                added: json.content.annotations
+            }, true);  // Silently add b/c this is new Content.
+        }
+
+        this.body = json ? json.content.bodyHtml : '';
+        this.source = json ? LivefyreContent.SOURCES[json.source] : 'livefyre';
     };
     inherits(LivefyreContent, Content);
 

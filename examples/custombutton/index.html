@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="/src/css/style.css">
+    <style>
+    #listView {
+        width:500px;
+        overflow: hidden;
+    }
+    .custom-button {
+        color: #6d7179;
+        background-color: #f5f5f5;
+        border-color: #d5d6d9;
+        -webkit-box-shadow: 0 1px 2px rgba(47,52,64,.15);
+        -moz-box-shadow: 0 1px 2px rgba(47,52,64,.15);
+        -ms-box-shadow: 0 1px 2px rgba(47,52,64,.15);
+        -o-box-shadow: 0 1px 2px rgba(47,52,64,.15);
+        box-shadow: 0 1px 2px rgba(47,52,64,.15)
+    }
+    </style>
+</head>
+    <body>
+        <div id="listView"></div>
+
+        <script src="../../lib/cajon/cajon.js" type="text/javascript"></script>
+        <script src="/requirejs.conf.js" type="text/javascript"></script>
+        <script>
+        requirejs.config({
+            baseUrl: '../../'
+        });
+        require([
+            'streamhub-sdk/auth',
+            'streamhub-sdk/content/views/content-list-view',
+            'streamhub-sdk/collection',
+            'streamhub-sdk/content',
+            'streamhub-sdk/collection/liker',
+            'streamhub-sdk/sharer',
+            'streamhub-sdk/ui/hub-button'
+        ],function (Auth, ListView, Collection, Content, Liker, sharer, HubButton) {
+            var opts = {
+                "network": "labs-t402.fyre.co",
+                "siteId": "303827",
+                "articleId": "xbox-0",
+                "environment": "t402.livefyre.com",
+                "replies": true
+            };
+
+            var listView = window.view = new ListView({
+                initial: 50,
+                showMore: 50,
+                el: document.getElementById("listView"),
+                liker: new Liker(),
+                sharer: sharer
+            });
+
+            var ogCreateContentView = listView.createContentView;
+            listView.createContentView = function () {
+                var contentView = ogCreateContentView.apply(this, arguments);
+                var button = new HubButton(function () {
+                    alert('clicky on the custom button');
+                }, {
+                    label: 'custom'
+                });
+                button.elClass += ' custom-button';
+                contentView.addButton(button);
+                return contentView;
+            };
+
+            var collection = window.collection =  new Collection(opts);
+
+            collection.pipe(listView);
+
+        });
+        </script>
+    </body>
+</html>

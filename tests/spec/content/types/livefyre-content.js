@@ -119,6 +119,13 @@ function ($, LivefyreContent) {
             });
         });
 
+        describe('.getLikeCount()', function () {
+            it('returns 0 if a fake LivefyreContent', function () {
+                var c = new LivefyreContent();
+                expect(c.getLikeCount()).toBe(0);
+            });
+        });
+
         it('has a geocode property if a geocode annotation is present on the json', function () {
             var json = {"vis":1,"collectionId":"58203273","content":{"parentId":"","bodyHtml":"Two things I can't live without: #thebay and my chuck t's :)","id":"instagram-653589918757055868_223369762@instagram.com","authorId":"223369762@instagram.com","updatedAt":1392134048,"annotations":{"geocode":{"latitude":37.673845177,"longitude":-122.14884498}},"createdAt":1392134011},"source":19,"type":0,"event":1392134048988712,"childContent":[{"content":{"targetId":"instagram-653589918757055868_223369762@instagram.com","authorId":"-","link":"http://distilleryimage9.s3.amazonaws.com/6a5b7310933411e3b0fd12440ac5900d_8.jpg","oembed":{"provider_url":"http://instagram.com","title":"Two things I can't live without: #thebay and my chuck t's :)","url":"http://distilleryimage9.s3.amazonaws.com/6a5b7310933411e3b0fd12440ac5900d_8.jpg","thumbnail_width":150,"height":640,"width":640,"version":"1.0","author_name":"babyyyyy_cakessssss","provider_name":"Instagram","thumbnail_url":"http://distilleryimage9.s3.amazonaws.com/6a5b7310933411e3b0fd12440ac5900d_5.jpg","type":"photo","thumbnail_height":150,"author_url":"http://www.instagram.com/babyyyyy_cakessssss"},"position":0,"id":"instagram-653589918757055868_223369762@instagram.com.http://distilleryimage9.s3.amazonaws.com/6a5b7310933411e3b0fd12440ac5900d_8.jpg"},"vis":1,"type":3,"event":1392134048988712,"source":0}]};
             var content = new LivefyreContent(json);
