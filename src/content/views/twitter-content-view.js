@@ -27,7 +27,7 @@ function (LivefyreContentView, HubButton, inherits, $) {
      * This will be invoked on construction
      * They will be rendered by ._renderButtons later.
      */
-    LivefyreContentView.prototype._addInitialButtons = function () {
+    TwitterContentView.prototype._addInitialButtons = function () {
         var replyButton = new HubButton(undefined, {
             className: 'content-action content-action-reply',
             buttonUrl: 'https://twitter.com/intent/tweet?in_reply_to=' + this.content.tweetId
