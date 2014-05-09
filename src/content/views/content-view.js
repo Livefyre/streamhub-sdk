@@ -196,6 +196,11 @@ define([
      */
     ContentView.prototype.getTemplateContext = function () {
         var context = $.extend({}, this.content);
+        // Ensure that content.body has a p tag
+        var isHtml = /^\s*<(p|div)/;
+        if ( ! isHtml.test(context.body)) {
+            context.body = '<p>'+context.body+'</p>';
+        }
         return context;
     };
 

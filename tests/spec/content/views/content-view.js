@@ -112,7 +112,36 @@ function (
                 expect(contentView.$el.find('.content-created-at').length).toBe(0);
             });
         });
-        
+
+        describe('ensure html .body (no just text nodes)', function () {
+            function renderedBodyEl(body) {
+                var content = new Content(body);
+                var contentView = new ContentView({
+                    content: content
+                });
+                contentView.render();
+                return contentView.$el;
+            }
+            it('wraps the body in some html element if needed', function () {
+                var $body = renderedBodyEl('what');
+                expect($body.find('.content-body *').length).toBe(1);
+                // html but not starting with
+                $body = renderedBodyEl('what <b>the heck</b>');
+                expect($body.find('.content-body *').length).toBe(2);
+                expect($body.find('.content-body > p').length).toBe(1);
+                // html but not a block level thing
+                $body = renderedBodyEl('<a>the heck</a>');
+                expect($body.find('.content-body *').length).toBe(2);
+                expect($body.find('.content-body > p').length).toBe(1);
+            });
+            it('doesnt wrap bodyHtml with paragraphs', function () {
+                ['<p>what</p><p>1</p>', '  <p>what</p><p>1</p>'].forEach(function (body) {
+                    var $body = renderedBodyEl(body);
+                    expect($body.find('.content-body *').length).toBe(2);
+                });
+            });
+        });
+
         describe('when rendering avatars', function () {
             it('removes the avatar section if the avatar image fails to load', function () {
                 var content = new Content('<p>My avatar is broken</p>');
