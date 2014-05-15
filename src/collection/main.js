@@ -7,12 +7,14 @@ define([
     'streamhub-sdk/collection/clients/bootstrap-client',
     'streamhub-sdk/collection/clients/create-client',
     'streamhub-sdk/collection/clients/write-client',
+    'streamhub-sdk/content/clients/content-client',
+    'streamhub-sdk/content/fetch-content',
     'streamhub-sdk/auth',
     'inherits',
     'streamhub-sdk/debug'],
 function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedContents,
         Duplex, LivefyreBootstrapClient, LivefyreCreateClient, LivefyreWriteClient,
-        Auth, inherits, debug) {
+        LivefyreContentClient, fetchContent, Auth, inherits, debug) {
     'use strict';
 
 
@@ -22,7 +24,9 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
     /**
      * An Object that represents a hosted StreamHub Collection
      * @param [opts.replies=false] {boolean} Whether to stream out reply Content
-     * from the Archives and Updaters
+     *      from the Archives and Updaters
+     * @param [opts.autoCreate] {boolean} Set false to prevent from automatically
+     *      creating this collection if it doesn't alreayd exist.
      */
     var Collection = function (opts) {
         opts = opts || {};
@@ -100,6 +104,36 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         opts = opts || {};
         opts.collection = this;
         return new FeaturedContents(opts);
+    };
+    
+    
+    /**
+     * Makes a remote call to fetch a piece of content. If that content is a reply,
+     * the parent(s) will also be loaded. this.id and this.network are required
+     * before invoking this method.
+     * @param contentId {!string} ID for the piece of content desired.
+     * @param callback {function(err: object, data: object)} Callback to return the content.
+     * @param [depthOnly] {boolean=} Set true if you would also like all replies
+     *          associated with the content.
+     */
+    Collection.prototype.fetchContent = function (contentId, callback, depthOnly) {
+        var opts = {};
+        if (!this.id || !this.network) {
+            throw 'Can\'t fetchContent() without this.id and this.network';
+        }
+        if (!contentId || !callback) {
+            throw 'Can\'t fetchContent() without specifying a contentId and a callback';
+        }
+        //build opts for content client and state to content
+        opts.collectionId = this.id;
+        opts.network = this.network;
+        opts.environment = this.environment;
+        opts.replies = true;
+        opts.depthOnly = depthOnly || false;
+        opts.collection = this;
+        opts.contentId = contentId;
+
+        fetchContent(opts, callback);
     };
 
 

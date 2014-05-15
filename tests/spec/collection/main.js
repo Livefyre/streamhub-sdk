@@ -33,6 +33,16 @@ Auth, Writable, Readable) {
             });
             expect(collection.id).toBe(myId);
         });
+        it('defaults ._autoCreate to true on construction', function () {
+            var collection = new Collection();
+            expect(collection._autoCreate).toBe(true);
+        });
+        it('can set ._autoCreate to false using opts.autoCreate on construction', function () {
+            var collection = new Collection({
+                autoCreate: false
+            });
+            expect(collection._autoCreate).toBe(false);
+        });
         describe('instance', function () {
             var opts,
                 collection,
@@ -67,6 +77,43 @@ Auth, Writable, Readable) {
             });
             it('has .environment', function () {
                 expect(collection.environment).toBe(opts.environment);
+            });
+            
+            describe('.fetchContent', function () {
+                var clbk;
+                beforeEach(function () {
+                    collection.id = '10772933';
+                    clbk = jasmine.createSpy('callback');
+                });
+                
+                it('throws when attempted without collection.id or collection.network', function () {
+                    collection.network = '';
+                    expect(function () {
+                        collection.fetchContent();
+                    }).toThrow();
+                    
+                    collection.network = 'livefyre.com';
+                    collection.id = '';
+                    expect(function () {
+                        collection.fetchContent();
+                    }).toThrow();
+                });
+                
+                it('throws when a contentID or callback isn\'t specified when invoked', function () {
+                    expect(function () {
+                        collection.fetchContent('26482715');
+                    }).toThrow();
+                    expect(function () {
+                        collection.fetchContent('', undefined);
+                    }).toThrow();
+                });
+                
+                xit('optionally passes depthOnly to the content client', function () {
+                    throw 'TODO (Joao) Figure out how to test this!';
+                    collection.fetchContent('26482715', clbk, true);
+                    expect(cC.getContent).toHaveBeenCalled();
+                    expect(cC.getContent.calls[0].args[0].depthOnly).toBe(true);
+                });
             });
 
             describe('.createArchive', function () {
@@ -180,6 +227,13 @@ Auth, Writable, Readable) {
                     expect(collection._createClient.createCollection).toHaveBeenCalled();
                     expect(fnCallback).toHaveBeenCalledWith(null, mockInitResponse);
                     expect(fnCallback.callCount).toBe(1);
+                });
+                
+                it('throws when asked to create a new collection and is already in process of creating a new collection', function () {
+                    collection._isCreatingCollection = true;
+                    expect(function () {
+                        collection._createCollection();
+                    }).toThrow();
                 });
 
                 it('throws error when services are failing, without making more calls than necessary', function () {
