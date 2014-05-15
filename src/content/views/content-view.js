@@ -25,6 +25,9 @@ define([
         opts = opts || {};
         
         this.content = opts.content;
+        if (this.content) {
+            this.content.view = this;
+        }
         // store construction time to use for ordering if this.content has no dates
         this.createdAt = new Date();
         this.template = opts.template || this.template;

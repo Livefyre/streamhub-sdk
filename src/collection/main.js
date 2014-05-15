@@ -1,4 +1,5 @@
 define([
+    'streamhub-sdk/jquery',
     'streamhub-sdk/collection/streams/archive',
     'streamhub-sdk/collection/streams/updater',
     'streamhub-sdk/collection/streams/writer',
@@ -6,13 +7,15 @@ define([
     'stream/duplex',
     'streamhub-sdk/collection/clients/bootstrap-client',
     'streamhub-sdk/collection/clients/create-client',
+    'streamhub-sdk/collection/clients/permalink-client',
     'streamhub-sdk/collection/clients/write-client',
+    'streamhub-sdk/content/fetch-content',
     'streamhub-sdk/auth',
     'inherits',
     'streamhub-sdk/debug'],
-function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedContents,
-        Duplex, LivefyreBootstrapClient, LivefyreCreateClient, LivefyreWriteClient,
-        Auth, inherits, debug) {
+function ($, CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedContents,
+        Duplex, LivefyreBootstrapClient, LivefyreCreateClient, LivefyrePermalinkClient,
+        LivefyreWriteClient, fetchContent, Auth, inherits, debug) {
     'use strict';
 
 
@@ -22,7 +25,9 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
     /**
      * An Object that represents a hosted StreamHub Collection
      * @param [opts.replies=false] {boolean} Whether to stream out reply Content
-     * from the Archives and Updaters
+     *      from the Archives and Updaters
+     * @param [opts.autoCreate] {boolean} Set false to prevent from automatically
+     *      creating this collection if it doesn't alreayd exist.
      */
     var Collection = function (opts) {
         opts = opts || {};
@@ -34,12 +39,13 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
 
         this._collectionMeta = opts.collectionMeta;
         this._signed = opts.signed;
-        this._autoCreate = ('autoCreate' in opts) ? opts.autoCreate : Boolean(this._collectionMeta);
+        this._autoCreate = (opts.autoCreate === false) ? false : true;
         this._maxInitAttempts = opts.maxInitAttempts || 4;
         this._replies = opts.replies || false;
 
         this._bootstrapClient = opts.bootstrapClient || new LivefyreBootstrapClient();
         this._createClient = opts.createClient || new LivefyreCreateClient();
+        this._permalinkClient = opts.permalinkClient || new LivefyrePermalinkClient();
 
         // Internal streams
         this._writer = opts.writer || null;
@@ -100,6 +106,36 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         opts = opts || {};
         opts.collection = this;
         return new FeaturedContents(opts);
+    };
+    
+    
+    /**
+     * Makes a remote call to fetch a piece of content. If that content is a reply,
+     * the parent(s) will also be loaded. this.id and this.network are required
+     * before invoking this method.
+     * @param contentId {!string} ID for the piece of content desired.
+     * @param callback {function(err: object, data: object)} Callback to return the content.
+     * @param [depthOnly] {boolean=} Set true if you would also like all replies
+     *          associated with the content.
+     */
+    Collection.prototype.fetchContent = function (contentId, callback, depthOnly) {
+        var opts = {};
+        if (!this.id || !this.network) {
+            throw 'Can\'t fetchContent() without this.id and this.network';
+        }
+        if (!contentId || !callback) {
+            throw 'Can\'t fetchContent() without specifying a contentId and a callback';
+        }
+        //build opts for content client and state to content
+        opts.collectionId = this.id;
+        opts.network = this.network;
+        opts.environment = this.environment;
+        opts.replies = true;
+        opts.depthOnly = depthOnly || false;
+        opts.collection = this;
+        opts.contentId = contentId;
+
+        fetchContent(opts, callback);
     };
 
 
@@ -265,16 +301,10 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
      */
     Collection.prototype._getBootstrapInit = function (errback) {
         var self = this,
-            collectionOpts;
+            collectionOpts = this._getBaseOpts();
 
         // Use this._bootstrapClient to request init (init is default when
         // no opts.page is specified)
-        collectionOpts = {
-            network: this.network,
-            siteId: this.siteId,
-            articleId: this.articleId,
-            environment: this.environment
-        };
         this._bootstrapClient.getContent(collectionOpts, function (err, data) {
             if (err) {
                 log("Error requesting Bootstrap init", err, data);
@@ -282,12 +312,6 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
             errback.call(self, err, data);
         });
     };
-
-
-    /**
-     * @callback optionalObjectCallback
-     * @param [error] {Object}
-     */
 
 
     /**
@@ -315,17 +339,44 @@ function (CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedConten
         };
 
         // Use this._createClient to request a collection creation
-        var collectionOpts = {
-            network: this.network,
-            siteId: this.siteId,
-            articleId: this.articleId,
-            environment: this.environment,
+        var collectionOpts = this._getBaseOpts();
+        $.extend(opts, {
             collectionMeta: this._collectionMeta,
             signed: this._signed
-        };
+        });
         this._createClient.createCollection(collectionOpts, callback);
     };
 
+
+    /**
+     * Gets a permalink URL from the server for a given piece of content.
+     * @param data {Content}
+     * @param callback {function(err: Object, data: Object)}  A callback with "err/data" interface
+     */
+    Collection.prototype.getPermalink = function (data, callback) {
+        var client = this._permalinkClient;
+        var opts = this._getBaseOpts();
+        opts.messageId = data.content.id;
+        $.extend(opts, data);
+        client.getPermalink(opts, callback);
+    };
+
+
+    /**
+     * Get the base options that should go with all requests.
+     * @return {Object}
+     * @private
+     */
+    Collection.prototype._getBaseOpts = function () {
+        return {
+            network: this.network,
+            environment: this.environment,
+            collectionId: this.id,
+            siteId: this.siteId,
+            articleId: this.articleId,
+            lftoken: Livefyre.user.get('token')
+        };
+    };
 
     return Collection;
 });

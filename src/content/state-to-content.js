@@ -22,9 +22,10 @@ inherits) {
     /**
      * An Object that transforms state objects from Livefyre APIs
      * into streamhub-sdk Content instances
-     * @param authors {object} A mapping of authorIds to author information
-     * @param [replies=false] {boolean} Whether to read out reply Content
-     * @param storage {Storage} A storage mechanism that supports get/set functions.
+     * @param [opts.authors] {object} A mapping of authorIds to author information
+     * @param [opts.collection] {Collection}
+     * @param [opts.replies=false] {boolean} Whether to read out reply Content
+     * @param [opts.storage] {Storage} A storage mechanism that supports get/set functions.
      */
     var StateToContent = function (opts) {
         opts = opts || {};
@@ -292,7 +293,7 @@ inherits) {
     StateToContent._addReplyOrStore = StateToContent.prototype._addReplyOrStore;
 
     StateToContent.prototype._addOpineOrStore = function (opine, targetId) {
-        var target = Storage.get(targetId);
+        var target = this._storage.get(targetId);
         if (target) {
             log('attaching attachment', arguments);
             target.addOpine(opine);

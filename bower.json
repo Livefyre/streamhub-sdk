@@ -18,6 +18,7 @@
     "inherits": "git://github.com/Livefyre/inherits.git",
     "view": "git://github.com/Livefyre/view.git#~1.1",
     "auth": "git://github.com/Livefyre/auth.git#~0.0",
+    "debug": "visionmedia/debug#~0.7.4",
     "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#v0.3.3"
   },
   "devDependencies": {

@@ -176,6 +176,15 @@ function (
                 });
                 lfContentView.render();
 
+                expect(lfContentView._commands.like._canExecute).toBe(false);
+            });
+
+            it("can execute when the Like button's associated content is not authored by the authenticated user (can Like other users' content)", function () {
+                var lfContent = new LivefyreContent({
+                    body: 'lf content',
+                    author: { id: 'datdude@blah' }
+                });
+
                 // Add like
                 var lfOpine = new LivefyreOpine({
                     id: 'blah',

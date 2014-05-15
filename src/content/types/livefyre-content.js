@@ -93,6 +93,7 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
             }
         }
         if (!found) {
+            obj.setParent && obj.setParent(this);
             this.replies.push(obj);
             this.emit('reply', obj);
         }
@@ -161,6 +162,27 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
         this.opines.splice(indexToRemove, 1);
         this._likes--;
         this.emit('removeOpine', obj);
+    };
+    
+    /**
+     * Sets a reference to the provided Content as its parent Content.
+     * Can only be set once and if the id matches.
+     * @param parent {!Content}
+     */
+    LivefyreContent.prototype.setParent = function (parent) {
+        parent && !this._parent && this.parentId && parent.id === this.parentId && (this._parent = parent);
+    };
+    
+    /**
+     * Returns a reference to this._parent if it exists, null if it doesn't, and
+     * undefined if this object doesn't even have a parentId.
+     * @returns {?Content=}
+     */
+    LivefyreContent.prototype.getParent = function (parent) {
+        if (this._parent) {
+            return this._parent;
+        }
+        return (this.parentId) ? null : undefined;
     };
 
     LivefyreContent.prototype.getLikeCount = function () {

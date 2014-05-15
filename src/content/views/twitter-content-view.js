@@ -40,6 +40,7 @@ function (LivefyreContentView, HubButton, inherits, $) {
             className: 'content-action content-action-favorite',
             buttonUrl: 'https://twitter.com/intent/favorite?tweet_id=' + this.content.tweetId
         });
+        LivefyreContentView.prototype._addInitialButtons.apply(this, arguments);
 
         this.addButton(replyButton);
         this.addButton(retweetButton);
