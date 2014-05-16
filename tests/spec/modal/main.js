@@ -80,7 +80,43 @@ define([
                 modalView.show(new GalleryAttachmentListView());
                 expect(modalView.visible).toBe(true);
             });
+
+            it('the document body overflow is hidden', function () {
+                expect($('body').css('overflow')).toEqual('hidden');
+            });
         });
+
+        describe('when showing stacked', function () {
+
+            var anotherView;
+            var anotherModalView;
+            var modalView;
+            var view;
+
+            beforeEach(function() {
+                view = new GalleryAttachmentListView();
+                anotherView = new GalleryAttachmentListView();
+                modalView = new ModalView();
+                anotherModalView = new ModalView();
+
+                modalView.show(view, true);
+                anotherModalView.show(anotherView, true);
+            });
+
+            afterEach(function() {
+                modalView.hide();
+                anotherModalView.hide();
+            });
+
+            it('it shows the view at the top of the stack', function() {
+                expect(anotherModalView.visible).toBeTruthy();
+            });
+
+            it('it hides the views not at the top of the stack', function() {
+                expect(modalView.visible).not.toBeTruthy();
+            });
+        });
+
 
         describe('when hiding', function() {
 
@@ -100,6 +136,39 @@ define([
                 modalView.show(new GalleryAttachmentListView());
                 modalView.hide();
                 expect(modalView.visible).toBe(false);
+            });
+
+            it('the document body overflow is auto', function () {
+                expect($('body').css('overflow')).toEqual('auto');
+            });
+        });
+
+        describe('when hiding stacked', function() {
+
+            var anotherView;
+            var anotherModalView;
+            var modalView;
+            var view;
+
+            beforeEach(function() {
+                view = new GalleryAttachmentListView();
+                anotherView = new GalleryAttachmentListView();
+                modalView = new ModalView();
+                anotherModalView = new ModalView();
+
+                modalView.show(view, true);
+                anotherModalView.show(anotherView, true);
+            });
+
+            afterEach(function() {
+                $('body > .hub-modals').remove();
+            });
+
+
+            it('it shows the next view on the stack', function() {
+                anotherModalView.$el.trigger('hideModal.hub');
+                expect(anotherModalView.visible).not.toBeTruthy();
+                expect(modalView.visible).toBeTruthy();
             });
         });
 

@@ -84,8 +84,7 @@ Button.prototype.getTemplateContext = function () {
  * @protected
  */
 Button.prototype._execute = function () {
-    // TODO: Don't execute if not enabled
-    this._command.execute(this._errback);
+    !this._disabled && this._command.execute(this._errback);
 };
 
 /**

@@ -40,6 +40,8 @@ define([
     // Store all instances of modal to ensure that only one is visible
     ModalView.instances = [];
 
+    // A stack pointing to instances that should be re-shown
+    ModalView._stackedInstances = [];
 
     // A singleton container element houses all modals
     ModalView.$el = $('<div class="hub-modals"></div>');
@@ -64,24 +66,30 @@ define([
 
     /**
      * Makes the modal and its content visible
-     * @param modalSubView {View} The view to be displayed in the by the modal
+     * @param [modalSubView] {View} The view to be displayed in the by the modal.
+     *      Defaults to this._modalSubView
+     * @param [stack] {boolean=} Set true to start a stacked set of modals.
+     *          Set false to exclude from a current stack. Leave undefined
+     *          for normal stackless behavior.
      */
-    ModalView.prototype.show = function (modalSubView) {
+    ModalView.prototype.show = function (modalSubView, stack) {
+        if (stack || ModalView._stackedInstances.length && stack !== false) {
+            this._stack();
+        }
+
         // First hide any other modals
         $.each(ModalView.instances, function (i, modal) {
             modal.hide();
         });
 
-        $('body').css({
-            'overflow': 'hidden'
-        });
+        $('body').css('overflow', 'hidden');
 
         this.$el.show();
         if ( ! this._attached) {
             this._attach();
         }
 
-        this._modalSubView = modalSubView;
+        this._modalSubView = modalSubView || this._modalSubView;
 
         this.render();
 
@@ -96,6 +104,7 @@ define([
         this.$el.hide();
         this._detach();
         this.visible = false;
+        $('body').css('overflow', 'auto');
     };
 
 
@@ -126,7 +135,7 @@ define([
 
         this.$el.on('hideModal.hub', function (e) {
             self.hide();
-            $('body').css('overflow', 'auto');
+            self._unstack();
         });
 
         this.$el.on('click', this.closeButtonSelector, function (e) {
@@ -169,6 +178,36 @@ define([
         this._attached = false;
     };
 
+    /**
+     * Pushes this instance onto a stack of instances
+     * @private
+     */
+    ModalView.prototype._stack = function () {
+        ModalView._stackedInstances.push(this);
+    };
+
+    /**
+     * If we're stacking modals, remove this modal from the stack and show the
+     * next modal.
+     * @private
+     */
+    ModalView.prototype._unstack = function () {
+        var stackLength = ModalView._stackedInstances.length,
+            top;
+        if (stackLength === 0) {
+        //Return early if the stack is empty
+            return;
+        }
+
+        //Check that this is the top item and pop it off if it is
+        top = ModalView._stackedInstances[stackLength - 1];
+        this === top && ModalView._stackedInstances.pop() && stackLength--;
+
+        if (stackLength > 0) {
+        //If there is a next modal, show it
+            ModalView._stackedInstances[stackLength - 1].show(undefined, false);
+        }
+    };
 
     return ModalView;
 });
