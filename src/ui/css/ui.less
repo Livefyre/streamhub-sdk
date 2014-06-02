@@ -1,14 +1,6 @@
-@import (reference) "./buttons";
-@import (reference) "./mixins";
+/**
+ * Livefyre-Bootstrap Variables
+ */
 
-.hub-btn {
-    .lf-btn();
-
-    &:active {
-        .box-shadow(none);
-    }
-}
-
-.hub-btn-link {
-    .lf-btn-link();
-}
+@streamhub-ui: "../../../lib/streamhub-ui/src/css";
+@import "@{streamhub-ui}/ui.less";

@@ -46,6 +46,22 @@ define(['streamhub-sdk/debug', 'streamhub-sdk/jquery'], function (debug, $) {
     };
 
     /**
+     * Memoize a function. That is, only run the function once and cache the result
+     * so that it doesn't have to keep calculating it.
+     * @param {function()} fn The function to memoize.
+     * @return {function()} The memoized function.
+     */
+    exports.memoize = function (fn) {
+        return function() {
+            var value = fn.call(this);
+            fn = function () {
+                return value;
+            };
+            return value;
+        };
+    };
+
+    /**
      * Format a date object to be displayed to humans
      * @param date {Date} A JavaScript Date object
      * @return {string} A formatted timestamp like "5/27//06 • 3:26 AM"

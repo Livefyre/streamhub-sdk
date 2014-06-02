@@ -17,7 +17,7 @@
     "postinstall": "./node_modules/bower/bin/bower install && ./node_modules/less/bin/lessc -ru --compress src/css/style.less src/css/style.css",
     "start": "./node_modules/http-server/bin/http-server .",
     "build": "./node_modules/requirejs/bin/r.js -o ./tools/build.conf.js && npm run-script build-css",
-    "build-css": "mkdir -p dist && cp src/css/style.css dist/streamhub-sdk.min.css",
+    "build-css": "npm run lessc && mkdir -p dist && cp src/css/style.css dist/streamhub-sdk.min.css",
     "hint": "./node_modules/jshint/bin/jshint src/ tests/spec; echo",
     "hint-jenkins": "./node_modules/jshint/bin/jshint --reporter=jslint src/**/*.js > lint.log; echo",
     "test": "./node_modules/karma/bin/karma start tools/karma.conf.js --singleRun",

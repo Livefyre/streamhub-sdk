@@ -14,6 +14,7 @@ define([
     'streamhub-sdk/content/views/instagram-content-view',
     'streamhub-sdk/content/views/gallery-on-focus-view',
     'streamhub-sdk/ui/command',
+    'streamhub-share',
     'streamhub-sdk/collection/liker'
 ], function(
     auth,
@@ -31,6 +32,7 @@ define([
     InstagramContentView,
     GalleryOnFocusView,
     Command,
+    ShareButton,
     Liker
 ) {
     'use strict';
@@ -78,17 +80,19 @@ define([
      */
     ContentViewFactory.prototype.createContentView = function(content, opts) {
         opts = opts || {};
-        var ContentViewType = this._getViewTypeForContent(content);
-        var attachmentsView = this._createAttachmentsView(content);
+        var contentView,
+            ContentViewType = this._getViewTypeForContent(content),
+            attachmentsView = this._createAttachmentsView(content),
+            cvOpts = {
+                content: content,
+                attachmentsView: attachmentsView
+            };
 
-        var likeCommand = opts.likeCommand || this._createLikeCommand(content, opts.liker);
-        var shareCommand = opts.shareCommand || this._createShareCommand(content, opts.sharer);
-        var contentView = new ContentViewType({
-            content : content,
-            attachmentsView: attachmentsView,
-            likeCommand: likeCommand,
-            shareCommand: shareCommand
-        });
+        cvOpts.likeCommand = opts.likeCommand || this._createLikeCommand(content, opts.liker);
+        cvOpts.shareCommand = opts.shareCommand || this._createShareCommand(content, opts.sharer);
+        
+        contentView = new ContentViewType(cvOpts);
+        !cvOpts.shareCommand && contentView.addButton(new ShareButton({content: content}));
 
         return contentView;
     };

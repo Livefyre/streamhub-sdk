@@ -1,6 +1,7 @@
 define([
     'streamhub-sdk/collection',
     'streamhub-sdk-tests/mocks/collection/mock-collection',
+    'streamhub-sdk-tests/mocks/collection/clients/mock-permalink-client',
     'streamhub-sdk/collection/streams/archive',
     'streamhub-sdk/collection/streams/updater',
     'streamhub-sdk/collection/streams/writer',
@@ -10,7 +11,7 @@ define([
     'streamhub-sdk/auth',
     'stream/writable',
     'stream/readable'
-], function (Collection, MockCollection, CollectionArchive,
+], function (Collection, MockCollection, MockLivefyrePermalinkClient, CollectionArchive,
 CollectionUpdater, CollectionWriter, FeaturedContents, ContentListView, Content,
 Auth, Writable, Readable) {
     'use strict';
@@ -33,6 +34,21 @@ Auth, Writable, Readable) {
             });
             expect(collection.id).toBe(myId);
         });
+        it('defaults ._autoCreate to true on construction', function () {
+            var collection = new Collection({
+                    collectionMeta: {
+                        title: 'SDK Test',
+                        url: 'http://test.fyre.co',
+                        tags: ['test', 'SDK']
+                    }});
+            expect(collection._autoCreate).toBe(true);
+        });
+        it('can set ._autoCreate to false using opts.autoCreate on construction', function () {
+            var collection = new Collection({
+                autoCreate: false
+            });
+            expect(collection._autoCreate).toBe(false);
+        });
         describe('instance', function () {
             var opts,
                 collection,
@@ -53,20 +69,61 @@ Auth, Writable, Readable) {
                         errback(null, typeof opts.page !== 'undefined' ? mockPageResponse : mockInitResponse);
                     })
                 };
+                opts.permalinkClident = new MockLivefyrePermalinkClient();
                 collection = new Collection(opts);
             });
 
             it('has .network', function () {
                 expect(collection.network).toBe(opts.network);
             });
+            
             it('has .siteId', function () {
                 expect(collection.siteId).toBe(opts.siteId);
             });
+            
             it('has .articleId', function () {
                 expect(collection.articleId).toBe(opts.articleId);
             });
+            
             it('has .environment', function () {
                 expect(collection.environment).toBe(opts.environment);
+            });
+            
+            describe('.fetchContent', function () {
+                var clbk;
+                beforeEach(function () {
+                    collection.id = '10772933';
+                    clbk = jasmine.createSpy('callback');
+                });
+                
+                it('throws when attempted without collection.id or collection.network', function () {
+                    collection.network = '';
+                    expect(function () {
+                        collection.fetchContent();
+                    }).toThrow();
+                    
+                    collection.network = 'livefyre.com';
+                    collection.id = '';
+                    expect(function () {
+                        collection.fetchContent();
+                    }).toThrow();
+                });
+                
+                it('throws when a contentID or callback isn\'t specified when invoked', function () {
+                    expect(function () {
+                        collection.fetchContent('26482715');
+                    }).toThrow();
+                    expect(function () {
+                        collection.fetchContent('', undefined);
+                    }).toThrow();
+                });
+                
+                xit('optionally passes depthOnly to the content client', function () {
+                    throw 'TODO (Joao) Figure out how to test this!';
+                    collection.fetchContent('26482715', clbk, true);
+                    expect(cC.getContent).toHaveBeenCalled();
+                    expect(cC.getContent.calls[0].args[0].depthOnly).toBe(true);
+                });
             });
 
             describe('.createArchive', function () {
@@ -157,6 +214,11 @@ Auth, Writable, Readable) {
 
                     collection = new Collection(opts);
                 });
+                
+                it('returns undefined if it is already in the process of initializing from bootstrap', function () {
+                    collection._isInitingFromBootstrap = true;
+                    expect(collection.initFromBootstrap()).not.toBeDefined();
+                });
 
                 it('reads from existing collections', function () {
                     spyOn(collection._bootstrapClient, "getContent").andCallFake(fnSuccessfulInit);
@@ -180,6 +242,13 @@ Auth, Writable, Readable) {
                     expect(collection._createClient.createCollection).toHaveBeenCalled();
                     expect(fnCallback).toHaveBeenCalledWith(null, mockInitResponse);
                     expect(fnCallback.callCount).toBe(1);
+                });
+                
+                it('throws when asked to create a new collection and is already in process of creating a new collection', function () {
+                    collection._isCreatingCollection = true;
+                    expect(function () {
+                        collection._createCollection();
+                    }).toThrow();
                 });
 
                 it('throws error when services are failing, without making more calls than necessary', function () {

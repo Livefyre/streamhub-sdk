@@ -40,6 +40,10 @@ function (LivefyreContentView, HubButton, inherits, $) {
             className: 'content-action content-action-favorite',
             buttonUrl: 'https://twitter.com/intent/favorite?tweet_id=' + this.content.tweetId
         });
+        var shareButton = this._createShareButton();
+        if (shareButton) {
+            this.addButton(shareButton);
+        }
 
         this.addButton(replyButton);
         this.addButton(retweetButton);
