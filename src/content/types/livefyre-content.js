@@ -43,6 +43,11 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
         this._annotator.annotate(this, {
             added: json.content.annotations
         }, true);  // Silently add b/c this is new Content.
+        if(json.content.attachments) {
+            for(var i=0; i<json.content.attachments.length; i++) {
+                this.addAttachment(json.content.attachments[i]);
+            }
+        }
     };
     inherits(LivefyreContent, Content);
 
