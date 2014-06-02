@@ -107,6 +107,29 @@ function(LivefyreHttpClient, inherits) {
         }, callback);
     };
 
+    LivefyreWriteClient.prototype.bozoContent = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/message/',
+            opts.contentId,
+            '/bozo/'
+        ].join("");
+
+        var postData = {
+            collection_id: opts.collectionId,
+            site_id: opts.siteId,
+            lftoken: opts.lftoken
+        };
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
     /**
      * Posts a tweet to a Livefyre collection.
      * @param opts {Object} The livefyre collection options.
@@ -288,6 +311,57 @@ function(LivefyreHttpClient, inherits) {
         }, callback);
     };
 
+    LivefyreWriteClient.prototype.banUser = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/author/',
+            opts.authorId,
+            '/ban/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken,
+            retroactive: opts.retroactive
+        };
+        // Must include either "network" or "sites" as a param: http://docs.livefyre.com/developers/api-reference/#flex-ban
+        if(opts.network) { postData.network = opts.network; }
+        if(opts.sites) { postData.sites = opts.sites; }
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
+
+    LivefyreWriteClient.prototype.unbanUser = function (opts, callback) {
+        opts = opts || {};
+        callback = callback || function () {};
+
+        var url = [
+            this._getUrlBase(opts),
+            '/api/v3.0/author/',
+            opts.authorId,
+            '/unban/'
+        ].join("");
+
+        var postData = {
+            lftoken: opts.lftoken,
+            retroactive: opts.retroactive
+        };
+        // Must include either "network" or "sites" as a param: http://docs.livefyre.com/developers/api-reference/#flex-unban
+        if(opts.network) { postData.network = opts.network; }
+        if(opts.sites) { postData.sites = opts.sites; }
+
+        this._request({
+            method: 'POST',
+            url: url,
+            data: postData
+        }, callback);
+    };
 
     return LivefyreWriteClient;
 });
