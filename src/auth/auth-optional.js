@@ -10,5 +10,6 @@ module.exports = {
     logout: function () {},
     hasDelegate: function () {},
     on: function () {},
+    removeListener: function () {},
     isAuthenticated: function () {}
 };
