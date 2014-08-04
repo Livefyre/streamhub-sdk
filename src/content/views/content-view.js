@@ -83,10 +83,6 @@ ContentView.prototype.events = CompositeView.prototype.events.extended({
     }
 });
 
-ContentView.prototype.render = function () {
-    CompositeView.prototype.render.call(this);
-};
-
 ContentView.prototype._addInitialChildViews = function (opts) {
     this._headerView = opts.headerView || this._headerViewFactory.createHeaderView(opts.content);
     this.add(this._headerView, { render: false });

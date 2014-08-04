@@ -54,16 +54,32 @@ define([
     /**
      * @param opts {object}
      * @param opts.contentId [string]
+     * @param opts.collection {Collection}
      * @param opts.content {Content}
      * @param opts.annotationDiff {object} A set of 'added', 'updated', and 'removed' annotations.
      * @param opts.silence [boolean] Mute any events that would be fired
      */
     Annotator.prototype._write = function(opts) {
+        opts = opts || {};
         var content = opts.content || Storage.get(opts.contentId);
-        if (!content) {
+        var collection = opts.collection;
+
+        if (content) {
+            this.annotate(content, opts.annotationDiff, opts.silence);
             return;
         }
-        this.annotate(content, opts.annotationDiff, opts.silence);
+
+        if (opts.contentId && collection) {
+            // Fetch content
+            if (collection) {
+                collection.fetchContent(opts.contentId, function (err, content) {
+                    if (! content) {
+                        return;
+                    }
+                    this.annotate(content, opts.annotationDiff, opts.silence);
+                }.bind(this));
+            }
+        }
     };
 
     /**

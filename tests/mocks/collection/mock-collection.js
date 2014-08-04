@@ -15,6 +15,8 @@ MockLivefyreStreamClient, Collection) {
             featuredInit: opts.withFeaturedInit
         });
         opts.streamClient = new MockLivefyreStreamClient();
+        opts.siteId = '123';
+        opts.network = 'mynetwork';
 		Collection.call(this, opts);
 	};
 

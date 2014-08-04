@@ -178,7 +178,8 @@ StateToContent, Annotator, debug) {
                 annotationDiff = annotations[contentId];
                 annotator.write({
                     contentId: contentId,
-                    annotationDiff: annotationDiff
+                    annotationDiff: annotationDiff,
+                    collection: this._collection
                 });
             }
         }

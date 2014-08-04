@@ -110,8 +110,8 @@ function ($, CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedCon
         opts.collection = this;
         return new FeaturedContents(opts);
     };
-    
-    
+
+
     /**
      * Makes a remote call to fetch a piece of content. If that content is a reply,
      * the parent(s) will also be loaded. this.id and this.network are required
