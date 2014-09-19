@@ -3,6 +3,7 @@ var inherits = require('inherits');
 var debug = require('streamhub-sdk/debug');
 var CardContentView = require('streamhub-sdk/content/views/card-content-view');
 var asLivefyreContentView = require('streamhub-sdk/content/views/mixins/livefyre-content-view-mixin');
+var hasInnerHtmlBug = null;
 
 'use strict';
 
@@ -33,7 +34,6 @@ inherits(LivefyreContentView, CardContentView);
  * @returns {LivefyreContentView}
  */
 LivefyreContentView.prototype.render = function () {
-
     /**
      * bengo:
      * This next 3 lines makes me sad, but it is necessary to support IE9.
@@ -45,7 +45,7 @@ LivefyreContentView.prototype.render = function () {
      * this.innerHTML is set, they are not cleared.
      * bit.ly/1no8mNk 
      */
-    if (getIeVersion() === 9) {
+    if (hasInnerHtmlBug = testHasInnerHtmlBug()) {
         this._footerView._detachButtons();
     }
 
@@ -53,11 +53,18 @@ LivefyreContentView.prototype.render = function () {
     return this;
 };
 
-
-// return the ie version if IE, else false
-function getIeVersion () {
-    var myNav = navigator.userAgent.toLowerCase();
-    return (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) : false;
+function testHasInnerHtmlBug() {
+    // only test once
+    if (hasInnerHtmlBug !== null) {
+        return hasInnerHtmlBug
+    }
+    var txt = 'hi';
+    var parent = document.createElement('div');
+    var child = document.createElement('span');
+    child.appendChild(document.createTextNode(txt));
+    parent.appendChild(child);
+    parent.innerHTML = '';
+    return child.innerHTML === '';
 }
 
 module.exports = LivefyreContentView;

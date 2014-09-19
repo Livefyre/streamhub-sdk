@@ -12,10 +12,17 @@ function(LivefyreContent, inherits) {
      */
     var LivefyreInstagramContent = function(json) {
         LivefyreContent.call(this, json);
+        this._setBody();
     };
     inherits(LivefyreInstagramContent, LivefyreContent);
 
     LivefyreInstagramContent.prototype.typeUrn = 'urn:livefyre:js:streamhub-sdk:content:types:livefyre-instagram';
+
+    LivefyreInstagramContent.prototype._setBody = function () {
+        if (this.attachments.length && this.attachments[0].title) {
+            this.body = this.attachments[0].title
+        }
+    };
 
     return LivefyreInstagramContent;
 });

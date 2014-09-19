@@ -10,7 +10,7 @@ var log = debug('streamhub-sdk/content/views/content-header-view');
 
 /**
  * A view that displays a content item's header.
- * Includes the avatar, content byline, and source-type logo/tooltip
+ * Includes the avatar, content byline, and source-type logo
  * @param opts {Object} A set of options to config the view with
  * @param opts.el {HTMLElement} The element in which to render the streamed content
  * @param opts.content {Content} The content instance with which to display its header
@@ -28,7 +28,6 @@ var ContentHeaderView = function (opts) {
     this.authorVerified = opts.authorVerified;
     this.contentSourceName = opts.contentSourceName;
     this.contentSourceUrl = opts.contentSourceUrl;
-    this.contentSourceTooltipText = opts.contentSourceTooltipText;
 };
 inherits(ContentHeaderView, View);
 
@@ -39,7 +38,6 @@ ContentHeaderView.prototype.elClass = 'content-header';
 ContentHeaderView.prototype.headerElSelector = '.content-header';
 ContentHeaderView.prototype.avatarClass = 'content-author-avatar';
 ContentHeaderView.prototype.avatarSelector = '.'+ContentHeaderView.prototype.avatarClass;
-ContentHeaderView.prototype.tooltipElSelector = '.hub-tooltip-link';
 ContentHeaderView.prototype.contentWithImageClass = 'content-with-image';
 ContentHeaderView.prototype.parentClassSelector = '.content';
 
@@ -60,39 +58,6 @@ ContentHeaderView.prototype.events = View.prototype.events.extended({}, function
         headerEl.show();
 
         $(targetEl).trigger('click');
-    };
-    events['mouseenter ' + this.tooltipElSelector] = function (e) {
-        var target = e.target;
-        var title = $(target).attr('title');
-        if ( ! title) {
-            return;
-        }
-        var position = $(target).position();
-        var positionWidth = $(target).width();
-
-        var $currentTooltip = $("<div class=\"hub-current-tooltip content-action-tooltip\"><div class=\"content-action-tooltip-bubble\">" + title + "</div><div class=\"content-action-tooltip-tail\"></div></div>");
-        $(target).parent().append($currentTooltip);
-
-        var tooltipWidth = $currentTooltip.outerWidth();
-        var tooltipHeight = $currentTooltip.outerHeight();
-
-        $currentTooltip.css({
-            "left": position.left + (positionWidth / 2) - (tooltipWidth / 2),
-            "top":  position.top - tooltipHeight - 2
-        });
-
-        if ($(target).hasClass(this.tooltipElSelector)){
-            var currentLeft = parseInt($currentTooltip.css('left'), 10);
-            $currentTooltip.css('left', currentLeft + 7);
-        }
-
-        $currentTooltip.fadeIn();
-    };
-    events['mouseleave ' + this.tooltipElSelector] = function (e) {
-        var $current = this.$el.find('.hub-current-tooltip');
-        $current.removeClass('hub-current-tooltip').fadeOut(200, function(){
-            $current.remove();
-        });
     };
 });
 
@@ -118,6 +83,7 @@ ContentHeaderView.prototype._handleAvatarError = function (e) {
 ContentHeaderView.prototype.getTemplateContext = function () {
     var context = $.extend({}, this);
     context.authorAvatarUrl = this.author ? this.author.profileUrl : undefined;
+    context.authorUrl = context.authorUrl ? context.authorUrl : context.authorAvatarUrl;
     return context;
 };
 

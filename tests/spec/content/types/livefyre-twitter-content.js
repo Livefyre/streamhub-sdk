@@ -14,6 +14,6 @@ function ($, LivefyreTwitterContent, verifiedTweetState, unverifiedTweetState) {
         it('is not .twitterVierifed if the content author is not a verified twitter user', function () {
             var content = new LivefyreTwitterContent(unverifiedTweetState);
             expect(content.twitterVerified).toBe(false);
-        })
+        });
     });
 });

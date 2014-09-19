@@ -161,9 +161,9 @@ function (CollectionArchive, MockCollection, Readable) {
                 collection: new MockCollection({
                     bootstrapClient: bootstrapClient
                 }),
-                bootstrapClient: bootstrapClient,
+                bootstrapClient: bootstrapClient
                 // Don't actually pass this as it should be the default
-                // order: CollectionArchive.comparators.CREATED_AT_DESCENDING
+                // ,order: CollectionArchive.comparators.CREATED_AT_DESCENDING
             });
             var ended = false;
             archive.on('data', function (content) {

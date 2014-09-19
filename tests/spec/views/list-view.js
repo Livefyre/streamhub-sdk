@@ -46,7 +46,7 @@ function ($, ListView, View) {
                     expect(ListView.prototype.render).not.toHaveBeenCalled();
                 });
             });
-            
+
             describe('and adding views', function () {
                 var view1,
                     view2,
@@ -87,7 +87,7 @@ function ($, ListView, View) {
                         expect(list.views[2]).toBe(view3);
                     });
                 });
-                
+
                 describe('with a comparator set', function () {
                     beforeEach(function () {
                         list.comparator = function (a, b) {

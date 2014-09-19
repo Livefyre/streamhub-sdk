@@ -1,15 +1,15 @@
-define(['streamhub-sdk/jquery', 'event-emitter'], function($, EventEmitter) {
+define(['inherits', 'event-emitter'], function(inherits, EventEmitter) {
     'use strict';
     
 	/**
 	 * A module to use for storing Content objects.
 	 * @exports streamhub-sdk/storage
 	 */
-    var Storage = {
-        cache: {}
+    var Storage = function() {
+        this.cache = {}
+        EventEmitter.call(this);
     };
-    EventEmitter.call(Storage);
-    $.extend(Storage, EventEmitter.prototype);
+    inherits(Storage, EventEmitter);
     
     /**
      * Gets an object from storage, using sync or async
@@ -17,7 +17,7 @@ define(['streamhub-sdk/jquery', 'event-emitter'], function($, EventEmitter) {
      * @param callback {?function} optional callback to fire in async mode
      * @returns the value at the specified key position
      */
-    Storage.get = function(key, callback) {
+    Storage.prototype.get = function(key, callback) {
         var result = this.cache[key];
         if (callback) {
             callback(result);
@@ -32,7 +32,7 @@ define(['streamhub-sdk/jquery', 'event-emitter'], function($, EventEmitter) {
      * @param value {Object} the value to store
      * @param callback {?function} optional callback to fire in async mode when complete
      */
-    Storage.set = function(key, value, callback) {
+    Storage.prototype.set = function(key, value, callback) {
         var obj = this.cache[key];
         this.cache[key] = value;
         

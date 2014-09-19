@@ -1,9 +1,7 @@
 define([
-    'streamhub-sdk/storage',
     'streamhub-sdk/util',
-    'stream/writable',
     'inherits'
-], function (Storage, util, Writable, inherits) {
+], function (util, inherits) {
     'use strict';
 
     /**
@@ -11,10 +9,7 @@ define([
      */
     var Annotator = function (opts) {
         opts = opts || {};
-        Writable.call(this, opts);
     };
-
-    inherits(Annotator, Writable);
 
     /**
      * @param content {Content}
@@ -52,21 +47,6 @@ define([
     };
 
     /**
-     * @param opts {object}
-     * @param opts.contentId [string]
-     * @param opts.content {Content}
-     * @param opts.annotationDiff {object} A set of 'added', 'updated', and 'removed' annotations.
-     * @param opts.silence [boolean] Mute any events that would be fired
-     */
-    Annotator.prototype._write = function(opts) {
-        var content = opts.content || Storage.get(opts.contentId);
-        if (!content) {
-            return;
-        }
-        this.annotate(content, opts.annotationDiff, opts.silence);
-    };
-
-    /**
      * AnnotationTypes
      * featuredmessage
      * moderator
@@ -78,6 +58,28 @@ define([
     Annotator.prototype.added = {};
     Annotator.prototype.updated = {};
     Annotator.prototype.removed = {};
+
+    // likedBy
+    Annotator.prototype.added.likedBy = function (changeSet, annotation, content) {
+        var likes = content.likedBy.splice(0);
+        for (var i=0; i < annotation.length; i++) {
+            var a = annotation[i]
+            if (likes.indexOf(a) < 0){
+                likes.push(a);
+            }
+        }
+        changeSet.likedBy = likes;
+    };
+
+    Annotator.prototype.updated.likedBy = Annotator.prototype.added.likedBy;
+
+    Annotator.prototype.removed.likedBy = function (changeSet, annotation, content) {
+        var likes = content.likedBy.splice(0);
+        for (var i=0; i < annotation.length; i++) {
+            likes.splice(likes.indexOf(annotation[i]), 1);
+        }
+        changeSet.likedBy = likes;
+    };
 
     // featuredmessage
 
@@ -97,9 +99,7 @@ define([
         changeSet.sortOrder = annotation;
     };
 
-    Annotator.prototype.updated.sortOrder = function (changeSet, annotation, content) {
-        changeSet.sortOrder = annotation;
-    };
+    Annotator.prototype.updated.sortOrder = Annotator.prototype.added.sortOrder;
 
     Annotator.prototype.removed.sortOrder = function (changeSet, annotation, content) {
         changeSet.sortOrder = null;

@@ -4,9 +4,9 @@ define([
     'streamhub-sdk/content/views/tiled-attachment-list-view',
     'streamhub-sdk/content/views/oembed-view',
     'hgn!streamhub-sdk/content/templates/gallery-attachment-list',
-    'hgn!streamhub-sdk/content/templates/content-byline',
+    'streamhub-sdk/content/content-header-view-factory',
     'inherits'],
-function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemplate, contentBylineTemplate, inherits) {
+function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemplate, ContentHeaderViewFactory, inherits) {
     'use strict';
 
     /**
@@ -36,6 +36,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         this.proportionalThumbnails = opts.proportionalThumbnails === undefined ? false : opts.proportionalThumbnails;
         this.focusedIndex = 0;
         this.oembedViews = [];
+        this._contentHeaderViewFactory = new ContentHeaderViewFactory();
 
         if (opts.content) {
             this.setContent(opts.content);
@@ -313,7 +314,9 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
 
         // Meta
         var contentMetaEl = this.$el.find(this.attachmentMetaSelector);
-        contentMetaEl.html(contentBylineTemplate(this.content));
+        var headerView = this._contentHeaderViewFactory.createHeaderView(this.content);
+        headerView.setElement(contentMetaEl);
+        headerView.render();
 
         // Update gallery size
         var self = this;

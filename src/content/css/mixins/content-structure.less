@@ -1,4 +1,6 @@
-@import (reference) "bootstrap/less/mixins.less";
+@import (reference) "lib/bootstrap/less/mixins.less";
+@import (reference) "lib/livefyre-bootstrap/src/styles/fycon-chars.less";
+@import (reference) "lib/livefyre-bootstrap/src/styles/variables.less";
 
 .content-structure() {
     display: block;
@@ -66,6 +68,10 @@
         }
     }
 
+    .content-author-username, .content-author-name {
+        display: block;
+    }
+
     .content-body {
         margin: 0;
         display: block;
@@ -101,7 +107,7 @@
         }
 
         .content-footer-left {
-            .hub-btn-link:first-child {
+            .hub-btn:first-child {
                 margin-left: -8px;
             }
         }
@@ -109,11 +115,16 @@
         .content-footer-right {
             float: right;
 
-            .hub-btn-link:first-child {
+            .hub-btn:first-child {
                 margin-right: -5px;
             }
         }
 
+
+        .hub-btn:before {
+            font-size: 16px; 
+            margin-right: 5px;
+        }
         .hub-btn {
             padding: 0px 7px;
             margin-right: 0px;
@@ -126,28 +137,19 @@
         }
 
         .hub-content-like {
-            padding-left: 23px;
-            background-image: data-uri('../../images/like.png');
-            background-repeat: no-repeat;
-            background-position: 0px center;
-        }
-        .hub-content-like.hub-btn-toggle-on {
-            background-image: data-uri('../../images/like_liked.png');
+            .fycon-action-like();
+            &:before {
+                font-size: 15px;
+            }
         }
 
         .hub-content-reply {
-            padding-left: 27px;
-            background-image: data-uri('../../images/reply.png');
-            background-repeat: no-repeat;
-            background-position: 7px center;
+            .fycon-action-reply();
         }
 
         .hub-content-share {
             position: relative;
-            padding-left: 29px;
-            background-image: data-uri('../../images/share.png');
-            background-repeat: no-repeat;
-            background-position: 7px center;
+            .fycon-action-share();
         }
     }
 
@@ -323,54 +325,13 @@
             vertical-align: bottom;
             margin-right: 2px;
         }
-        .content-action {
-            display:inline;
-            .content-action-tooltip {
-
-            }
-        }
-    }
-
-
-    .content-action-tooltip {
-        position: absolute;
-        display: none;
-        z-index: 3;
-
-        .content-action-tooltip-bubble {
-            font-size: 14px;
-            line-height: 18px;
-            font-weight: normal;
-            white-space: nowrap;
-            color: #CDCDCD;
-            color: rgba(255, 255, 255, 0.8);
-            padding: 4px 15px;
-            border: 1px solid rgba(0, 0, 0, 0.9);
-            border-radius: 3px;
-            text-shadow: 0 -1px 0 #000;
-            box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
-            background: -moz-linear-gradient(top,  rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.9) 100%); /* FF3.6+ */
-            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,0,0,0.8)), color-stop(100%,rgba(0,0,0,0.9))); /* Chrome,Safari4+ */
-            background: -webkit-linear-gradient(top,  rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.9) 100%); /* Chrome10+,Safari5.1+ */
-            background: -o-linear-gradient(top,  rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.9) 100%); /* Opera 11.10+ */
-            background: -ms-linear-gradient(top,  rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.9) 100%); /* IE10+ */
-            background: linear-gradient(to bottom,  rgba(0,0,0,0.8) 0%,rgba(0,0,0,0.9) 100%); /* W3C */
-            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cc000000', endColorstr='#e6000000',GradientType=0 ); /* IE6-9 */
-        }
-        .content-action-tooltip-tail {
-            background: no-repeat left top url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAICAYAAADwdn+XAAAAT0lEQVQoFZ2RQQoAIAgE15/7c2slgtKiFNSQnbkEANrbiq0wI1uSqLMcBYnDi+BDMuEgeJAscCq4SAJ8FCSSFGZORpg/EUpElMee8c33Xg3nK8NJYv1kigAAAABJRU5ErkJggg==');
-            height: 8px;
-            width: 16px;
-            display: block;
-            margin: -1px auto 0 auto;
-        }
     }
     
     .content-featured {
         font-weight: 500;
         font-size: 12px;
         background: no-repeat left center url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAASCAYAAABB7B6eAAACI0lEQVQ4Ea2Vz0uUYRDHP/Pu5lqZmrpUkIVKahb9JPoLOkRdIhAK9BJdOnSQqJMRHcI6B9065B/QKQwsUMhTSKAkdJB+WGvtZqm0667tvtO8717e1X2X2PWFl3dmnme+M+935plH9P29Ondh7j4wqMo++9b8iLAIMuq0Hx6Wwsv+EQO+UzNqGQAReeSYfbDM2haZdCBaFS3RndB6FGnpQ3YdgB17cCdubErKw45uslYyNB3C6bgI8VOQTkDGqG7shPWVUK//CxCJIX3XkKYu9PMYOvcUaTuO9A4g0XrchfEaAkTqcc4Mo2tJ3Knb0LAf5+QQsrvXB9XsL3T+efUBpOcqxJrR6QdI12V7L4G6aOodmv6OfpuAfLrKAI0dSPs5dPYJzrGbSPxEMevcCu70SChocKFiDZwj12H1E3LwvPHfiWaSaGIS/fE2iFFRDg/Q3FMsaj7rF1IzRsfyvFEyCWupiqDBxdAAXtaaz6Bfxq1LXhloMujnF1ssCbY1+AE1NQ2FXOke08oHiLX4fLtvbkH2Z8BJkL1njbIL1kXdqAe4vgr1rbA4hc48DuwtipIf69eNVum+Am4BInVFOtRkO7ESP41sb0OXZnE/voClGesoW7MuwwpvykaokD/4m0Z/f8Cxg4R1ke9oFHnFdb++hj8LpUC55VI9oHnTNFHVPAqAhIne2LZpKqNhG7bA/szxLwWb28VLYgsgDcLDsveh09539x9LbLqByJ9N/QAAAABJRU5ErkJggg==);
-        margin: 0 20px;
+        margin: 0 20px 10px 20px;
         padding: 0 0 0 30px;
         height: 18px;
         line-height: 18px;
@@ -378,86 +339,77 @@
 
 
     .content-source-logo {
-        background-image: data-uri('../../images/social-icons.png');
-        background-repeat: no-repeat;
-        background-position: left top;
-
+        .fycon-source-livefyre();
+        font-size: 16px;
+        text-align: right;
         height: 22px;
-        width: 22px;    
+        width: 22px; 
     }
 
     img.content-source-logo{
         background-image: none;
     }
 
-    &.content-instagram {
-        .content-source-logo {
-            background-position: -45px 0;
-        }
+    &.hub-content-image-loading {
+        display: none;
     }
+
 
     &.content-tweet {
         .content-author-avatar + .content-main {
             min-height: 34px;
         }
         .content-source-logo {
-            background-position: -24px 0;
+            .fycon-source-twitter();
+            color: @brand-twitter;
         }
 
+        .hub-btn.hub-content-action:before {
+            font-size: 18px;
+            line-height: 18px;
+            vertical-align: text-bottom;
+        }
         .hub-btn.hub-content-action:first-child {
             margin-left: -10px;
         }
         
-        .hub-content-action-favorite {
-            width: 18px;
-            height: 16px;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-image: data-uri('../../images/favorite.png');
-            &:hover {
-                background-image: data-uri('../../images/favorite_hover.png');
-            }
-            &:active {
-                background-image: data-uri('../../images/favorite_active.png');
-            }
-        }
-        .hub-content-action-reply {
+        .hub-btn.hub-content-action-reply {
+            .fycon-action-reply();
             width: 23px;
             height: 16px;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-image: data-uri('../../images/reply.png');
-            &:hover {
-                background-image: data-uri('../../images/reply_hover.png');
-            }
-            &:active {
-                background-image: data-uri('../../images/reply_active.png');
-            }
         }
-        .hub-content-action-retweet {
+        .hub-btn.hub-content-action-reply:before {
+            vertical-align: top;
+            font-size: 20px;
+            line-height: 20px;
+        }
+        .hub-btn.hub-content-action-retweet {
+            .fycon-action-retweet();
             width: 27px;
             height: 16px;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-image: data-uri('../../images/retweet.png');
-            &:hover {
-                background-image: data-uri('../../images/retweet_hover.png');
-            }
-            &:active {
-                background-image: data-uri('../../images/retweet_active.png');
-            }
+        }
+        .hub-btn.hub-content-action-retweet:before {
+            font-size: 21px;
+            line-height: 21px;
+        }
+        .hub-btn.hub-content-action-favorite {
+            .fycon-action-favorite();
+            width: 18px;
+            height: 16px;
+        }
+        .hub-btn.hub-content-action-favorite:before {
+            font-size: 16px;
+            line-height: 16px;
         }
     }
-    &.content-facebook {
-        .content-source-logo {
-            background-position: -72px 0;
-        }
+    &.content-facebook .content-source-logo {
+        .fycon-source-facebook();
+        color: @brand-facebook;
     }
-
-    &.hub-content-image-loading {
-        display: none;
+    &.content-instagram .content-source-logo {
+        .fycon-source-instagram();
+        color: @brand-instagram;
     }
-
     &.content-url { 
         .content-body {
             font-size: 14px;

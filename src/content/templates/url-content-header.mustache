@@ -1,7 +1,7 @@
 <div class="content-header-inner">
     <div class="content-byline">
         {{#contentSourceUrl}}
-            <a class="hub-tooltip-link tooltip-{{contentSourceName}} content-source-logo" {{#contentSourceUrl}}href="{{contentSourceUrl}}" target="_blank"{{/contentSourceUrl}} {{#contentSourceTooltipText}}title="{{contentSourceTooltipText}}"{{/contentSourceTooltipText}}> 
+            <a class="content-source-logo" {{#contentSourceUrl}}href="{{contentSourceUrl}}" target="_blank"{{/contentSourceUrl}}> 
                 {{#favicon}}
                     <img class="content-source-logo" src="{{ favicon }}"/>
                 {{/favicon}}
@@ -20,7 +20,9 @@
         {{/contentSourceUrl}}
 
         {{#displayNameLink}}
-            <a class="content-author-name" href="{{ displayNameLink }}" target="_blank">{{ displayName }}</a>
+            <div class="content-author-name">
+                <a href="{{ displayNameLink }}" target="_blank">{{ displayName }}</a>
+            </div>
         {{/displayNameLink}}
         {{^displayNameLink}}
             <div class="content-author-name">{{ displayName }}</div>

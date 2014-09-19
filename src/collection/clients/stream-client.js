@@ -11,6 +11,7 @@ function(LivefyreHttpClient, inherits) {
     var LivefyreStreamClient = function (opts) {
         opts = opts || {};
         opts.serviceName = 'stream1';
+        this._version = opts.version || 'v3.1';
         LivefyreHttpClient.call(this, opts);
     };
 
@@ -33,7 +34,9 @@ function(LivefyreHttpClient, inherits) {
 
         var url = [
             this._getUrlBase(opts),
-            "/v3.0/collection/",
+            "/",
+            this._version,
+            "/collection/",
             opts.collectionId,
             "/",
             opts.commentId || "0",

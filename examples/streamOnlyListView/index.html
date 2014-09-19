@@ -37,12 +37,20 @@
                 el: document.getElementById("listView"),
                 initial: 10,
                 showMore: 10,
-                maxVisibleItems: 10
+                maxVisibleItems: 10,
+                streamOnly: true
             });
 
             var collection = window.collection =  new Collection(opts);
 
             collection.pipe(listView);
+            /*var i = 0;
+            window.interval = setInterval(function(){
+                view.add(new Content('Rawr rawr rawr ' + i++));
+                if(i > 50000) {
+                    clearInterval(window.interval);
+                }
+            }, 10);*/
 
         });
         </script>

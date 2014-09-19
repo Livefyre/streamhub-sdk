@@ -266,6 +266,30 @@ function ($, ContentListView, Content, ContentView) {
                     expect(listView.comparator(a, b)).toBeGreaterThan(0);
                 });
             });
+
+            describe("and a.content has .sortOrder newer than a.content.createdAt", function () {
+                // sortOrder annotations are unix timestamps
+                // content.createdAt are date objects, which must be constructed
+                //     with unixtimestamp * 1000
+                var contentA = new Content('a');
+                contentA.createdAt = new Date(0);
+                contentA.sortOrder = 10; // assigned by annotator
+
+                var contentB = new Content('b');
+
+                var a = new ContentView({ content: contentA });
+                var b = new ContentView({ content: contentB });
+
+                it("returns < 0 if a.content.sortOrder after b.content.createdAt", function () {
+                    contentB.createdAt = new Date(9 * 1000);
+                    expect(listView.comparator(a, b)).toBeLessThan(0);
+                });
+
+                it("returns > 0 if a.content.sortOrder before b.content.createdAt", function () {
+                    contentB.createdAt = new Date(11 * 1000);
+                    expect(listView.comparator(a, b)).toBeGreaterThan(0);
+                });
+            });
         });
 
         describe("when adding Content", function () {

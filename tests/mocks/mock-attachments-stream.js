@@ -3,8 +3,9 @@ define([
     'streamhub-sdk/content/state-to-content',
     'json!streamhub-sdk-tests/mocks/bootstrap-data.json',
     'stream/readable',
+    'streamhub-sdk/storage',
     'inherits'
-], function ($, StateToContent, fixture, Readable, inherits) {
+], function ($, StateToContent, fixture, Readable, Storage, inherits) {
     'use strict';
 
     for (var provider in fixture.content) {
@@ -22,7 +23,8 @@ define([
         opts = opts || {};
         this.fixture = opts.bootstrapFixture || $.extend({}, fixture);
         this.stateToContent = new StateToContent({
-            authors: this.fixture.authors
+            authors: this.fixture.authors,
+            storage: new Storage()
         });
         for (var provider in fixture.content) {
             this.stateToContent.write(fixture.content[provider]);

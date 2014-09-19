@@ -2,12 +2,11 @@ define([
     'inherits',
     'stream/readable',
     'stream/util',
-    'streamhub-sdk/collection/clients/bootstrap-client',
     'streamhub-sdk/collection/clients/stream-client',
     'streamhub-sdk/content/state-to-content',
     'streamhub-sdk/content/annotator',
     'streamhub-sdk/debug'],
-function (inherits, Readable, streamUtil, BootstrapClient, StreamClient,
+function (inherits, Readable, streamUtil, StreamClient,
 StateToContent, Annotator, debug) {
     'use strict';
 
@@ -25,8 +24,6 @@ StateToContent, Annotator, debug) {
      *     resides on (e.g. t402.livefyre.com for UAT)
      * @param [opts.streamClient] {LivefyreStreamClient} A Client object that
      *     can request StreamHub's Stream web service
-     * @param [opts.bootstrapClient] {LivefyreBootstrapClient} A Client object
-     *     that can request StreamHub's Bootstrap web service
      * @param [opts.replies=false] {boolean} Whether to read out reply Content
      * @param [opts.createStateToContent] {function} Creates a custem Content adapter
      */
@@ -36,11 +33,17 @@ StateToContent, Annotator, debug) {
         this._streamClient = opts.streamClient || new StreamClient();
         this._request = null;
         this._replies = opts.replies || false;
+        this._storage = opts.storage;
+
+        if(this._collection && this._collection._storage){
+            this._storage = this._collection._storage;
+        }
+
         if (opts.createStateToContent) {
             this._createStateToContent = opts.createStateToContent;
         }
         if (opts.createAnnotator) {
-            this._createAnnotator = opts.createAnnotator;
+            this.createAnnotator = opts.createAnnotator;
         }
         Readable.call(this, opts);
     };
@@ -157,13 +160,18 @@ StateToContent, Annotator, debug) {
      */
     CollectionUpdater.prototype._contentsFromStreamData = function (streamData) {
         var annotationDiff,
-            annotator = this._createAnnotator(),
+            annotator = this.createAnnotator(),
             annotations = streamData.annotations,
             contentId,
             contents = [],
+            self = this,
             state,
             states = streamData.states,
             stateToContent = this._createStateToContent(streamData);
+
+        stateToContent.on('error', function(e){
+            self.emit('error', e);
+        });
 
         stateToContent.on('data', function (content) {
             contents.push(content);
@@ -174,21 +182,28 @@ StateToContent, Annotator, debug) {
                 state = states[contentId];
                 stateToContent.write(state);
             }
-        }
+        }    
 
         for (contentId in annotations) {
             if (annotations.hasOwnProperty(contentId)) {
                 annotationDiff = annotations[contentId];
-                annotator.write({
-                    contentId: contentId,
-                    annotationDiff: annotationDiff
-                });
+                this._handleAnnotationDiff(contentId, annotationDiff);
+                var content = this._storage.get(contentId);
+                if ( ! content) {
+                    // This is an annotation update for a contentId we dont
+                    // know about. Which is fine and normal.
+                    continue;
+                }
+                annotator.annotate(content, annotationDiff);
             }
         }
 
         return contents;
     };
 
+    CollectionUpdater.prototype._handleAnnotationDiff = function (contentId, annotationDiff) {
+        this.emit('annotationDiff', contentId, annotationDiff);
+    };
 
     /**
      * Get an Object that can be passed to LivefyreStreamClient to get new
@@ -213,13 +228,14 @@ StateToContent, Annotator, debug) {
         opts = opts || {};
         opts.replies = this._replies;
         opts.collection = this._collection;
+        opts.storage = this._storage;
         return new StateToContent(opts);
     };
 
     /**
      * Create an Annotator that will mutate Content in Storage.
      */
-    CollectionUpdater.prototype._createAnnotator = function () {
+    CollectionUpdater.prototype.createAnnotator = function () {
         return new Annotator();
     };
 

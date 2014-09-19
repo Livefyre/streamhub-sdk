@@ -40,6 +40,7 @@ inherits) {
         this._contentIdsInHeadDocument = [];
         this._replies = opts.replies || false;
         this._comparator = opts.comparator || CollectionArchive.comparators.CREATED_AT_DESCENDING;
+        this._storage = opts.storage;
 
         Readable.call(this, opts);
     };
@@ -223,6 +224,10 @@ inherits) {
         }
         var stateToContent = this._createStateToContent(bootstrapDoc);
 
+        stateToContent.on('error', function(e){
+            self.emit('error', e);
+        });
+
         stateToContent.on('data', function (content) {
             if (! content ||
                 self._contentIdsInHeadDocument.indexOf(content.id) !== -1) {
@@ -260,13 +265,13 @@ inherits) {
         var sortedContentList;
         if (this._comparator === CollectionArchive.comparators.CREATED_AT_ASCENDING) {
             contentListComparator = function (contentA, contentB) {
-                return contentA.createdAt - contentB.createdAt;
+                return (contentA.sortOrder || contentA.createdAt) - (contentB.sortOrder || contentB.createdAt);
             };
         } else {
             // Must be descending. That's the default.
             // Change this if there are ever 3 comparator options
             contentListComparator = function (contentA, contentB) {
-                return contentB.createdAt - contentA.createdAt;
+                return (contentB.sortOrder || contentB.createdAt) - (contentA.sortOrder || contentA.createdAt);
             };
         }
         sortedContentList = contentList.sort(contentListComparator);
@@ -281,6 +286,7 @@ inherits) {
         opts = opts || {};
         opts.replies = this._replies;
         opts.collection = this._collection;
+        opts.storage = this._storage;
         return new StateToContent(opts);
     };
 

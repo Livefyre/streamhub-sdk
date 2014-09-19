@@ -1,16 +1,23 @@
 define([
     'streamhub-sdk/collection/streams/featured-archive',
     'streamhub-sdk-tests/mocks/collection/mock-collection',
-    'stream/readable'],
-function (FeaturedArchive, MockCollection, Readable) {
+    'stream/readable',
+    'streamhub-sdk/storage'],
+function (FeaturedArchive, MockCollection, Readable, Storage) {
     'use strict';
 
     describe('streamhub-sdk/streams/featured-content', function () {
+        var collection;
+
+        beforeEach(function(){
+            // This collection has no Featured
+            collection = new MockCollection({
+                withFeaturedInit: true,
+                storage: new Storage()
+            });
+        });
 
         it('can be constructed with a Collection', function () {
-            var collection = new MockCollection({
-                withFeaturedInit: true
-            });
             var featuredContents = new FeaturedArchive({
                 collection: collection,
                 bootstrapClient: collection._bootstrapClient
@@ -20,9 +27,6 @@ function (FeaturedArchive, MockCollection, Readable) {
         });
 
         it('emits readable and reads out items from bootstrapInit.featured', function () {
-            var collection = new MockCollection({
-                withFeaturedInit: true
-            });
             var featuredContents = new FeaturedArchive({
                 collection: collection,
                 bootstrapClient: collection._bootstrapClient
@@ -39,11 +43,6 @@ function (FeaturedArchive, MockCollection, Readable) {
         });
 
         it('reads out from featured-all.json after reading from init', function () {
-            // This MockCollection has no featured Content
-            var collection = new MockCollection({
-                withFeaturedInit: true
-            });
-
             var bootstrapClient = collection._bootstrapClient;
 
             var featuredContents = new FeaturedArchive({
@@ -68,11 +67,6 @@ function (FeaturedArchive, MockCollection, Readable) {
         });
         
         it('does not emit duplicates across featured-all and init', function () {
-            // This MockCollection has no featured Content
-            var collection = new MockCollection({
-                withFeaturedInit: true
-            });
-
             var featuredCount = null;
             collection.on('_initFromBootstrap', function (err, initData) {
                 featuredCount = initData.featured.size;
@@ -117,11 +111,6 @@ function (FeaturedArchive, MockCollection, Readable) {
         });
 
         it('emits end when there are no more featured Contents', function () {
-            // This MockCollection has no featured Content
-            var collection = new MockCollection({
-                withFeaturedInit: true
-            });
-
             var featuredCount = null;
             collection.on('_initFromBootstrap', function (err, initData) {
                 featuredCount = initData.featured.size;

@@ -54,11 +54,11 @@
                 }
             };
 
-            var collection = window.collection =  new Collection(opts);
+            var collection = window.collection = new Collection(opts);
 
             var featuredContents = collection.createFeaturedContents();
 
-            featuredContents.createArchive().pipe(listView.more);
+            featuredContents.pipe(listView);
         });
         </script>
     </body>

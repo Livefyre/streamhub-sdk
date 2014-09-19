@@ -7,24 +7,30 @@
 
     <div class="content-byline">
         {{#contentSourceUrl}}
-            <a class="hub-tooltip-link {{#contentSourceName}}tooltip-{{contentSourceName}}{{/contentSourceName}} content-source-logo" {{#contentSourceUrl}}href="{{contentSourceUrl}}" target="_blank"{{/contentSourceUrl}} {{#contentSourceTooltipText}}title="{{contentSourceTooltipText}}"{{/contentSourceTooltipText}}></a>
+            <a class="content-source-logo" {{#contentSourceUrl}}href="{{contentSourceUrl}}" target="_blank"{{/contentSourceUrl}}></a>
         {{/contentSourceUrl}}
         {{^contentSourceUrl}}
             <span class="content-source-logo"></span>
         {{/contentSourceUrl}}
 
         {{#authorUrl}}
-            <a class="content-author-name" href="{{ authorUrl }}" target="_blank">{{ author.displayName }}</a>
+            <div class="content-author-name">
+                <a href="{{ authorUrl }}" target="_blank">{{ author.displayName }}</a>
+            </div>
         {{/authorUrl}}
         {{^authorUrl}}
-            <span class="content-author-name">{{ author.displayName }}</span>
+            <div class="content-author-name">
+                <span>{{ author.displayName }}</span>
+            </div>
         {{/authorUrl}}
         {{#authorVerified}}
             <span class="content-author-verified"></span>
         {{/authorVerified}}
         {{#authorUserName}}
             {{#authorUrl}}
-                <a class="content-author-username" href="{{authorUrl}}" target="_blank">{{authorUserNamePrefix}}{{ authorUserName }}</a>
+                <div class="content-author-username">
+                    <a href="{{authorUrl}}" target="_blank">{{authorUserNamePrefix}}{{ authorUserName }}</a>
+                </div>
             {{/authorUrl}}
         {{/authorUserName}}
     </div>

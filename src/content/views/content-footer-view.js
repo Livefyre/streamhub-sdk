@@ -109,6 +109,16 @@ ContentFooterView.prototype.addButton = function (button, opts) {
     }
 };
 
+/**
+ * Detach all the buttons from the DOM
+ */
+ContentFooterView.prototype._detachButtons = function () {
+    this._controls.left.forEach(detachButton);
+    this._controls.right.forEach(detachButton);
+    function detachButton(button) {
+        button.$el.detach();
+    }
+};
 
 /**
  * Remove a Button from the ContentView

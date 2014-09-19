@@ -23,8 +23,9 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
         opts = opts || {};
         Content.call(this);
 
-        this._likes = 0;
         this._annotator = opts.annotator || this._createAnnotator();
+
+        this.likedBy = [];
 
         // Set state from Livefyre API JSON if provided
         if (json) {
@@ -42,6 +43,8 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
             this._annotator.annotate(this, {
                 added: json.content.annotations
             }, true);  // Silently add b/c this is new Content.
+
+            // Add v3.1-style attachments
             if (json.content.attachments) {
                 json.content.attachments.map(this.addAttachment.bind(this));
             }
@@ -130,9 +133,6 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
 
         if (!found) {
             this.opines.push(obj);
-            if (obj.relType === LivefyreOpine.enums.type.indexOf('LIKE')) {
-                this._likes++;
-            }
             this.emit('opine', obj);
         }
     };
@@ -163,7 +163,6 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
             return;
         }
         this.opines.splice(indexToRemove, 1);
-        this._likes--;
         this.emit('removeOpine', obj);
     };
     
@@ -195,16 +194,45 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
         return (this.parentId) ? null : undefined;
     };
 
+    /**
+     * Return the number of likes for this Content
+     * @return {Number} The number of likes
+     */
     LivefyreContent.prototype.getLikeCount = function () {
-        return this._likes;
+        return this._getLegacyLikeCount() || this.likedBy.length || 0;
     };
 
+    /**
+     * Return the number of likes for this Content, checking the legacy opines
+     * @return {Number} The number of likes (determined from opines)
+     */
+    LivefyreContent.prototype._getLegacyLikeCount = function () {
+        var likes = 0;
+        for (var i=0; i < this.opines.length; i++) {
+            if (this.opines[i].author && this.opines[i].author.id) {
+                likes++;
+            }
+        }
+        return likes;
+    };
+
+    /**
+     * Return whether this Content is liked for a given author id
+     * @return {boolean}
+     */
     LivefyreContent.prototype.isLiked = function (authorId) {
         for (var i=0; i < this.opines.length; i++) {
             if (authorId === this.opines[i].author.id) {
                 return true;
             }
         }
+
+        for (var i=0; i < this.likedBy.length; i++) {
+            if (authorId === this.likedBy[i]) {
+                return true;
+            }
+        }
+
         return false;
     };
 

@@ -7,13 +7,11 @@ define([
     'streamhub-sdk/content/types/livefyre-opine',
     'streamhub-sdk/content/types/livefyre-instagram-content',
     'streamhub-sdk/content/types/livefyre-url-content',
-    'streamhub-sdk/storage',
     'streamhub-sdk/debug',
     'stream/transform',
     'inherits'
 ], function (LivefyreContent, LivefyreTwitterContent, LivefyreFacebookContent,
-Oembed, LivefyreOembed, LivefyreOpine, LivefyreInstagramContent, LivefyreUrlContent,
-Storage, debug, Transform, inherits) {
+Oembed, LivefyreOembed, LivefyreOpine, LivefyreInstagramContent, LivefyreUrlContent, debug, Transform, inherits) {
     'use strict';
 
 
@@ -33,7 +31,7 @@ Storage, debug, Transform, inherits) {
         this.setAuthors(opts.authors || {});
         this._replies = opts.replies;
         this._collection = opts.collection;
-        this._storage = opts.storage || Storage;
+        this._storage = opts.storage || (opts.collection ? opts.collection._storage : undefined);
         Transform.call(this, opts);
     };
 
@@ -48,7 +46,7 @@ Storage, debug, Transform, inherits) {
                 collection: this._collection
             });
         } catch (err) {
-            this.emit('error transforming state-to-content', err);
+            this.emit('error', err);
             log('StateToContent.transform threw', err);
         }
         if (contents && contents.length) {
@@ -56,6 +54,7 @@ Storage, debug, Transform, inherits) {
         }
         done();
     };
+
 
     /**
      * Creates the correct content type given the supplied "state".
@@ -71,6 +70,7 @@ Storage, debug, Transform, inherits) {
      */
     StateToContent.prototype.transform = function (state, authors, opts) {
         opts = opts || {};
+
         var isPublic = (typeof state.vis === 'undefined') || (state.vis === 1),
             isReply = state.content.parentId,
             type = StateToContent.enums.type[state.type],
@@ -110,7 +110,6 @@ Storage, debug, Transform, inherits) {
             } else {
                 this._storage.set(content.id, content);
             }
-            childContent = this._storage.get('children_'+content.id) || [];
         }
 
         // Get child states (replies and attachments)
@@ -123,6 +122,7 @@ Storage, debug, Transform, inherits) {
         }
 
         // Add any children that are awaiting the new content
+        childContent = this._storage.get('children_'+content.id) || [];
         if (childContent.length) {
             this._addChildren(content, childContent);
         }
@@ -165,12 +165,13 @@ Storage, debug, Transform, inherits) {
         if (opts.replies) {
             return [content].concat(descendantContent);
         }
+
         return [content];
     };
 
     // Keep static for legacy API compatibility.
     StateToContent.transform = function (state, authors, opts) {
-        var instance = new StateToContent();
+        var instance = new StateToContent(opts);
         return instance.transform(state, authors, opts);
     };
 
@@ -199,7 +200,7 @@ Storage, debug, Transform, inherits) {
         var sourceName = StateToContent.enums.source[state.source],
             ContentType;
 
-        state.author = authors && authors[state.content.authorId];
+        state.author = authors ? authors[state.content.authorId] : state.content.author;
 
         if ('OEMBED' === StateToContent.enums.type[state.type]) {
             return new LivefyreOembed(state);
@@ -352,7 +353,5 @@ Storage, debug, Transform, inherits) {
         'OEMBED'
     ];
 
-
-    StateToContent.Storage = Storage;
     return StateToContent;
 });

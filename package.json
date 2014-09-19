@@ -6,7 +6,7 @@
     "name": "Benjamin Goering",
     "email": "ben@livefyre.com"
   },
-  "version": "2.12.0",
+  "version": "2.13.5",
   "dependencies": {
     "bower": "1.3.6",
     "tmp": "0.0.23",
@@ -18,7 +18,7 @@
     "postinstall": "./node_modules/bower/bin/bower install && ./node_modules/less/bin/lessc -ru --include-path=lib --compress src/css/style.less src/css/style.css",
     "start": "./node_modules/http-server/bin/http-server .",
     "build": "./node_modules/requirejs/bin/r.js -o ./tools/build.conf.js && npm run-script build-css",
-    "build-css": "npm run lessc && mkdir -p dist && cp src/css/style.css dist/streamhub-sdk.min.css",
+    "build-css": "npm run lessc && mkdir -p dist && ./node_modules/csso/bin/csso src/css/style.css dist/streamhub-sdk.min.css",
     "hint": "./node_modules/jshint/bin/jshint src/ tests/spec; echo",
     "hint-jenkins": "./node_modules/jshint/bin/jshint --reporter=jslint src/**/*.js > lint.log; echo",
     "test": "./node_modules/karma/bin/karma start tools/karma.conf.js --singleRun",
@@ -27,7 +27,7 @@
     "test-jenkins": "npm test",
     "karma": "./node_modules/karma/bin/karma start tools/karma.conf.js",
     "build-version": "node tools/build_version.js",
-    "lessc": "./node_modules/less/bin/lessc -ru --include-path=lib --compress src/css/style.{less,css} && ./node_modules/less/bin/lessc -ru --include-path=lib --compress src/content/css/content.{less,css} && ./node_modules/less/bin/lessc -ru --include-path=lib --compress src/views/css/list-view.{less,css}",
+    "lessc": "./node_modules/less/bin/lessc -ru --include-path=lib --compress src/css/style.less src/css/style.css && ./node_modules/less/bin/lessc -ru --include-path=lib --compress src/content/css/content.less src/content/css/content.css && ./node_modules/less/bin/lessc -ru --include-path=lib --compress src/views/css/list-view.less src/views/css/list-view.css",
     "jsdoc": "rm -rf docs/api && ./node_modules/jsdoc/jsdoc README.md -c tools/jsdoc.conf.json",
     "send-to-coveralls": "find coverage -name 'lcov.info' -print0 | xargs -0 cat | ./node_modules/coveralls/bin/coveralls.js"
   },
@@ -49,9 +49,10 @@
     "karma-phantomjs-launcher": "~0.1.0",
     "karma-requirejs": "~0.2.0",
     "karma-script-launcher": "~0.1.0",
-    "less": "1.6.2",
+    "less": "1.7.4",
     "lfcdn": "git://github.com/Livefyre/lfcdn.git",
     "phantomjs": "~1.9.2-2",
-    "require-less": "0.0.7"
+    "require-less": "0.0.7",
+    "csso": "~1.3.11"
   }
 }

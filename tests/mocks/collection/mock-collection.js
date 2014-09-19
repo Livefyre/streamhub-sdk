@@ -11,6 +11,8 @@ MockLivefyreStreamClient, Collection) {
 
 	var MockCollection = function (opts) {
 		opts = opts || {};
+        opts.siteId = '123';
+        opts.network = 'blah';
         opts.bootstrapClient = opts.bootstrapClient || new MockLivefyreBootstrapClient({
             featuredInit: opts.withFeaturedInit
         });

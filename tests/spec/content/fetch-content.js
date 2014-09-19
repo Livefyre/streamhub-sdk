@@ -4,6 +4,7 @@ var Content = require('streamhub-sdk/content');
 var ContentClient = require('streamhub-sdk/content/clients/content-client');
 var fetchContent = require('streamhub-sdk/content/fetch-content');
 var StateToContent = require('streamhub-sdk/content/state-to-content');
+var Storage = require('streamhub-sdk/storage');
 
 describe('streamhub-sdk/content/fetch-content', function () {
     var CONST = {
@@ -128,14 +129,16 @@ describe('streamhub-sdk/content/fetch-content', function () {
             stateToContent;
             
         beforeEach(function () {
+            var storage = new Storage();
             contentClient = new ContentClient();
-            stateToContent = new StateToContent();
+            stateToContent = new StateToContent({ storage: storage});
             opts = {
                 network: CONST.NET,
                 collectionId: CONST.COLL,
                 contentId: CONST.CONT,
                 contentClient: contentClient,
-                stateToContent: stateToContent
+                stateToContent: stateToContent,
+                storage: storage
             };
             callback = jasmine.createSpy('callback');
             
@@ -220,6 +223,7 @@ describe('streamhub-sdk/content/fetch-content', function () {
         });
         
         it('passes the desired Content to the callback function as the second parameter', function () {
+          
             fetchContent(opts, callback);
             expect(contentClient.getContent).toHaveBeenCalled();
             waitsFor(function () {

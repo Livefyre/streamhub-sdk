@@ -1,5 +1,4 @@
 require([
-    'auth',
     'livefyre-auth',
     'auth/contrib/auth-button',
     'livefyre-auth/livefyre-auth-delegate',
@@ -9,13 +8,12 @@ require([
     'streamhub-sdk/collection',
     'streamhub-sdk/content',
     'streamhub-sdk/auth'
-],function (auth, authLivefyre, createAuthButton, livefyreAuthDelegate, debug,
+],function (auth, createAuthButton, livefyreAuthDelegate, debug,
 $, ListView, Collection, Content, Auth) {
     window.auth = auth;
     var log = debug('streamhub-sdk/auth-demo');
     var authButton = createAuthButton(auth, document.getElementById('auth-button'));
 
-    authLivefyre.plugin(auth);
     var delegate = window.delegate = livefyreAuthDelegate('http://www.livefyre.com');
     auth.delegate(delegate);
 

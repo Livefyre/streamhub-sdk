@@ -8,7 +8,7 @@ var GalleryAttachmentListView = require('streamhub-sdk/content/views/gallery-att
  * to add a event handler for focusContent.hub that displays a modal
  */
 function hasAttachmentModal(view, modal) {
-    if (! modal || modal === true) {
+    if (modal === undefined || modal === true) {
         modal = new AttachmentGalleryModal();
     }
 

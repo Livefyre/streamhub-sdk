@@ -1,0 +1,21 @@
+@import (reference) "lib/livefyre-bootstrap/src/styles/fycon-styles.less";
+
+@font-face {
+    .fycons-font-face(@icon-font-path: "http://cdn.livefyre.com/libs/livefyre-bootstrap/v1.3.1/fonts/");
+}
+.fycons-styles();
+
+.content-source-logo:before,
+.hub-btn:before {
+    font-family: "fycons-@{fycon-font-version}";
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    speak: none;
+    line-height: inherit;
+    display: inline-block;
+    vertical-align: middle;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}

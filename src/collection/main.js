@@ -11,11 +11,13 @@ define([
     'streamhub-sdk/collection/clients/write-client',
     'streamhub-sdk/content/fetch-content',
     'streamhub-sdk/auth',
+    'streamhub-sdk/storage',
+    'streamhub-sdk/dummyStorage',
     'inherits',
     'streamhub-sdk/debug'],
 function ($, CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedContents,
         Duplex, LivefyreBootstrapClient, LivefyreCreateClient, LivefyrePermalinkClient,
-        LivefyreWriteClient, fetchContent, Auth, inherits, debug) {
+        LivefyreWriteClient, fetchContent, Auth, Storage, DummyStorage, inherits, debug) {
     'use strict';
 
 
@@ -28,6 +30,12 @@ function ($, CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedCon
      *      from the Archives and Updaters
      * @param [opts.autoCreate] {boolean} Set false to prevent from automatically
      *      creating this collection if it doesn't alreayd exist.
+     * @param [opts.storage] {Storage Object} If a storage object is passed it 
+     *      is used by stateToContent to create content from API data, otherwise a new
+     *      default storage object is created.
+     * @param [opts.disableStorage] {Boolean} If true this collection will not store any 
+     *      content after it has been recieved. This prevents many default behaviors from 
+     *      occuring. 
      */
     var Collection = function (opts) {
         opts = opts || {};
@@ -50,6 +58,12 @@ function ($, CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedCon
         // Internal streams
         this._writer = opts.writer || null;
         this._pipedArchives = [];
+
+        if (opts.disableStorage) {
+            this._storage = new DummyStorage();
+        } else {
+            this._storage = opts.storage || new Storage();
+        }
 
         Duplex.call(this, opts);
 
@@ -74,6 +88,7 @@ function ($, CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedCon
         opts.collection = this;
         opts.bootstrapClient = opts.bootstrapClient || this._bootstrapClient;
         opts.replies = opts.replies || this._replies;
+        opts.storage = this._storage;
         return new CollectionArchive(opts);
     };
 
@@ -89,7 +104,8 @@ function ($, CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedCon
             streamClient: opts.streamClient,
             replies: this._replies,
             createStateToContent: opts.createStateToContent,
-            createAnnotator: opts.createAnnotator
+            createAnnotator: opts.createAnnotator,
+            storage: this._storage
         });
     };
 
@@ -193,14 +209,19 @@ function ($, CollectionArchive, CollectionUpdater, CollectionWriter, FeaturedCon
         }
     };
 
+    Collection.prototype.getOrCreateUpdater = function () {
+        if (! this._updater) {
+            return this.createUpdater();
+        }
+        return this._updater;
+    };
+
     Collection.prototype._read = function () {
         var self = this,
             content;
 
         // Create an internal updater the first time the Collection is piped
-        if ( ! this._updater) {
-            this._updater = this.createUpdater();
-        }
+        this._updater = this.getOrCreateUpdater();
 
         content = this._updater.read();
 

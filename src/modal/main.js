@@ -22,7 +22,7 @@ define([
         this._attached = false;
         this._modalSubView = opts.modalSubView || null;
         // The parent node that this will attach to when shown
-        this.parentNode = ModalView.el;
+        this.parentNode = opts.parentNode || ModalView.el;
         View.call(this);
 
         var self = this;

@@ -25,10 +25,12 @@ var log = debug('streamhub-sdk/views/list-view');
 var ListView = function(opts) {
     opts = opts || {};
     opts.autoRender = opts.autoRender === undefined ? true : opts.autoRender;
+
     if (opts.template) {
         this.template = opts.template
     }
     this.views = [];
+    this._streamOnly = opts.streamOnly ? true : false;
 
     View.call(this, opts);
     Writable.call(this, opts);
@@ -84,18 +86,36 @@ ListView.prototype.listElSelector = '.hub-list';
  */
 ListView.prototype.showMoreElSelector = '> .hub-list-more';
 
-ListView.prototype.comparators = {
+var comparators;
+ListView.prototype.comparators = comparators = {
     CREATEDAT_ASCENDING: function (a, b) {
-        var aDate = (a.content && a.content.createdAt) || a.createdAt,
-            bDate = (b.content && b.content.createdAt) || b.createdAt;
+        var aDate = getContentViewDate(a);
+            bDate = getContentViewDate(b);
         return aDate - bDate;
     },
     CREATEDAT_DESCENDING: function (a, b) {
-        var aDate = (a.content && a.content.createdAt) || a.createdAt,
-            bDate = (b.content && b.content.createdAt) || b.createdAt;
-        return bDate - aDate;
+        return -1 * comparators.CREATEDAT_ASCENDING(a, b);
     }
 };
+
+/**
+ * Given a ContentView, get a date object to use when sorting the most common
+ * way, prioritizing: .content.sortOrder, .content.createdAt, .createdAt
+ */
+function getContentViewDate(contentView) {
+    var content = contentView.content;
+    // if sortOrder on content, cast to date
+    var sortOrder = content.sortOrder;
+    if (typeof sortOrder === 'number') {
+        return new Date(sortOrder * 1000);
+    }
+    // default to content.createdAt or now
+    if (content && content.createdAt) {
+        return content.createdAt;
+    }
+    // if some random view, use its createdAt or now
+    return contentView.createdAt || new Date();
+}
 
 /**
  * Keys are views that were forcibly indexed into this view.
@@ -268,7 +288,17 @@ ListView.prototype.remove = function (view) {
 
     // Remove from this.views[]
     this.views.splice(viewIndex, 1);
-    this.emit('removed', view);
+
+
+    //Clean up views that will no longer be rendered
+    //if streaming
+    if(this._streamOnly){
+        view.destroy();
+    //Or let the thing using this View clean it up
+    } else {
+        this.emit('removed', view);
+    }
+
     return true;
 };
 

@@ -12,6 +12,7 @@ function HubLikeButton (fnOrCommand, opts) {
     if (this._content) {
         this._content.on("opine", function () { this._updateLikeCount() }.bind(this));
         this._content.on("removeOpine", function () { this._updateLikeCount() }.bind(this));
+        this._content.on("change:likedBy", function () { this._updateLikeCount() }.bind(this));
     }
 
     this._likeCommand = new AuthRequiredCommand(fnOrCommand);
@@ -71,11 +72,12 @@ HubLikeButton.prototype._handleClick = function () {
 }
 
 HubLikeButton.prototype._updateLikeCount = function () {
-    if (this._content.getLikeCount() === parseInt(this._label,10)) {
+    var count = this._content.getLikeCount();
+    if (count === parseInt(this._label,10)) {
         return;
     }
 
-    this.updateLabel(this._content.getLikeCount());
+    this.updateLabel(count);
 
     this.$el.removeClass('hub-btn-toggle-on').removeClass('hub-btn-toggle-off');
     this._enabled = auth.get('livefyre') ? this._content.isLiked(auth.get('livefyre').get('id')) : false;

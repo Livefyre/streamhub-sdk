@@ -8,9 +8,11 @@ function ($, Storage, Content) {
     describe('Storage', function () {
         var contentA,
             contentB,
-            onSpy;
+            onSpy,
+            storage;
         beforeEach(function () {
-            Storage.cache = {};
+            storage = new Storage();
+            storage.cache = {};
             contentA = new Content("Body A");
             contentB = new Content("Body B");
             onSpy = jasmine.createSpy('event handler');
@@ -23,26 +25,26 @@ function ($, Storage, Content) {
             });
             
             it("adds new contents and emits 'add'", function () {
-                Storage.on('add', onSpy);
+                storage.on('add', onSpy);
                 
-                Storage.set(contentA.id, contentA);
+                storage.set(contentA.id, contentA);
                 
-                expect(Storage.cache[contentA.id]).toEqual(contentA);
+                expect(storage.cache[contentA.id]).toEqual(contentA);
                 expect(onSpy).toHaveBeenCalledWith(contentA);
             });
 
             it("updates existing contents and emits 'change'", function () {
-                Storage.on('change', onSpy);
+                storage.on('change', onSpy);
                 
-                Storage.set(contentA.id, contentA);
-                Storage.set(contentA.id, contentB);
+                storage.set(contentA.id, contentA);
+                storage.set(contentA.id, contentB);
                 
-                expect(Storage.cache[contentA.id]).toEqual(contentB);
+                expect(storage.cache[contentA.id]).toEqual(contentB);
                 expect(onSpy).toHaveBeenCalledWith(contentA, contentB);
             });
             
             it("returns content", function () {
-                var val = Storage.set('key', contentA);
+                var val = storage.set('key', contentA);
                 
                 expect(val).toEqual(contentA);
             });
@@ -50,7 +52,7 @@ function ($, Storage, Content) {
             it("executes callback when provided", function () {
                 var spy = jasmine.createSpy('callback');
                 
-                Storage.set('key', contentA, spy);
+                storage.set('key', contentA, spy);
                 
                 expect(spy).toHaveBeenCalledWith(contentA);
             });
@@ -60,24 +62,24 @@ function ($, Storage, Content) {
             var key;
             beforeEach(function () {
                 key = contentA.id;
-                Storage.cache[key] = contentA;
+                storage.cache[key] = contentA;
             });
             
             it("returns content", function () {
-                var val = Storage.get(key);
+                var val = storage.get(key);
                 
                 expect(val).toEqual(contentA);
             });
             
             it("returns undefined when there is no data for that key", function () {
-                var val = Storage.get('fake key');
+                var val = storage.get('fake key');
                 
                 expect(val).not.toBeDefined();
             });
             
             it("executes callback when provided", function () {
                 var spy = jasmine.createSpy('callback');
-                Storage.get(key, spy);
+                storage.get(key, spy);
                 
                 expect(spy).toHaveBeenCalledWith(contentA);
             });
