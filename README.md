@@ -171,6 +171,13 @@ You can configure the "Show More" behavior of ListViews:
         showMore: 50
     });
 
+In typical use a ListView and any of its derivitives expects you to clean up any Views that are removed from  view. Attach a listener to your ListView to listen for these events and act appropriately:
+
+    var listView = listView({});
+    listView.on('remove', function(view){
+        view.destroy();
+    });
+
 ## Content
 
 `streamhub-sdk/content/content` provides a structured base class to represent any Content on the web. Content must only have a `.body`, which is an HTML string.

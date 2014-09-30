@@ -37,7 +37,7 @@ LivefyrePermalinkClient.prototype.getPermalink = function (opts, callback) {
 
             if (fragment) {
                 fragment = fragment.replace(rgx, '');
-                if (fragment.length > 0){
+                if (fragment.length > 0) {
                     fragment = fragment.replace(rgx, '');
                     //Check for & at the front and remove it
                     if (fragment.charAt(0) === '&') {

@@ -2,7 +2,6 @@ var inherits = require('inherits');
 var Readable = require('stream/readable');
 var PassThrough = require('stream/passthrough');
 var util = require('stream/util');
-var StateToContent = require('streamhub-sdk/content/state-to-content');
 var FeaturedFilter = require('streamhub-sdk/collection/streams/featured-filter');
 var Storage = require('streamhub-sdk/storage');
 var fetchContent = require('streamhub-sdk/content/fetch-content');

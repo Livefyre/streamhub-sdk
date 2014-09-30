@@ -159,6 +159,10 @@ ContentView.prototype._handleFeaturedChange = function (newVal, oldVal) {
 
 ContentView.prototype.destroy = function () {
     CompositeView.prototype.destroy.call(this);
+    this._attachmentsView = null;
+    this._thumbnailAttachmentsView = null;
+    this._blockAttachmentsView = null;
+
     this.content = null;
 };
 

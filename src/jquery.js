@@ -28,7 +28,7 @@ define(['jquery'], function($) {
                             xdr.timeout = userOptions.timeout;
                         }
                         
-                        xdr.ontimeout = function(){
+                        xdr.ontimeout = function() {
                             complete(500, 'timeout');
                         };
                         
@@ -73,7 +73,7 @@ define(['jquery'], function($) {
                             }
                         };
                         
-                        xdr.onerror = function(){
+                        xdr.onerror = function() {
                             complete(500, 'error', {
                                 text: xdr.responseText
                             });

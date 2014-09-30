@@ -7,13 +7,11 @@ define([
     'streamhub-sdk/content/types/livefyre-opine',
     'streamhub-sdk/content/types/livefyre-instagram-content',
     'streamhub-sdk/content/types/livefyre-url-content',
-    'streamhub-sdk/storage',
     'streamhub-sdk/debug',
     'stream/transform',
     'inherits'
 ], function (LivefyreContent, LivefyreTwitterContent, LivefyreFacebookContent,
-Oembed, LivefyreOembed, LivefyreOpine, LivefyreInstagramContent, LivefyreUrlContent,
-Storage, debug, Transform, inherits) {
+Oembed, LivefyreOembed, LivefyreOpine, LivefyreInstagramContent, LivefyreUrlContent, debug, Transform, inherits) {
     'use strict';
 
 
@@ -33,7 +31,7 @@ Storage, debug, Transform, inherits) {
         this.setAuthors(opts.authors || {});
         this._replies = opts.replies;
         this._collection = opts.collection;
-        this._storage = opts.storage || Storage;
+        this._storage = opts.storage || (opts.collection ? opts.collection.storage : undefined);
         Transform.call(this, opts);
     };
 
@@ -48,7 +46,7 @@ Storage, debug, Transform, inherits) {
                 collection: this._collection
             });
         } catch (err) {
-            this.emit('error transforming state-to-content', err);
+            this.emit('error', err);
             log('StateToContent.transform threw', err);
         }
         if (contents && contents.length) {
@@ -173,7 +171,7 @@ Storage, debug, Transform, inherits) {
 
     // Keep static for legacy API compatibility.
     StateToContent.transform = function (state, authors, opts) {
-        var instance = new StateToContent();
+        var instance = new StateToContent(opts);
         return instance.transform(state, authors, opts);
     };
 
@@ -355,7 +353,5 @@ Storage, debug, Transform, inherits) {
         'OEMBED'
     ];
 
-
-    StateToContent.Storage = Storage;
     return StateToContent;
 });

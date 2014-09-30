@@ -4,7 +4,7 @@ define([
     'streamhub-sdk/content/views/content-list-view',
     'streamhub-sdk/content',
     'streamhub-sdk-tests/mocks/mock-attachments-stream'],
-function ($, Injector, ContentListView, Content, MockCollection) {
+function ($, Injector, ContentListView, Content, MockAttachmentStream) {
     'use strict';
 
     describe('Injector', function () {
@@ -14,7 +14,7 @@ function ($, Injector, ContentListView, Content, MockCollection) {
                 target;
             beforeEach(function () {
                 injector = new Injector();
-                source = new MockCollection();
+                source = new MockAttachmentStream();
                 target = new ContentListView();
             });
             
@@ -166,7 +166,6 @@ function ($, Injector, ContentListView, Content, MockCollection) {
                         target.write(content);
                         target.write(content2);
                         expect(injector._counter).toBe(1);
-                        
                         injector.inject(n, i);
                         
                         waitsFor(function () {

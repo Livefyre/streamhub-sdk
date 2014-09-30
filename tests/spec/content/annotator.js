@@ -10,10 +10,6 @@ function (Annotator, AnnotatorExtensions, Writable, LivefyreContent, mockBootstr
     'use strict';
 
     describe('streamhub-sdk/content/annotator', function () {
-        it('is a Writable', function () {
-            expect(Annotator.prototype instanceof Writable).toBe(true);
-        });
-
         var annotator = new Annotator();
         var featuredmessage = { "featuredmessage": { "rel_collectionId": "10739960", "value": 1381771896 }};
         var likedBy = { "likedBy": ['authorId1', 'authordId2'] };

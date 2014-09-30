@@ -134,6 +134,7 @@ function ($, Readable, BootstrapClient, StateToContent, debug, inherits) {
     FeaturedArchive.prototype._contentsFromBootstrapDoc = function (bootstrapDoc, opts) {
         opts = opts || {};
         bootstrapDoc = bootstrapDoc || {};
+        bootstrapDoc.storage = this._collection.storage;
         var self = this,
             states = bootstrapDoc.content || [],
             stateToContent = new StateToContent(bootstrapDoc),

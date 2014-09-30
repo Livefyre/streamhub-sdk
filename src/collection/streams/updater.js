@@ -33,6 +33,12 @@ StateToContent, Annotator, debug) {
         this._streamClient = opts.streamClient || new StreamClient();
         this._request = null;
         this._replies = opts.replies || false;
+        this._storage = opts.storage;
+
+        if(this._collection && this._collection.storage) {
+            this._storage = this._collection.storage;
+        }
+
         if (opts.createStateToContent) {
             this._createStateToContent = opts.createStateToContent;
         }
@@ -158,9 +164,14 @@ StateToContent, Annotator, debug) {
             annotations = streamData.annotations,
             contentId,
             contents = [],
+            self = this,
             state,
             states = streamData.states,
             stateToContent = this._createStateToContent(streamData);
+
+        stateToContent.on('error', function(e) {
+            self.emit('error', e);
+        });
 
         stateToContent.on('data', function (content) {
             contents.push(content);
@@ -171,16 +182,19 @@ StateToContent, Annotator, debug) {
                 state = states[contentId];
                 stateToContent.write(state);
             }
-        }
+        }    
 
         for (contentId in annotations) {
             if (annotations.hasOwnProperty(contentId)) {
                 annotationDiff = annotations[contentId];
                 this._handleAnnotationDiff(contentId, annotationDiff);
-                annotator.write({
-                    contentId: contentId,
-                    annotationDiff: annotationDiff
-                });
+                var content = this._storage.get(contentId);
+                if ( ! content) {
+                    // This is an annotation update for a contentId we dont
+                    // know about. Which is fine and normal.
+                    continue;
+                }
+                annotator.annotate(content, annotationDiff);
             }
         }
 
@@ -214,6 +228,7 @@ StateToContent, Annotator, debug) {
         opts = opts || {};
         opts.replies = this._replies;
         opts.collection = this._collection;
+        opts.storage = this._storage;
         return new StateToContent(opts);
     };
 

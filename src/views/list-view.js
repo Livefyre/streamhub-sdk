@@ -25,10 +25,12 @@ var log = debug('streamhub-sdk/views/list-view');
 var ListView = function(opts) {
     opts = opts || {};
     opts.autoRender = opts.autoRender === undefined ? true : opts.autoRender;
+
     if (opts.template) {
         this.template = opts.template
     }
     this.views = [];
+    this._streamOnly = opts.streamOnly ? true : false;
 
     View.call(this, opts);
     Writable.call(this, opts);
@@ -286,7 +288,17 @@ ListView.prototype.remove = function (view) {
 
     // Remove from this.views[]
     this.views.splice(viewIndex, 1);
-    this.emit('removed', view);
+
+
+    //Clean up views that will no longer be rendered
+    //if streaming
+    if(this._streamOnly) {
+        view.destroy();
+    //Or let the thing using this View clean it up
+    } else {
+        this.emit('removed', view);
+    }
+
     return true;
 };
 

@@ -37,13 +37,13 @@
                 el: document.getElementById("listView"),
                 initial: 10,
                 showMore: 10,
-                maxVisibleItems: 10
+                maxVisibleItems: 10,
+                streamOnly: true
             });
 
             var collection = window.collection =  new Collection(opts);
 
             collection.pipe(listView);
-
         });
         </script>
     </body>
