@@ -1,6 +1,6 @@
 {
   "name": "streamhub-sdk",
-  "version": "2.15.1",
+  "version": "2.15.2",
   "main": [
     "./src/main.js"
   ],
@@ -20,7 +20,7 @@
     "auth": "git://github.com/Livefyre/auth.git#~0.2.0",
     "debug": "visionmedia/debug#~0.7.4",
     "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#v1.3.4",
-    "streamhub-share": "git://github.com/Livefyre/streamhub-share.git#0.1.3",
+    "streamhub-share": "git://github.com/Livefyre/streamhub-share.git#0.1.4",
     "streamhub-ui": "git://github.com/Livefyre/streamhub-ui.git#0.1.3"
   },
   "devDependencies": {
