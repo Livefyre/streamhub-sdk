@@ -319,9 +319,14 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $, LivefyreContent) {
             it('can .read() annotations from the stream', function () {
                 var id = 'ContentInStorage123';
                 var content = new LivefyreContent({});
+                content.id = id;
+                content.collection = {
+                    id: 10739960
+                }
+                var Storage = StateToContent.Storage;
                 expect(content.getFeaturedValue()).toEqual(undefined);
 
-                StateToContent.Storage.set(id, content);
+                Storage.set(Storage.keys.content(content), content);
 
                 spyOn(updater, '_read').andCallThrough();
                 var contents = [];
@@ -336,7 +341,7 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $, LivefyreContent) {
 
                 runs(function () {
                     updater.pause();
-                    var featuredContent = StateToContent.Storage.get(id);
+                    var featuredContent = Storage.get(Storage.keys.content(content));
                     expect(featuredContent.getFeaturedValue()).toEqual(jasmine.any(Number));
                 });
             });
