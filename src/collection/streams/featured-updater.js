@@ -48,7 +48,11 @@ FeaturedUpdater.prototype.handleAnnotations = function (contentId, annotations) 
         return;
     }
 
-    var content = Storage.get(contentId);
+    var content = Storage.get(Storage.keys.content({
+        id: contentId,
+        collection: collectionFromAnnotationDiff(featuredAnnotations)
+    }));
+
     // Only handle case where content is not in Storage,
     // as CollectionUpdater already handles that.
     if (! content) {
@@ -66,3 +70,14 @@ FeaturedUpdater.prototype.handleAnnotations = function (contentId, annotations) 
 };
 
 module.exports = FeaturedUpdater;
+
+function collectionFromAnnotationDiff(annotationDiff) {
+    try {
+        return {
+            id: annotationDiff.added.featuredmessage.rel_collectionId
+        }
+    } catch (e) {
+        // expected because of big dot access chain in try{}
+    }
+    return;
+}

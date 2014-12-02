@@ -16,9 +16,10 @@ Oembed, LivefyreOembed, LivefyreOpine, LivefyreInstagramContent, LivefyreUrlCont
 Storage, debug, Transform, inherits) {
     'use strict';
 
-
     var log = debug('streamhub-sdk/content/state-to-content');
 
+    var getContentStorageKey = Storage.keys.content;
+    var getContentChildrenStorageKey = Storage.keys.contentChildren;
 
     /**
      * An Object that transforms state objects from Livefyre APIs
@@ -97,7 +98,7 @@ Storage, debug, Transform, inherits) {
         // Store content with IDs in case we later get
         // replies or attachments targeting it
         if (content && content.id) {
-            var stored = this._storage.get(content.id);
+            var stored = this._storage.get(getContentStorageKey(content));
             if (stored) {
                 // If existing content, update properties on existing instance
                 // only if the update is newer than the current content or if it is a visibility update
@@ -124,7 +125,7 @@ Storage, debug, Transform, inherits) {
                 if (content.updatedBy) {
                     return;
                 }
-                this._storage.set(content.id, content);
+                this._storage.set(getContentStorageKey(content), content);
             }
         }
 
@@ -138,7 +139,7 @@ Storage, debug, Transform, inherits) {
         }
 
         // Add any children that are awaiting the new content
-        childContent = this._storage.get('children_'+content.id) || [];
+        childContent = this._storage.get(getContentChildrenStorageKey(content)) || [];
         if (childContent.length) {
             this._addChildren(content, childContent);
         }
@@ -296,7 +297,10 @@ Storage, debug, Transform, inherits) {
 
 
     StateToContent.prototype._attachOrStore = function (attachment, targetId) {
-        var target = this._storage.get(targetId);
+        var target = this._storage.get(getContentStorageKey({
+            id: targetId,
+            collection: attachment.collection
+        }));
         if (target) {
             log('attaching attachment', arguments);
             target.addAttachment(attachment);
@@ -309,7 +313,11 @@ Storage, debug, Transform, inherits) {
     StateToContent._attachOrStore = StateToContent.prototype._attachOrStore;
 
     StateToContent.prototype._addReplyOrStore = function (reply, parentId) {
-        var parent = this._storage.get(parentId);
+        var parentKey = getContentStorageKey({
+            id: parentId,
+            collection: reply.collection
+        })
+        var parent = this._storage.get(parentKey);
         if (parent) {
             log('adding reply', arguments);
             parent.addReply(reply);
@@ -334,11 +342,15 @@ Storage, debug, Transform, inherits) {
 
     StateToContent.prototype._storeChild = function (child, parentId) {
         //TODO (joao) Make this smart enough to not push duplicates
-        var childrenKey = 'children_' + parentId,
-            children = this._storage.get(childrenKey) || [];
+        var childrenKey = getContentChildrenStorageKey({
+            id: parentId,
+            collection: child.collection
+        });
+        var children = this._storage.get(childrenKey) || [];
         children.push(child);
         this._storage.set(childrenKey, children);
     };
+
     // Keep static for legacy API compatibility
     StateToContent._storeChild = StateToContent.prototype._storeChild;
 

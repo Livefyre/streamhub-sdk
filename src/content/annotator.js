@@ -59,12 +59,28 @@ define([
      * @param opts.silence [boolean] Mute any events that would be fired
      */
     Annotator.prototype._write = function(opts) {
-        var content = opts.content || Storage.get(opts.contentId);
+        var collection = collectionFromAnnotationDiff(opts.annotationDiff);
+        var contentStorageKey = collection && Storage.keys.content({
+            id: opts.contentId,
+            collection: collection
+        });
+        var content = opts.content || (contentStorageKey ? Storage.get(contentStorageKey) : null);
         if (! content) {
             return;
         }
         this.annotate(content, opts.annotationDiff, opts.silence);
     };
+
+    function collectionFromAnnotationDiff(annotationDiff) {
+        try {
+            return {
+                id: annotationDiff.added.featuredmessage.rel_collectionId
+            }
+        } catch (e) {
+            // expected because of big dot access chain in try{}
+        }
+        return;
+    }
 
     /**
      * AnnotationTypes
