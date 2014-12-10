@@ -1,0 +1,5 @@
+article.content a,
+article.content .content-byline .content-author-name a,
+article.content a.content-author-name {
+    color: var(--linkColor);
+}

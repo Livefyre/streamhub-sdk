@@ -102,7 +102,7 @@ Storage, debug, Transform, inherits) {
             if (stored) {
                 // If existing content, update properties on existing instance
                 // only if the update is newer than the current content or if it is a visibility update
-                if (isContent && ((content.updatedAt > stored.updatedAt) || !isValidDate(content.updatedAt))) {
+                if (isContent && (!isValidDate(stored.updatedAt) || ((content.updatedAt > stored.updatedAt)) || !isValidDate(content.updatedAt))) {
                     // This could be a delete state, so only update
                     // properties that are actually set
                     stored.set(this._getUpdatedProperties(content));

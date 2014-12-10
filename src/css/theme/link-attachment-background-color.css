@@ -1,0 +1,3 @@
+.content-default .content-attachments-stacked .content-attachment-link {
+    background-color: var(--linkAttachmentBackgroundColor);
+}

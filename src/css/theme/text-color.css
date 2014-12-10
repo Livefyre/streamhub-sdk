@@ -1,0 +1,4 @@
+article.content .content-body,
+article.content .content-author-name {
+    color: var(--textColor);
+}

@@ -1,0 +1,5 @@
+.hub-btn-link,
+.hub-btn-link:hover,
+.hub-btn-link:active {
+    color: var(--buttonTextColor);
+}

@@ -1,0 +1,6 @@
+.content-default .content-attachments-stacked .content-attachment-link:nth-child(1) {
+    border-top: 1px solid var(--linkAttachmentBorderColor);
+}
+.content-default .content-attachments-stacked .content-attachment-link {
+    border-bottom: 1px solid var(--linkAttachmentBorderColor);
+}
