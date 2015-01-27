@@ -14,6 +14,7 @@ var StateToContent = require('streamhub-sdk/content/state-to-content');
  * @param [opts.depthOnly] {boolean=} Default is false.
  * @param [opts.contentClient] {ContentClient=} HTTP Client
  * @param [opts.stateToContent] {Object} StateToContent instance
+ * @param [opts.lftoken] {string} Token for accessing privelaged data
  * @param callback {!function(err: Object, data: Content)}
  */
 var fetchContent = function (opts, callback) {

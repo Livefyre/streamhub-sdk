@@ -172,13 +172,22 @@ describe('streamhub-sdk/content/clients/content-client', function () {
         });
         
         describe('and called with additional opts', function () {
+            var fakeToken;
             beforeEach(function () {
+                fakeToken = 'token1234';
                 callOpts.depthOnly = true;
+                callOpts.lftoken = fakeToken;
             });
             
             it('makes a request with depth_only=true', function() {
                 contentClient.getContent(callOpts, callback);
                 expect(contentClient._request.mostRecentCall.args[0].data.depth_only).toBe(true);
+            });
+
+            it('passes along an lftoken with show_hidden_content=true', function() {
+                contentClient.getContent(callOpts, callback);
+                expect(contentClient._request.mostRecentCall.args[0].data.lftoken).toBe(fakeToken);
+                expect(contentClient._request.mostRecentCall.args[0].data.show_hidden_content).toBe(true);
             });
         });
     });

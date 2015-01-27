@@ -32,6 +32,7 @@ LivefyreContentClient.prototype._serviceName = 'bootstrap';
  * @param [opts.depthOnly] {boolean} False by default. Set to true to return all
  *      replies to the specified contentId
  * @param [opts.environment] {string} Optional livefyre environment to use dev/prod environment
+ * @param [opts.lftoken] {string} Token for accessing privelaged data
  * @param callback {function} A callback that is called upon success/failure of the
  *      stream request. Callback signature is "function(error, data)".
  */
@@ -44,13 +45,19 @@ LivefyreContentClient.prototype.getContent = function(opts, callback) {
         "/api/v3.0/content/thread/"
     ].join("");
 
+    var getData = {
+        collection_id: opts.collectionId,
+        content_id: opts.contentId,
+        depth_only: opts.depthOnly || false
+    };
+    if (opts.lftoken) {
+        getData.lftoken = opts.lftoken;
+        getData.show_hidden_content = true;
+    }
+
     var request = this._request({
         url: url,
-        data: {
-            collection_id: opts.collectionId,
-            content_id: opts.contentId,
-            depth_only: opts.depthOnly || false
-        }
+        data: getData
     }, function (err, data) {
         if (err) {
             return callback.apply(this, arguments);
