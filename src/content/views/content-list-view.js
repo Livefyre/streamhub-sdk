@@ -111,6 +111,7 @@ ContentListView.prototype.add = function(content, forcedIndex, opts) {
     opts = opts || {};
     if (!content.el && this.getContentView(content)) {
         log('already added', content);
+        this.more.setGoal(this.more.getGoal() + 1);
         return;
     }
 
