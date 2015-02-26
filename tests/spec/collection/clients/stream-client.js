@@ -32,7 +32,7 @@ function ($, LivefyreStreamClient) {
 
         it("should make requests to the right URL", function () {
             streamClient.getContent(opts, callback);
-            expect(streamClient._request.mostRecentCall.args[0].url).toBe("http://stream1.labs-t402.fyre.co/v3.1/collection/10669131/0/");
+            expect(streamClient._request.mostRecentCall.args[0].url).toBe("http://stream1.labs-t402.fyre.co/v3.1/collection/10669131/0/?backend=streamhub-sdk");
         });
 
         describe('when constructed with opts.protocol=https', function () {
@@ -50,7 +50,7 @@ function ($, LivefyreStreamClient) {
                     environment: 'qa-ext.livefyre.com'
                 };
                 streamClient.getContent(opts, callback);
-                expect(streamClient._request.mostRecentCall.args[0].url).toBe("https://backplane-qa.stream1.fyre.co/v3.1/collection/2486639/0/");
+                expect(streamClient._request.mostRecentCall.args[0].url).toBe("https://backplane-qa.stream1.fyre.co/v3.1/collection/2486639/0/?backend=streamhub-sdk");
             });
         });
 

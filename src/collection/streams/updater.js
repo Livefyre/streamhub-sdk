@@ -26,6 +26,7 @@ StateToContent, Annotator, debug) {
      *     can request StreamHub's Stream web service
      * @param [opts.replies=false] {boolean} Whether to read out reply Content
      * @param [opts.createStateToContent] {function} Creates a custem Content adapter
+     * @param [opts.maxErrors] {integer} Limit of exponential backoff
      */
     var CollectionUpdater = function (opts) {
         opts = opts || {};
@@ -33,6 +34,15 @@ StateToContent, Annotator, debug) {
         this._streamClient = opts.streamClient || new StreamClient();
         this._request = null;
         this._replies = opts.replies || false;
+
+        // fail for up to ~4 minutes before announcing an a fatal streaming error:
+        //   integral 2*x*x dx x=0..maxErrors
+        // http://www.wolframalpha.com/input/?i=integral+of+2*%28x*x%29+dx%2C+x%3D0..7
+        this._maxErrors = opts.maxErrors || 7;
+        this._errors = 0;
+
+        // for cycle detection
+        this._seenEventIds = [];
         if (opts.createStateToContent) {
             this._createStateToContent = opts.createStateToContent;
         }
@@ -73,7 +83,7 @@ StateToContent, Annotator, debug) {
                 if (latestEvent === undefined) {
                     throw new Error("Couldn't get latestEvent after initFromBootstrap");
                 }
-                self._latestEvent = latestEvent;
+                self._updateStreamPosition(latestEvent);
                 self._stream();
             });
         }
@@ -98,8 +108,15 @@ StateToContent, Annotator, debug) {
                 return;
             }
             if (err) {
-                return self.emit('error', err);
+                self._errors++;
+                if (self._errors > self._maxErrors) {
+                    return self.emit('error', err);
+                }
+                setTimeout(pollAgain, self._getTimeoutAfterError());
+                return;
             }
+            // reset
+            self._errors = 0;
             if (data.timeout) {
                 // Timed out on the long poll. This just means there
                 // was no real-time data. So we should keep streaming
@@ -108,8 +125,13 @@ StateToContent, Annotator, debug) {
                 return pollAgain();
             }
             var contents = self._contentsFromStreamData(data);
+            var nextEventId = data.maxEventId;
+
+            // If nextEventId is one we've seen before, dont use it!
+            // increment the highest of what we've seen by one instead
+
             // Update _latestEvent so we only get new data
-            self._latestEvent = data.maxEventId;
+            self._updateStreamPosition(nextEventId);
 
             if (contents.length) {
                 self.push.apply(self, contents);
@@ -132,6 +154,41 @@ StateToContent, Annotator, debug) {
         this._request = request;
     };
 
+    /**
+     * Get the number of milliseconds before trying another stream request
+     * after an error
+     */
+    CollectionUpdater.prototype._getTimeoutAfterError = function () {
+        var numErrorsSinceSuccess = this._errors;
+        var timeout = 2000 * Math.pow(numErrorsSinceSuccess, 2);
+        return timeout;
+    };
+
+    /**
+     * Maintains the stream cursor, with logic to ensure cycles are broken.
+     */
+    CollectionUpdater.prototype._updateStreamPosition = function (eventId) {
+        var seenEventIds = this._seenEventIds;
+        var seenBefore = seenEventIds.indexOf(eventId) !== -1;
+
+        // we've detected a cycle which can occur under some
+        // rare data conditions. This will break the cycle.
+        if (seenBefore) {
+            seenEventIds.sort();
+            // find the newest event, and move past it
+            // this will break the cycle in the cached data.
+            eventId = seenEventIds[seenEventIds.length - 1] + 1;
+        }
+
+        // cap at 100
+        while (seenEventIds.length > 100) {
+            seenEventIds.shift();
+        }
+
+        seenEventIds.push(eventId);
+
+        this._latestEvent = eventId;
+    };
 
     /**
      * Pause the Updater

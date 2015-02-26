@@ -357,5 +357,133 @@ MockLivefyreBootstrapClient, MockLivefyreStreamClient, $, LivefyreContent) {
             var stateToContent = updater._createStateToContent();
             expect(stateToContent._replies).toBe(true);
         });
+
+        it('retries when encountering stream errors, up to opts.maxErrors', function () {
+            var MAX_ERRORS = 3;
+            var errorsSoFar = 0;
+            var streamClient = new MockLivefyreStreamClient();
+
+            // patch streamClient to return errors
+            streamClient.getContent = (function (ogGetContent) {
+                return function (opts, errback) {
+                    errorsSoFar = errorsSoFar + 1;
+                    if (errorsSoFar <= MAX_ERRORS) {
+                        return errback({
+                            status: 500,
+                            message: 'Fake test error'
+                        });
+                    }
+                    // okay done MAX_ERRORS. If one more error happens, this
+                    // should trigger an 'error' event
+                    if (errorsSoFar === (MAX_ERRORS + 1)) {
+                        return errback({
+                            status: 500,
+                            message: 'fake test error. one more than max'
+                        });
+                    }
+                    // do normal
+                    return ogGetContent.apply(this, arguments);
+                };
+            }(streamClient.getContent));
+            // and spy
+            spyOn(streamClient, 'getContent').andCallThrough();
+
+            var updater = new CollectionUpdater({
+                collection: new MockCollection(),
+                streamClient: streamClient,
+                replies: true,
+                maxErrors: MAX_ERRORS
+            });
+            var onErrorSpy = jasmine.createSpy();
+            updater.on('error', onErrorSpy);
+            updater._getTimeoutAfterError = function () {
+                // always do 1 so this test doesn't take forever
+                return 1;
+            }
+            updater.on('data', function onData(d) {
+                updater.removeListener('data', onData);
+                updater.pause();
+            });
+            waitsFor(function () {
+                return errorsSoFar >= MAX_ERRORS;
+            });
+            runs(function () {
+                // waitsFor is fuzzy so this could be 4 or 3
+                expect(errorsSoFar >= MAX_ERRORS).toBe(true);
+                // +1 original call that triggered initial error
+                expect(streamClient.getContent.callCount).toBe(MAX_ERRORS + 1);
+            });
+            waitsFor(function () {
+                return onErrorSpy.callCount;
+            });
+            runs(function () {
+                expect(onErrorSpy.callCount).toBe(1);
+                expect(errorsSoFar).toBe(MAX_ERRORS + 1);
+                // no more long polls should have happened
+                expect(streamClient.getContent.callCount).toBe(MAX_ERRORS + 1);
+            });
+        });
+
+        it('does the right thing if it encounters a loop in the stream', function () {
+            /**
+             * We're going to poll three times normally,
+             * then the third time will be a loop whose event is the second
+             *   value.
+             */
+            var events = [10,20,30,20,40,50,60,50,80].map(function (e) {
+                // make all higher than initial event
+                return e + 1372807378824134;
+            });
+            var numEvents = events.length;
+            var streamClient = new MockLivefyreStreamClient();
+
+            // patch streamClient to return errors
+            var i = 0;
+            streamClient.getContent = (function (ogGetContent) {
+                return function (opts, errback) {
+                    var eventId = events.shift();
+                    if (eventId) {
+                        return errback(null, {
+                            maxEventId: eventId
+                        })
+                    }
+                    // do normal
+                    return ogGetContent.apply(this, arguments);
+                };
+            }(streamClient.getContent));
+            // and spy
+            spyOn(streamClient, 'getContent').andCallThrough();
+
+            var updater = new CollectionUpdater({
+                collection: new MockCollection(),
+                streamClient: streamClient,
+                replies: true
+            });
+            updater._getTimeoutAfterError = function () {
+                // always do 1 so this test doesn't take forever
+                return 1;
+            }
+            updater.on('data', function onData(d) {
+                updater.removeListener('data', onData);
+                updater.pause();
+            });
+            waitsFor(function () {
+                return events.length === 0;
+            });
+            runs(function () {
+                updater.pause();
+                expect(streamClient.getContent.calls.length).toBe(numEvents + 1);
+                expectHandlesLoop(streamClient.getContent.calls, 3);
+                expectHandlesLoop(streamClient.getContent.calls, 7);
+                
+                function expectHandlesLoop(calls, whichCallRespondsWithLoop) {
+                    var callThatRespondsWithLoop = calls[whichCallRespondsWithLoop]; 
+                    var commentIdThatRespondsWithLoop = callThatRespondsWithLoop.args[0].commentId;
+                    var callAfterLoop = calls[whichCallRespondsWithLoop + 1];
+                    expect(callAfterLoop.args[0].commentId).toBe(commentIdThatRespondsWithLoop + 1);
+                }
+            });
+        });
+
     });
 });
