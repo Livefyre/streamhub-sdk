@@ -46,7 +46,9 @@ define(['streamhub-sdk/jquery'], function($) {
             type: opts.method || 'GET',
             url: opts.url,
             data: opts.data,
-            dataType: opts.dataType || this._getDataType()
+            dataType: opts.dataType || this._getDataType(),
+            // Defaults to form encoded: http://api.jquery.com/jquery.ajax/
+            contentType: opts.contentType
         });
 
         xhr.done(function(data, status, jqXhr) {
