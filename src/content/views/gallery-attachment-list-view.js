@@ -9,6 +9,8 @@ define([
 function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemplate, ContentHeaderViewFactory, inherits) {
     'use strict';
 
+    var AUTOPLAY_PROVIDER_REGEX = /YouTube|Livefyre/;
+
     /**
      * A view that displays a content's attachments as a gallery
      *
@@ -265,7 +267,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
             photoContentEl.hide().removeClass(this.focusedAttachmentClassName);
             var videoContentEl = focusedEl.find('.content-attachment-video');
             videoContentEl.addClass(this.focusedAttachmentClassName);
-            videoContentEl.html(this._focusedAttachment.html);
+            videoContentEl.html(this.getAttachmentVideoHtml());
             if (this.tile) {
                 videoContentEl.find('iframe').css({'width': '100%', 'height': '100%'});
             }
@@ -331,6 +333,24 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         } else {
             this.resizeFocusedAttachment();
         }
+    };
+
+    /**
+     * Gets the attachment's video html embed string. If supported, also attach
+     * the autoplay query param so that the video will auto-play.
+     * @return {string} Attachment's html embed.
+     */
+    GalleryAttachmentListView.prototype.getAttachmentVideoHtml = function () {
+        var attachment = this._focusedAttachment;
+
+        if (!AUTOPLAY_PROVIDER_REGEX.test(attachment.provider_name)) {
+            return attachment.html;
+        }
+
+        var html = $(attachment.html)[0];
+        var queryChar = html.src.indexOf('?') > -1 ? '&' : '?';
+        html.src += queryChar + 'autoplay=1';
+        return $('<div>').append(html).html();
     };
 
     /**
