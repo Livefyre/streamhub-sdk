@@ -343,14 +343,22 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
     GalleryAttachmentListView.prototype.getAttachmentVideoHtml = function () {
         var attachment = this._focusedAttachment;
 
+        // If the provider is not available for autoplay, nothing more to do.
         if (!AUTOPLAY_PROVIDER_REGEX.test(attachment.provider_name)) {
             return attachment.html;
         }
 
-        var html = $(attachment.html)[0];
-        var queryChar = html.src.indexOf('?') > -1 ? '&' : '?';
-        html.src += queryChar + 'autoplay=1';
-        return $('<div>').append(html).html();
+        var $html = $(attachment.html);
+        var iframe = $html[0].tagName === 'IFRAME' ? $html[0] : $html.find('iframe')[0];
+
+        // If there isn't an iframe in the attachment html, nothing more to do.
+        if (!iframe) {
+          return attachment.html;
+        }
+
+        var queryChar = iframe.src.indexOf('?') > -1 ? '&' : '?';
+        iframe.src += queryChar + 'autoplay=1';
+        return $('<div>').append($html).html();
     };
 
     /**
