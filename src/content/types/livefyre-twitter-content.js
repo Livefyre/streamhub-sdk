@@ -69,9 +69,13 @@ define([
 
     LivefyreTwitterContent.prototype.addAttachment = function (oembed) {
         if (oembed && oembed.type === 'link') {
-            var provider = oembed.provider_name ? oembed.provider_name.toLowerCase() : null; 
-            if(provider && provider === "twitter") 
+            var provider = oembed.provider_name ? oembed.provider_name.toLowerCase() : null;
+            // Links that are provided by twitter or twimg are generally bad
+            // because they were classified as links and are probably actually
+            // videos.
+            if (provider && ['twitter', 'twimg'].indexOf(provider) > -1) {
                 return;
+            }
         }
 
         return LivefyreContent.prototype.addAttachment.apply(this, arguments);
