@@ -225,12 +225,12 @@ LivefyreUrlContent, LivefyreYoutubeContent, mockBootstrapData) {
                 expect(instagramContent.attachments.length).toBe(1);
             });
 
-            it('transforms native youtube curate states into streamhub-sdk-content/types/livefyre-url-content', function () {
+            it('transforms native youtube curate states into streamhub-sdk-content/types/livefyre-youtube-content', function () {
                 var youtubeState = {"source": 22, "collectionId": "145524614", "content": {"attachments": [{"provider_url": "https://www.youtube.com/", "title": "Craft for Kids: Make Crayola\u00ae Clay Beads Necklace", "url": "http://www.youtube.com/watch?v=xvpnS2zZpZs", "type": "video", "thumbnail_width": 480, "height": 276, "width": 490, "html": "<iframe class=\"embedly-embed\" src=\"//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FxvpnS2zZpZs%3Ffeature%3Doembed&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DxvpnS2zZpZs&image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FxvpnS2zZpZs%2Fhqdefault.jpg&key=e582b10318464a55acff2cd426d3327f&type=text%2Fhtml&schema=youtube\" width=\"490\" height=\"276\" scrolling=\"no\" frameborder=\"0\" allowfullscreen></iframe>", "author_name": "Hallmark", "provider_name": "YouTube", "thumbnail_url": "https://i.ytimg.com/vi/xvpnS2zZpZs/mqdefault.jpg", "thumbnail_height": 360, "author_url": "https://www.youtube.com/user/hallmarkcards"}], "generator": {"url": "https://www.youtube.com/", "image": "http://g.etfv.co///youtube.com", "displayName": "YouTube", "id": "www.youtube.com"}, "bodyHtml": "<p>Hallmark photo stylist, Erin Marinez teaches her neighbor how to turn Crayola Air-Dry Clay into marbled beads and make a cute and crafty necklace.</p>", "annotations": {"sortOrder": 1445214122.021083}, "authorId": "youtube.com/user/Hallmark/videos@embed.hallmark.fyre.co", "parentId": "", "updatedAt": 1445214122, "id": "15608811756944026-youtube.com@embed.hallmark.fyre.co", "createdAt": 1445025112}, "vis": 1, "type": 0, "event": 1445214122071189};
                 var youtubeContent;
                 stateToContent.write(youtubeState);
                 youtubeContent = stateToContent.read();
-                expect(youtubeContent instanceof LivefyreUrlContent).toBe(true);
+                expect(youtubeContent instanceof LivefyreYoutubeContent).toBe(true);
                 expect(youtubeContent.attachments.length).toBe(1);
                 expect(youtubeContent.body).toBe('<p>Hallmark photo stylist, Erin Marinez teaches her neighbor how to turn Crayola Air-Dry Clay into marbled beads and make a cute and crafty necklace.</p>');
                 expect(youtubeContent.title).toBe('Craft for Kids: Make Crayola® Clay Beads Necklace');

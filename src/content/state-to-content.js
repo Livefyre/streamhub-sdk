@@ -215,7 +215,7 @@ LivefyreYoutubeContent, Storage, debug, Transform, inherits) {
 
 
     StateToContent.prototype._createContent = function (state, authors) {
-        var sourceName = StateToContent.enums.source[state.source],
+        var sourceName = getSourceName(state),
             ContentType;
 
         state.author = authors ? authors[state.content.authorId] : state.content.author;
@@ -251,10 +251,20 @@ LivefyreYoutubeContent, Storage, debug, Transform, inherits) {
     // Keep static for legacy API compatibility.
     StateToContent._createContent = StateToContent.prototype._createContent;
 
+    function getSourceName (state) {
+        var source = StateToContent.enums.source[state.source];
+        if (source === 'url' && isYoutubeState(state)) {
+            return 'feed';
+        }
+        return source;
+    }
 
     function isProviderState (state, pattern) {
         try {
-            return pattern.test(state.content.feedEntry.channelId);
+            if ('feedEntry' in state.content) {
+                return pattern.test(state.content.feedEntry.channelId);
+            }
+            return pattern.test(state.content.generator.url);
         } catch (err) {
             return false;
         }
