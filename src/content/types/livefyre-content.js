@@ -35,6 +35,7 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
             this.set({ id: json.content.id || json.id });
             this.author = json.author;
             this.title = json.content.title;
+            this.feedUrl = (json.content.feedEntry || {}).link;
             this.createdAt = new Date(1000 * json.content.createdAt);
             this.updatedAt = new Date(1000 * json.content.updatedAt);
             this.lastVisibility = Content.enums.visibility[json.lastVis];

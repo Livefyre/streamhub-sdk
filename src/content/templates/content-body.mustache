@@ -1,5 +1,12 @@
 {{#title}}
-    <p class="content-body-title"><strong >{{{ title }}}</strong></p>
+    {{#feedUrl}}
+        <a href="{{ feedUrl }}" target="_blank" class="content-body-title">
+            <strong>{{{ title }}}</strong>
+        </a>
+    {{/feedUrl}}
+    {{^feedUrl}}
+        <p class="content-body-title"><strong>{{{ title }}}</strong></p>
+    {{/feedUrl}}
 {{/title}}
 
 <div class="content-body-main">{{{ body }}}</div>
