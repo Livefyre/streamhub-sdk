@@ -7,7 +7,7 @@ define([], function () {
      * Anchor html tag regex.
      * @type {RegExp}
      */
-    var ANCHOR_REGEX = /(<a[^<]*<\/a>)/ig;
+    var ANCHOR_REGEX = /(<a(?:(?!<\/a>).)*<\/a>)/ig;
 
     /**
      * URL regex.

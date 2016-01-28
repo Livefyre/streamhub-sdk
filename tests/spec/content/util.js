@@ -55,6 +55,15 @@ function (util) {
 
                 str = '<p><a href="http://google.com" target="_blank" rel="nofollow">http://google.com</a> http://google.com</p>';
                 expect(util.linkify(str)).toEqual('<p><a href="http://google.com" target="_blank" rel="nofollow">http://google.com</a> <a href="http://google.com" target="_blank" rel="nofollow">http://google.com</a></p>');
+
+                str = '<a href="https://twitter.com/#!/search/realtime/%23Realtors" class="fyre-hashtag" hashtag="Realtors" rel="tag" target="_blank">#Realtors</a> high quality remake of <a href="https://twitter.com/#!/search/realtime/%23Adele" class="fyre-hashtag" hashtag="Adele" rel="tag" target="_blank">#Adele</a> \'s <a href="https://twitter.com/#!/search/realtime/%23Hello" class="fyre-hashtag" hashtag="Hello" rel="tag" target="_blank">#Hello</a>. Hilarious lyric customization <a href="https://t.co/JL06YLfggW" target="_blank" rel="nofollow">youtube.com/watch</a>? v=X8EF1cY35KY&amp;sns=tw <a href="https://twitter.com/#!/search/realtime/%23realestate" class="fyre-hashtag" hashtag="realestate" rel="tag" target="_blank">#realestate</a>';
+                expect(util.linkify(str)).toEqual(str);
+
+                str = '<a href="https://twitter.com/#!/search/realtime/%23TodosSomosChiqui" class="fyre-hashtag" hashtag="TodosSomosChiqui" rel="tag" target="_blank">#TodosSomosChiqui</a> <a href="https://twitter.com/#!/search/realtime/%23SaludosSecundariaAnexa" class="fyre-hashtag" hashtag="SaludosSecundariaAnexa" rel="tag" target="_blank">#SaludosSecundariaAnexa</a> <a vocab="http://schema.org" typeof="Person" rel="nofollow" resource="acct:163521165@twitter.com" data-lf-handle="" data-lf-provider="twitter" property="url" href="https://twitter.com/#!/los40mx" target="_blank" class="fyre-mention fyre-mention-twitter">@<span property="name">los40mx</span></a> <a href="https://twitter.com/#!/search/realtime/%23YAPARATE" class="fyre-hashtag" hashtag="YAPARATE" rel="tag" target="_blank">#YAPARATE</a> <a href="https://twitter.com/#!/search/realtime/%23ProyectoClase" class="fyre-hashtag" hashtag="ProyectoClase" rel="tag" target="_blank">#ProyectoClase</a> <a href="https://twitter.com/#!/search/realtime/%23Listen" class="fyre-hashtag" hashtag="Listen" rel="tag" target="_blank">#Listen</a>  <a href="https://twitter.com/#!/search/realtime/%23Hello" class="fyre-hashtag" hashtag="Hello" rel="tag" target="_blank">#Hello</a>';
+                expect(util.linkify(str)).toEqual(str);
+
+                str = '<a href="http://google.com" target="_blank"><span>something</span></a> derp';
+                expect(util.linkify(str)).toEqual(str);
             });
         });
     });
