@@ -68,6 +68,10 @@ require.config({
   },{
     name: "livefyre-bootstrap",
     location: "lib/livefyre-bootstrap/src"
+  },{
+    name: 'linkify',
+    location: 'node_modules/linkifyjs/lib',
+    main: 'linkify'
   }],
   shim: {
     jquery: {
