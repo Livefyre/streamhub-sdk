@@ -4,21 +4,6 @@ function (util) {
     'use strict';
 
     describe('streamhub-sdk/content/util', function () {
-        describe('inAnchor', function () {
-            it('returns false if not within an anchor', function () {
-                var str = '<p>abc <a href="http://www.blah.com">http://www.blah.com</a> def</p>';
-                expect(util.inAnchor(str, 5)).toBe(null);
-            });
-
-            it('returns true if within an anchor', function () {
-                var str = '<p>abc <a href="http://www.blah.com">http://www.blah.com</a> def</p>';
-                expect(util.inAnchor(str, 15)).toEqual({
-                    startIndex: 7,
-                    endIndex: 60
-                });
-            });
-        });
-
         describe('linkify', function () {
             it('does nothing if there are no urls', function () {
                 expect(util.linkify('abc def')).toEqual('abc def');
@@ -63,6 +48,9 @@ function (util) {
                 expect(util.linkify(str)).toEqual(str);
 
                 str = '<a href="http://google.com" target="_blank"><span>something</span></a> derp';
+                expect(util.linkify(str)).toEqual(str);
+
+                str = 'Mr. Lowery, a rock guitarist-songwriter, applied for class-action status, arguing that Spotify has failed to handle the mechanical licensing for a huge number of songs by many songwriters.<br clear="all"><br><br><a href="http://rc.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/rc/1/rc.htm" rel="nofollow"><img border="0" src="http://rc.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/rc/1/rc.img"></a><br><br><a href="http://rc.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/rc/2/rc.htm" rel="nofollow"><img border="0" src="http://rc.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/rc/2/rc.img"></a><br><br><a href="http://rc.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/rc/3/rc.htm" rel="nofollow"><img border="0" src="http://rc.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/rc/3/rc.img"></a><br><br><a href="http://da.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/a2.htm"><img border="0" src="http://da.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/a2.img"></a><br><a href="http://adchoice.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/ach.htm"><img border="0" src="http://adchoice.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/ach.img"></a><img border="0" height="1" src="http://pi.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/a2t.img" width="1"><img border="0" height="1" src="http://pi2.feedsportal.com/r/247386580830/u/75/f/640387/c/34625/s/4c88b34c/sc/27/a2t2.img" width="1"><img border="0" height="1" src="http://rss.nytimes.com/c/34625/f/640387/s/4c88b34c/sc/27/mf.gif" width="1">';
                 expect(util.linkify(str)).toEqual(str);
             });
         });

@@ -12,7 +12,8 @@
     "tmp": "0.0.23",
     "http-server": "*",
     "requirejs": "2.1.9",
-    "phantom": "*"
+    "phantom": "*",
+    "linkifyjs": "2.0.0-beta.8"
   },
   "scripts": {
     "postinstall": "./node_modules/bower/bin/bower install && ./node_modules/less/bin/lessc -ru --include-path=lib --compress src/css/style.less src/css/style.css",
