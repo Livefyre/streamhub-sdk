@@ -7,4 +7,5 @@ script:
   - cp -f src/css/style.css ./style2.css
   - npm run lessc
   - diff -q src/css/style.css ./style2.css
+  - rm -f ./style1.css
   - npm run test-ci
