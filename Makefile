@@ -39,7 +39,7 @@ lint: build
 	npm run hint
 
 lessc: build
-	npm rum lessc
+	npm run lessc
 
 env=dev
 deploy: dist
