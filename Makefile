@@ -38,6 +38,9 @@ server: build
 lint: build
 	npm run hint
 
+lessc: build
+	npm rum lessc
+
 env=dev
 deploy: dist
 	./node_modules/.bin/lfcdn -e $(env)
