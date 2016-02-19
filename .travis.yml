@@ -5,7 +5,9 @@ before_install:
   - phantomjs --version
 script:
   - cp -f src/css/style.css ./style2.css
+  - wc ./style2.css
   - npm run lessc
-  - diff -q src/css/style.css ./style2.css
-  - rm -f ./style1.css
+  - wc src/css/style.css
+  - diff --brief src/css/style.css ./style2.css
+  - rm -f ./style2.css
   - npm run test-ci
