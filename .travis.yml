@@ -8,7 +8,7 @@ script:
   - wc ./style2.css
   - remove src/css/style.css
   - wc src/css/style.css
-  - sudo npm run lessc
+  - npm run lessc
   - wc src/css/style.css
   - ls -l src/css/style.css
   - diff --brief src/css/style.css ./style2.css
