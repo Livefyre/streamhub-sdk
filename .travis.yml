@@ -4,6 +4,7 @@ node_js:
 before_install:
   - phantomjs --version
 script:
+  - ls -l src/css/style.css
   - cp -f src/css/style.css ./style2.css
   - wc ./style2.css
   - rm src/css/style.css
