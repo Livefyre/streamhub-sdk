@@ -6,8 +6,11 @@ before_install:
 script:
   - cp -f src/css/style.css ./style2.css
   - wc ./style2.css
-  - npm run lessc
+  - remove src/css/style.css
   - wc src/css/style.css
+  - sudo npm run lessc
+  - wc src/css/style.css
+  - ls -l src/css/style.css
   - diff --brief src/css/style.css ./style2.css
   - rm -f ./style2.css
   - npm run test-ci
