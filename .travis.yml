@@ -6,7 +6,7 @@ before_install:
 script:
   - cp -f src/css/style.css ./style2.css
   - wc ./style2.css
-  - remove src/css/style.css
+  - rm src/css/style.css
   - wc src/css/style.css
   - npm run lessc
   - wc src/css/style.css
