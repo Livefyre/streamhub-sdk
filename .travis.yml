@@ -3,4 +3,10 @@ node_js:
   - "0.10"
 before_install:
   - phantomjs --version
-script: npm run test-ci
+  - cp -f src/css/style.css ./style2.css
+script:
+  - echo Checking for uncompiled less file changes
+  - npm run lessc
+  - diff --brief src/css/style.css ./style2.css
+  - rm -f ./style2.css
+  - npm run test-ci
