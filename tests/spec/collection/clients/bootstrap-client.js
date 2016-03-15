@@ -35,6 +35,17 @@ function ($, LivefyreBootstrapClient, MockBootstrapClient) {
                 expect(bootstrapClient instanceof LivefyreBootstrapClient).toBe(true);
             });
 
+            it("requests data from the custom network domain with environment t402.livefyre.com", function () {
+                bootstrapClient.getContent(opts, callback);
+                waitsFor(function() {
+                    return callback.callCount;
+                }, '.getContent to respond');
+                runs(function () {
+                    var mostRecentRequest = bootstrapClient._request.mostRecentCall.args[0];
+                    expect(mostRecentRequest.url).toBe('http://bootstrap.labs-t402.fyre.co/bs3/v3.1/t402.livefyre.com/labs-t402.fyre.co/303827/Z2VuZV9wdWJsaXNoXzA=/init');
+                });
+            });
+
             it ("should return data when getContent is called", function () {
                 bootstrapClient.getContent(opts, callback);
         
@@ -102,7 +113,7 @@ function ($, LivefyreBootstrapClient, MockBootstrapClient) {
             it("requests the bootstrap service with that version in the path", function () {
                 bootstrapClient.getContent(opts, callback);
                 var requestedUrl = bootstrapClient._request.mostRecentCall.args[0].url;
-                expect(requestedUrl).toBe('http://bootstrap.fyre/bs3/v3.1/livefyre.com/286472/NTA5Mzg4YzAtYTI3Mi00MTcwLTk4YjktNzE0OTczYjM3NTM4/init');
+                expect(requestedUrl).toBe('http://data.fyre/bs3/v3.1/livefyre.com/286472/NTA5Mzg4YzAtYTI3Mi00MTcwLTk4YjktNzE0OTczYjM3NTM4/init');
             });
         });
 
@@ -126,7 +137,7 @@ function ($, LivefyreBootstrapClient, MockBootstrapClient) {
             it("requests the correct bootstrap URL for localdev", function () {
                 bootstrapClient.getContent(opts, callback);
                 var requestedUrl = bootstrapClient._request.mostRecentCall.args[0].url;
-                expect(requestedUrl).toBe('http://bootstrap.fyre/bs3/v3.1/livefyre.com/286472/NTA5Mzg4YzAtYTI3Mi00MTcwLTk4YjktNzE0OTczYjM3NTM4/init');
+                expect(requestedUrl).toBe('http://data.fyre/bs3/v3.1/livefyre.com/286472/NTA5Mzg4YzAtYTI3Mi00MTcwLTk4YjktNzE0OTczYjM3NTM4/init');
             });
         });
 
@@ -150,7 +161,7 @@ function ($, LivefyreBootstrapClient, MockBootstrapClient) {
             it("requests the correct bootstrap URL for localdev", function () {
                 bootstrapClient.getContent(opts, callback);
                 var requestedUrl = bootstrapClient._request.mostRecentCall.args[0].url;
-                expect(requestedUrl).toBe('http://bootstrap.fy.re/bs3/v3.1/livefyre.com/286472/NTA5Mzg4YzAtYTI3Mi00MTcwLTk4YjktNzE0OTczYjM3NTM4/init');
+                expect(requestedUrl).toBe('http://data.fy.re/bs3/v3.1/livefyre.com/286472/NTA5Mzg4YzAtYTI3Mi00MTcwLTk4YjktNzE0OTczYjM3NTM4/init');
             });
         });
 
@@ -170,10 +181,10 @@ function ($, LivefyreBootstrapClient, MockBootstrapClient) {
                     });
                 });
             });
-            it("requests the correct bootstrap URL for prod", function () {
+            it("requests the correct bootstrap URL for prod livefyre.com network", function () {
                 bootstrapClient.getContent(opts, callback);
                 var requestedUrl = bootstrapClient._request.mostRecentCall.args[0].url;
-                expect(requestedUrl).toBe('http://bootstrap.livefyre.com/bs3/v3.1/livefyre.com/313878/MQ==/init');
+                expect(requestedUrl).toBe('http://data.livefyre.com/bs3/v3.1/livefyre.com/313878/MQ==/init');
             });
         });
 
@@ -193,7 +204,7 @@ function ($, LivefyreBootstrapClient, MockBootstrapClient) {
                     environment: 'qa-ext.livefyre.com'
                 });
                 var ajaxArgs = bootstrapClient._request.mostRecentCall.args[0];
-                expect(ajaxArgs.url).toBe('https://backplane-qa.bootstrap.fyre.co/bs3/v3.1/qa-ext.livefyre.com/backplane-qa.fyre.co/290598/MQ==/init');
+                expect(ajaxArgs.url).toBe('https://data.qa-ext.livefyre.com/bs3/v3.1/qa-ext.livefyre.com/backplane-qa.fyre.co/290598/MQ==/init');
             });
             it('makes correct request when opts.environment=fyre', function () {
                 spyOn(bootstrapClient, '_request');
@@ -205,6 +216,7 @@ function ($, LivefyreBootstrapClient, MockBootstrapClient) {
                 });
                 var ajaxArgs = bootstrapClient._request.mostRecentCall.args[0];
                 expect(ajaxArgs.url.indexOf('https')).toBe(0);
+                expect(ajaxArgs.url).toBe('https://data.fyre/bs3/v3.1/backplane-qa.fyre.co/290598/MQ==/init');
             });
 
         });

@@ -11,14 +11,28 @@ function(LivefyreHttpClient, inherits, base64) {
      */
     var LivefyreBootstrapClient = function (opts) {
         opts = opts || {};
-        opts.serviceName = 'bootstrap';
+        opts.serviceName = 'data';
         this._version = opts.version || 'v3.1';
         LivefyreHttpClient.call(this, opts);
     };
 
     inherits(LivefyreBootstrapClient, LivefyreHttpClient);
 
-    LivefyreBootstrapClient.prototype._serviceName = 'bootstrap';
+    LivefyreBootstrapClient.prototype._serviceName = 'data';
+    var BS_ENVS = ['livefyre.com', 't402.livefyre.com'];
+
+    LivefyreBootstrapClient.prototype._getHost = function(opts) {
+        var environment = opts.environment || 'livefyre.com';
+        // use bootstrap directly for custom networks in prod and UAT
+        // use data/Fastly if qa or if network == livefyre.com
+        // TODO: remove after Fastly is tested on Community network in prod
+        var isBsEnv = BS_ENVS.indexOf(environment) > -1;
+        if (isBsEnv && opts.network !== 'livefyre.com') {
+            this._serviceName = 'bootstrap';
+            return LivefyreHttpClient.prototype._getHost.call(this, opts);
+        }
+        return this._serviceName + '.' + environment;
+    };
 
     /**
      * Fetches data from the livefyre bootstrap service with the arguments given.
