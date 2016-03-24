@@ -251,7 +251,8 @@ ContentListView.prototype.getContentView = function (newContent) {
 ContentListView.prototype.createContentView = function (content) {
     var view = this.contentViewFactory.createContentView(content, {
         liker: this._liker,
-        sharer: this._sharer
+        sharer: this._sharer,
+        _i18n: this.opts._i18n
     });
     return view;
 };

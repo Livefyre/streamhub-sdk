@@ -101,11 +101,13 @@ function asLivefyreContentView(contentView, opts) {
      */
     contentView._createShareButton = function () {
         var shareCommand = contentView._commands.share;
+        var label = (this.opts._i18n && this.opts._i18n.shareButtonText) ? this.opts._i18n.shareButtonText : 'Share';
 
         if (!shareCommand) {
             return new ShareButton({
                 className: 'btn-link content-share',
-                content: this.content
+                content: this.content,
+                label: label
             });
         }
         if (! shareCommand.canExecute()) {
@@ -113,7 +115,7 @@ function asLivefyreContentView(contentView, opts) {
         }
         var shareButton = new HubButton(shareCommand, {
             className: 'btn-link content-share',
-            label: 'Share'
+            label: label
         });
         return shareButton;
     };

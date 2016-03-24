@@ -9,9 +9,9 @@ function (inherits, View) {
      */
     var ShowMoreButton = function (opts) {
         View.call(this, opts);
-        opts = opts || {};
-        if (opts.more) {
-            this.setMoreStream(opts.more);
+        this.opts = opts || {};
+        if (this.opts.more) {
+            this.setMoreStream(this.opts.more);
         }
     };
 
@@ -43,7 +43,7 @@ function (inherits, View) {
      * @return {string}
      */
     ShowMoreButton.prototype.template = function () {
-        return "Load More";
+        return (this.opts._i18n && this.opts._i18n.showMoreButtonText) ? this.opts._i18n.showMoreButtonText : "Load More";
     };
 
 

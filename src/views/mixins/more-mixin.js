@@ -33,7 +33,7 @@ var HasMoreMixin = function (listView, opts) {
      * @return {ShowMoreButton}
      */
     function createShowMoreButton(opts) {
-        return new ShowMoreButton();
+        return new ShowMoreButton(opts);
     };
 
     /**

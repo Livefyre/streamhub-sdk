@@ -84,7 +84,8 @@ ContentViewFactory.prototype.createContentView = function(content, opts) {
         attachmentsView: opts.attachmentsView,
         likeCommand: likeCommand,
         shareCommand: shareCommand,
-        useSingleMediaView: this._useSingleMediaView
+        useSingleMediaView: this._useSingleMediaView,
+        _i18n: opts._i18n
     });
 
     return contentView;
