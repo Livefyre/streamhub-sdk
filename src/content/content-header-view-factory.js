@@ -22,25 +22,39 @@ ContentHeaderViewFactory.prototype._getHeaderViewOptsForContent = function (cont
     var opts = {};
     opts.author =  content.author;
 
+
     if (content.typeUrn === TYPE_URNS.LIVEFYRE_TWITTER || content.typeUrn === TYPE_URNS.TWITTER) {
         if (content.author && typeof content.author.profileUrl === 'string') {
             opts.authorUserNamePrefix = '@';
             opts.authorUserName = content.author.profileUrl.split('/').pop();
             opts.authorUrl = '//twitter.com/intent/user?user_id='+content.author.twitterUserId;
         }
-
         opts.authorVerified = content.twitterVerified;
-
         opts.contentSourceName = 'twitter';
-
         opts.contentSourceUrl = '//twitter.com';
     } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_FACEBOOK) {
         if (content.author) {
+            opts.authorUserNamePrefix = '@';
             opts.authorUrl = content.author.profileUrl;
         }
-
-        opts.contentSourceName = 'facebook'
+        opts.contentSourceName = 'facebook';
+        opts.contentSourceUrl = '//facebook.com';
         opts.contentSourceTooltipText = 'View on Facebook';
+    } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_INSTAGRAM ) {
+        if (content.author) {
+            opts.authorUserNamePrefix = '@';
+            opts.authorUrl = content.author.profileUrl;
+        }
+        opts.authorUserName = content.author.profileUrl.split('/').pop();
+        opts.contentSourceName = 'instagram';
+        opts.contentSourceUrl = '//instagram.com';
+    } else if (content.typeUrn === TYPE_URNS.LIVEFYRE ) {
+        if (content.author) {
+            opts.authorUserNamePrefix = '@';
+            opts.authorUrl = content.author.profileUrl;
+        }
+        opts.authorUserName = content.author.profileUrl.split('.com/').pop();
+        opts.contentSourceName = 'livefyre';
     }
 
     return opts;
