@@ -30,7 +30,7 @@ var HasQueueMixin = function (listView, opts) {
     };
 
     function createShowQueueButton(opts) {
-        return new ShowMoreButton();
+        return new ShowMoreButton(opts);
     };
 
     /**

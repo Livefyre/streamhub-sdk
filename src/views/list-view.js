@@ -68,7 +68,8 @@ var ListView = function(opts) {
                 throw new Error("Can't get show more button for ListView");
             }
             return el;
-        }.bind(this)
+        }.bind(this),
+        _i18n: opts._i18n
     });
 
     this.comparator = opts.comparator || this.comparator;
