@@ -38,6 +38,11 @@ function asLivefyreContentView(contentView, opts) {
     };
 
     contentView._addInitialButtons = function () {
+        // Expand
+        contentView._expandButton = contentView._createExpandButton();
+        if (contentView._expandButton) {
+            contentView.addButton(contentView._expandButton);
+        }
         // Like
         contentView._likeButton = contentView._createLikeButton();
         if (contentView._likeButton) {
@@ -53,6 +58,17 @@ function asLivefyreContentView(contentView, opts) {
         if (contentView._shareButton) {
             contentView.addButton(contentView._shareButton);
         }
+    };
+
+    /**
+     * Create a Button to be used for showing modal
+     * @protected
+     */
+    contentView._createExpandButton = function () {
+        return new HubButton(undefined, {
+            className: 'content-action content-action-expand',
+            buttonUrl: '#'
+        });
     };
 
     /**

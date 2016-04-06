@@ -33,6 +33,10 @@ function asTwitterContentView(contentView, opts) {
     };
 
     contentView._addInitialButtons = function () {
+        var expandButton = new HubButton(undefined, {
+            className: 'content-action content-action-expand',
+            buttonUrl: '#'
+        });
         var replyButton = new HubButton(undefined, {
             className: 'content-action content-action-reply',
             buttonUrl: 'https://twitter.com/intent/tweet?in_reply_to=' + contentView.content.tweetId
@@ -46,6 +50,7 @@ function asTwitterContentView(contentView, opts) {
             buttonUrl: 'https://twitter.com/intent/favorite?tweet_id=' + contentView.content.tweetId
         });
 
+        contentView.addButton(expandButton);
         contentView.addButton(replyButton);
         contentView.addButton(retweetButton);
         contentView.addButton(favoriteButton);
