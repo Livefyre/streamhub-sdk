@@ -48,13 +48,6 @@ ContentHeaderViewFactory.prototype._getHeaderViewOptsForContent = function (cont
         opts.authorUserName = content.author.profileUrl.split('/').pop();
         opts.contentSourceName = 'instagram';
         opts.contentSourceUrl = '//instagram.com';
-    } else if (content.typeUrn === TYPE_URNS.LIVEFYRE ) {
-        if (content.author) {
-            opts.authorUserNamePrefix = '@';
-            opts.authorUrl = content.author.profileUrl;
-        }
-        opts.authorUserName = content.author.profileUrl.split('.com/').pop();
-        opts.contentSourceName = 'livefyre';
     }
 
     return opts;
