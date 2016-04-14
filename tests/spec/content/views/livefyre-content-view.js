@@ -229,7 +229,7 @@ function (
             it("cannot execute when the Like button's associated content is authored by the authenticated user (cannot Like own content)", function () {
                 var lfContent = new LivefyreContent({
                     body: 'lf content',
-                    author: { id: mockAuthResponse.data.profile.id },
+                    author: { id: mockAuthResponse.data.profile.id, profileUrl: 'http://www.qa-ext.livefyre.com/profile/1794008/'},
                     id: '1'
                 });
 
@@ -252,7 +252,10 @@ function (
             it("can execute when the Like button's associated content is not authored by the authenticated user (can Like other users' content)", function () {
                 var lfContent = new LivefyreContent({
                     body: 'lf content',
-                    author: { id: 'datdude@blah' },
+                    author: {
+                        id: 'datdude@blah',
+                        profileUrl: 'http://www.qa-ext.livefyre.com/profile/1794008/'
+                    },
                     id: '1'
                 });
 
