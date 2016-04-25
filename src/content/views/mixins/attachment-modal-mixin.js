@@ -9,7 +9,7 @@ var GalleryAttachmentListView = require('streamhub-sdk/content/views/gallery-att
  */
 function hasAttachmentModal(view, modal) {
     if (modal === undefined || modal === true) {
-        modal = new AttachmentGalleryModal();
+        modal = new AttachmentGalleryModal({creator: view});
     }
 
     view.events = view.events.extended({

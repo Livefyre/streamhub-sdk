@@ -8,13 +8,12 @@ define([
     'use strict';
 
     /**
-     * A view that overlays over the entire viewport to display some content
-     *
-     * @param opts {Object} A set of options to config the view with
+     * A view that overlays over the entire viewport to display some content.
+     * @constructor
+     * @exports streamhub-sdk/modal
      * @fires GalleryAttachmentListView#hideModal.hub
      * @fires GalleryAttachmentListView#error
-     * @exports streamhub-sdk/modal
-     * @constructor
+     * @param opts {Object} A set of options to config the view with
      */
     var ModalView = function (opts) {
         opts = opts || {};
@@ -24,6 +23,14 @@ define([
         // The parent node that this will attach to when shown
         this.parentNode = opts.parentNode || ModalView.el;
         View.call(this);
+
+        /**
+         * View that created this instance.
+         * This will be used to trigger an init event.
+         * @type {View}
+         * @private
+         */
+        this._creator = opts.creator;
 
         var self = this;
         $(window).keyup(function (e) {
@@ -36,7 +43,6 @@ define([
         ModalView.instances.push(this);
     };
     inherits(ModalView, View);
-
 
     // Store all instances of modal to ensure that only one is visible
     ModalView.instances = [];
@@ -54,29 +60,32 @@ define([
     };
     $(document).ready(ModalView.insertEl);
 
-
     ModalView.prototype.template = ModalTemplate;
     ModalView.prototype.elClass = ' hub-modal';
-
 
     ModalView.prototype.modalElSelector = '.hub-modal';
     ModalView.prototype.closeButtonSelector = '.hub-modal-close';
     ModalView.prototype.containerElSelector = '.hub-modal-content';
     ModalView.prototype.contentViewElSelector = '.hub-modal-content-view';
 
-
     /**
-     * Makes the modal and its content visible
+     * Makes the modal and its content visible.
      * @param [modalSubView] {View} The view to be displayed in the by the modal.
-     *      Defaults to this._modalSubView
+     *     Defaults to this._modalSubView
      * @param [stack] {boolean=} Set true to start a stacked set of modals.
-     *          Set false to exclude from a current stack. Leave undefined
-     *          for normal stackless behavior.
+     *     Set false to exclude from a current stack. Leave undefined for
+     *     normal stackless behavior.
      */
     ModalView.prototype.show = function (modalSubView, stack) {
         var self = this;
         if (stack || ModalView._stackedInstances.length && stack !== false) {
             this._stack();
+        }
+
+        // If a creator view was provided to the modal, trigger an init event
+        // so that anyone listening knows a modal is being opened.
+        if (this._creator && this._creator.$el) {
+            this._creator.$el.trigger('initModal.hub', this);
         }
 
         // First hide any other modals
@@ -90,10 +99,9 @@ define([
         });
 
         this.$el.trigger('showing');
-
         $('body').css('overflow', 'hidden');
-
         this.$el.show();
+
         if ( ! this._attached) {
             this._attach();
         }
@@ -108,7 +116,6 @@ define([
         this.$el.trigger('shown');
     };
 
-
     /**
      * Makes the modal and its content not visible
      */
@@ -121,7 +128,6 @@ define([
         this.$el.trigger('hidden');
     };
 
-
     /**
      * Creates DOM structure of gallery to be displayed
      */
@@ -132,14 +138,13 @@ define([
         this._modalSubView.render();
     };
 
-
     /**
      * Set the element for the view to render in.
      * ModalView construction takes care of creating its own element in
      *     ModalView.el. You probably don't want to call this manually
-     * @private
      * @param element {HTMLElement} The element to render this View in
      * @returns this
+     * @private
      */
     ModalView.prototype.setElement = function (element) {
         View.prototype.setElement.call(this, element);
@@ -153,7 +158,7 @@ define([
         });
 
         this.$el.on('click', this.closeButtonSelector, function (e) {
-            self.$el.trigger('hideModal.hub');
+            self.$el.trigger('hideModal.hub', self);
         });
 
         this.$el.on('click', function (e) {
@@ -162,13 +167,12 @@ define([
              * @event GalleryAttachmentListView#hideModal.hub
              */
             if ($(e.target).hasClass('hub-modal-content') || $(e.target).hasClass('hub-modal-close')) {
-                self.$el.trigger('hideModal.hub');
+                self.$el.trigger('hideModal.hub', self);
             }
         });
 
         return this;
     };
-
 
     /**
      * Attach .el to the DOM
@@ -179,12 +183,10 @@ define([
         this._attached = true;
     };
 
-
     /**
      * Detach .el from the DOM
-     * This may be useful when the modal is hidden, so that
-     *     the browser doesn't have to lay it out, and it doesn't
-     *     somehow intercept DOM events
+     * This may be useful when the modal is hidden, so that the browser doesn't
+     *     have to lay it out, and it doesn't somehow intercept DOM events
      * @private
      */
     ModalView.prototype._detach = function () {
@@ -206,19 +208,20 @@ define([
      * @private
      */
     ModalView.prototype._unstack = function () {
-        var stackLength = ModalView._stackedInstances.length,
-            top;
+        var stackLength = ModalView._stackedInstances.length;
+        var top;
+
+        // Return early if the stack is empty.
         if (stackLength === 0) {
-        //Return early if the stack is empty
             return;
         }
 
-        //Check that this is the top item and pop it off if it is
+        // Check that this is the top item and pop it off if it is.
         top = ModalView._stackedInstances[stackLength - 1];
         this === top && ModalView._stackedInstances.pop() && stackLength--;
 
+        // If there is a next modal, show it.
         if (stackLength > 0) {
-        //If there is a next modal, show it
             ModalView._stackedInstances[stackLength - 1].show(undefined, false);
         }
     };

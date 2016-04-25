@@ -69,6 +69,10 @@ require.config({
   },{
     name: "livefyre-bootstrap",
     location: "lib/livefyre-bootstrap/src"
+  }, {
+    name: "activity-streams-vocabulary",
+    location: "lib/activity-streams-vocabulary/src",
+    main: "index.js"
   }],
   shim: {
     jquery: {

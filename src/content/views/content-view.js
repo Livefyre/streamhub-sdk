@@ -3,7 +3,6 @@ var CompositeView = require('view/composite-view');
 var ContentHeaderView = require('streamhub-sdk/content/views/content-header-view');
 var ContentBodyView = require('streamhub-sdk/content/views/content-body-view');
 var ContentFooterView = require('streamhub-sdk/content/views/content-footer-view');
-var TiledAttachmentListView = require('streamhub-sdk/content/views/tiled-attachment-list-view');
 var BlockAttachmentListView = require('streamhub-sdk/content/views/block-attachment-list-view');
 var ContentHeaderViewFactory = require('streamhub-sdk/content/content-header-view-factory');
 var ContentThumbnailViewFactory = require('streamhub-sdk/content/content-thumbnail-view-factory');
@@ -63,7 +62,7 @@ var ContentView = function (opts) {
 
         this.$el.on('insights:local', function (evt, data) {
             if (data.type.search(/^Share(?:T|F|U)/) < 0) {
-                data.content = opts.content;
+                data.content = data.content || opts.content;
             }
         });
 

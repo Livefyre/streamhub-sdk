@@ -4,6 +4,8 @@ var inherits = require('inherits');
 var View = require('streamhub-sdk/view');
 var template = require('hgn!streamhub-sdk/content/templates/content-footer');
 var util = require('streamhub-sdk/util');
+var ActivityTypes = require('activity-streams-vocabulary').ActivityTypes;
+var ObjectTypes = require('activity-streams-vocabulary').ObjectTypes;
 
 'use strict';
 
@@ -40,7 +42,25 @@ ContentFooterView.prototype.formatDate = util.formatDate;
 ContentFooterView.prototype.footerLeftSelector = '.content-footer-left > .content-control-list';
 ContentFooterView.prototype.footerRightSelector = '.content-footer-right > .content-control-list';
 
+ContentFooterView.prototype.events = View.prototype.events.extended({
+    'click': function (evt) {
+        var $evtTarget = $(evt.target);
 
+        if ($evtTarget.filter('.content-created-at a').length) {
+            $evtTarget.trigger('insights:local', {
+                type: ActivityTypes.CLICK_THROUGH,
+                content: {
+                    href: evt.target.href || '',
+                    type: ObjectTypes.LINK
+                }
+            });
+        }
+    }
+});
+
+/**
+ * @extend
+ */
 ContentFooterView.prototype.render = function () {
     View.prototype.render.call(this);
     this._renderButtons();
@@ -131,6 +151,9 @@ ContentFooterView.prototype.removeButton = function (button) {
     button.destroy();
 };
 
+/**
+ * @override
+ */
 ContentFooterView.prototype.getTemplateContext = function () {
     var context = $.extend({}, this._content);
     if (this._content && this._content.createdAt) {

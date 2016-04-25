@@ -3,6 +3,7 @@ var AttachmentListView = require('streamhub-sdk/content/views/attachment-list-vi
 var OembedView = require('streamhub-sdk/content/views/oembed-view');
 var TiledAttachmentListTemplate = require('hgn!streamhub-sdk/content/templates/tiled-attachment-list');
 var inherits = require('inherits');
+var ActivityTypes = require('activity-streams-vocabulary').ActivityTypes;
 
 'use strict';
 
@@ -41,7 +42,15 @@ TiledAttachmentListView.prototype.events = AttachmentListView.prototype.events.e
             }
         }
 
-        this.$el.trigger('focusContent.hub', { content: this.content, attachmentToFocus: targetOembed });
+        this.$el
+            .trigger('focusContent.hub', {
+                content: this.content,
+                attachmentToFocus: targetOembed
+            })
+            .trigger('insights:local', {
+                type: ActivityTypes.MODAL_VIEW,
+                content: this.content
+            });
     }
 });
 

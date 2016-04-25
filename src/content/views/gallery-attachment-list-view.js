@@ -90,7 +90,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
              * Hide modal
              * @event GalleryAttachmentListView#hideModal.hub
              */
-            this.$el.trigger('hideModal.hub');
+            this.$el.trigger('hideModal.hub', this);
         },
         'focusContent.hub': function(e, context) {
             if (context.content) {

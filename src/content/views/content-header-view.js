@@ -3,6 +3,8 @@ var inherits = require('inherits');
 var View = require('streamhub-sdk/view');
 var template = require('hgn!streamhub-sdk/content/templates/content-header');
 var debug = require('debug');
+var ActivityTypes = require('activity-streams-vocabulary').ActivityTypes;
+var ObjectTypes = require('activity-streams-vocabulary').ObjectTypes;
 
 var log = debug('streamhub-sdk/content/views/content-header-view');
 
@@ -43,6 +45,23 @@ ContentHeaderView.prototype.parentClassSelector = '.content';
 
 ContentHeaderView.prototype.events = View.prototype.events.extended({}, function (events) {
     events['click'] = function(e) {
+        var evtTarget = e.target;
+
+        if (evtTarget.nodeName.toLowerCase() === 'img' &&
+            evtTarget.parentNode.nodeName.toLowerCase() === 'a') {
+            evtTarget = evtTarget.parentNode;
+        }
+
+        if (evtTarget.nodeName.toLowerCase() === 'a') {
+            $(evtTarget).trigger('insights:local', {
+                type: ActivityTypes.CLICK_THROUGH,
+                content: {
+                    href: evtTarget.href || '',
+                    type: ObjectTypes.LINK
+                }
+            });
+        }
+
         if (! this.$el.parents(this.parentClassSelector).hasClass(this.contentWithImageClass) ||
             $(e.target).parent().hasClass(this.avatarClass)) {
             // Only do this when there is an image
