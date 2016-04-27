@@ -153,6 +153,7 @@ define([
         this.$el.addClass(this.elClass);
 
         this.$el.on('hideModal.hub', function (e) {
+            self._modalSubView.destroy && self._modalSubView.destroy();
             self.hide();
             self._unstack();
         });

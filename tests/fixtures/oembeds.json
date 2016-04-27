@@ -1,0 +1,75 @@
+{
+    "photo": {
+        "filepicker": {
+            "url": "http://dazfoe7f6de09.cloudfront.net/ClkZgZ8UQmwHZZMy4ShD_FSM-impastas.jpg",
+            "link": "http://dazfoe7f6de09.cloudfront.net/ClkZgZ8UQmwHZZMy4ShD_FSM-impastas.jpg",
+            "provider_name": "LivefyreFilePicker",
+            "type": "photo"
+        },
+        "instagram": {
+            "url": "https://scontent.cdninstagram.com/t51.2885-15/s640x640/sh0.08/e35/12627845_1519342335027967_531938538_n.jpg",
+            "type": "photo"
+        }
+    },
+    "rich": {
+        "soundcloud": {
+            "provider_url": "http://soundcloud.com",
+            "title": "Tiësto & Ummet Ozcan - What You're Waiting For [Available May 9] by Musical Freedom Recs",
+            "type": "rich",
+            "html": "<iframe class=\"embedly-embed\" src=\"//cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fw.soundcloud.com%2Fplayer%2F%3Fvisual%3Dtrue%26url%3Dhttp%253A%252F%252Fapi.soundcloud.com%252Ftracks%252F260022383%26show_artwork%3Dtrue&wmode=transparent&url=https%3A%2F%2Fsoundcloud.com%2Fmusical-freedom%2Ftiesto-ummet-ozcan-what-youre-waiting-for-may-9&image=http%3A%2F%2Fi1.sndcdn.com%2Fartworks-000159064689-hmskkh-t500x500.jpg&key=9a490b23ba72460b82aa369e9dfb1234&type=text%2Fhtml&schema=soundcloud\" width=\"500\" height=\"500\" scrolling=\"no\" frameborder=\"0\" allowfullscreen></iframe>",
+            "thumbnail_width": 500,
+            "height": 500,
+            "width": 500,
+            "version": "1.0",
+            "link": "https://soundcloud.com/musical-freedom/tiesto-ummet-ozcan-what-youre-waiting-for-may-9",
+            "author_name": "Musical Freedom Recs",
+            "provider_name": "SoundCloud",
+            "thumbnail_url": "http://i1.sndcdn.com/artworks-000159064689-hmskkh-t500x500.jpg",
+            "thumbnail_height": 500,
+            "author_url": "http://soundcloud.com/musical-freedom"
+        }
+    },
+    "video": {
+        "instagram": {
+            "width": 640,
+            "thumbnail_url": "https://scontent.cdninstagram.com/hphotos-xpt1/t51.2885-15/s150x150/e15/11910456_443791672476794_1778395696_n.jpg",
+            "type": "video",
+            "html": "<iframe src=\"//api.embed.ly/1/video?width=490&height=490&mp4=https://scontent.cdninstagram.com/hphotos-xtp1/t50.2886-16/12078856_856907221083570_102451330_n.mp4&poster=https://scontent.cdninstagram.com/hphotos-xpt1/t51.2885-15/s150x150/e15/11910456_443791672476794_1778395696_n.jpg}&schema=instagram\" frameborder=0 allowfullscreen></iframe>",
+            "height": 640
+        },
+        "livefyre": {
+            "html": "<iframe frameborder=\"0\" allowfullscreen src=\"//cdn.livefyre.com/libs/video-player/v1.0.0/player.html?data=%7B%22Outputs%22%3A%5B%7B%22Thumbnail%22%3A%22thumbnails%2Fhi%2FNiGNbEkQRNqKNaSsODrI_VIDEO0001-00001.png%22%2C%22Key%22%3A%22hi%2FNiGNbEkQRNqKNaSsODrI_VIDEO0001.mp4%22%7D%2C%7B%22Thumbnail%22%3A%22thumbnails%2Fmobile%2FNiGNbEkQRNqKNaSsODrI_VIDEO0001-00001.png%22%2C%22Key%22%3A%22mobile%2FNiGNbEkQRNqKNaSsODrI_VIDEO0001.mp4%22%7D%5D%2C%22Domain%22%3A%22media.fyre.co%22%2C%22Prefix%22%3A%22staging%2Fmp4%2F%22%7D\" width=\"640\" height=\"360\"></iframe>",
+            "link": "http://media.fyre.co/NiGNbEkQRNqKNaSsODrI_VIDEO0001.3gp",
+            "provider_name": "Livefyre",
+            "thumbnail_height": 360,
+            "thumbnail_url": "http://media.fyre.co/staging/mp4/thumbnails/hi/NiGNbEkQRNqKNaSsODrI_VIDEO0001-00001.png",
+            "thumbnail_width": 640,
+            "type": "video",
+            "url": "http://media.fyre.co/NiGNbEkQRNqKNaSsODrI_VIDEO0001.3gp"
+        },
+        "livefyre_promise": {
+            "url": "http://media.fyre.co/xsQHPbPJQBWSFFBqGmqC_recording.mp4",
+            "thumbnail_width": 75,
+            "thumbnail_url": "http://zor.livefyre.com/wjs/v3.0/images/video-play.png",
+            "provider_name": "Livefyre",
+            "type": "video_promise",
+            "thumbnail_height": 56
+        },
+        "youtube": {
+            "provider_url": "http://www.youtube.com/",
+            "version": "1.0",
+            "title": "Minecraft: Adobe Houses, Multiplying Zombies, And More! (Snapshot 13w17a)",
+            "url": "http://www.youtube.com/watch?v=fkvyHk6uMZ4",
+            "author_name": "CaptainSparklez",
+            "height": 480,
+            "width": 854,
+            "html": "<iframe width=\"854\" height=\"480\" src=\"http://www.youtube.com/embed/fkvyHk6uMZ4?feature=oembed\" frameborder=\"0\" allowfullscreen></iframe>",
+            "thumbnail_width": 480,
+            "provider_name": "YouTube",
+            "thumbnail_url": "http://i3.ytimg.com/vi/fkvyHk6uMZ4/hqdefault.jpg",
+            "type": "video",
+            "thumbnail_height": 360,
+            "author_url": "http://www.youtube.com/user/CaptainSparklez"
+        }
+    }
+}

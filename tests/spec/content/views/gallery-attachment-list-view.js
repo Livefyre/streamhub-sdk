@@ -176,6 +176,7 @@ function($, jasmineJquery, Content, GalleryAttachmentListView) {
                 expect(focusedVideoAttachmentEl).toHaveClass('content-attachments-focused');
                 expect(focusedVideoAttachmentEl).toHaveClass('content-attachment-video');
                 expect(focusedVideoAttachmentEl).toHaveCss({ display: 'block' });
+                expect($(focusedVideoAttachmentEl).find('iframe').length).toBe(1);
                 expect($(focusedVideoAttachmentEl).find('iframe').attr('src')).toContain('autoplay=1');
                 expect($(focusedVideoAttachmentEl).find('iframe').attr('src')).toContain('%26rel%3D0');
             });
@@ -200,6 +201,7 @@ function($, jasmineJquery, Content, GalleryAttachmentListView) {
                 expect(focusedVideoAttachmentEl).toHaveClass('content-attachments-focused');
                 expect(focusedVideoAttachmentEl).toHaveClass('content-attachment-video');
                 expect(focusedVideoAttachmentEl).toHaveCss({ display: 'block' });
+                expect($(focusedVideoAttachmentEl).find('iframe').length).toBe(1);
                 expect($(focusedVideoAttachmentEl).find('iframe').attr('src')).not.toContain('autoplay=1');
                 expect($(focusedVideoAttachmentEl).find('iframe').attr('src')).not.toContain('%26rel%3D0');
             });
@@ -224,6 +226,7 @@ function($, jasmineJquery, Content, GalleryAttachmentListView) {
                 expect(focusedVideoAttachmentEl).toHaveClass('content-attachments-focused');
                 expect(focusedVideoAttachmentEl).toHaveClass('content-attachment-video');
                 expect(focusedVideoAttachmentEl).toHaveCss({ display: 'block' });
+                expect($(focusedVideoAttachmentEl).find('iframe').length).toBe(1);
                 expect($(focusedVideoAttachmentEl).find('iframe').attr('src')).not.toContain('autoplay=1');
                 expect($(focusedVideoAttachmentEl).find('iframe').attr('src')).not.toContain('%26rel%3D0');
             });

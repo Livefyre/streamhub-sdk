@@ -91,7 +91,6 @@ function($, Content, Oembed, GalleryAttachmentListView, AttachmentGalleryModal) 
             });
 
             it('shows the video player as the focused attachment', function() {
-                tiledAttachmentEl.trigger('click');
                 var focusedAttachmentsEl = modalView.$el.find('.content-attachments-gallery');
                 var focusedVideoAttachmentEl = focusedAttachmentsEl.find('.content-attachment:first .content-attachment-video');
                 expect(focusedVideoAttachmentEl).not.toBeEmpty();

@@ -2,8 +2,9 @@ define([
     'jquery',
     'streamhub-sdk/content',
     'streamhub-sdk/content/views/attachment-list-view',
+    'streamhub-sdk/content/views/oembed-view-factory',
     'streamhub-sdk/content/views/oembed-view'],
-function($, Content, AttachmentListView, OembedView) {
+function($, Content, AttachmentListView, OembedViewFactory, OembedView) {
     'use strict';
 
     describe('AttachmentListView', function () {
@@ -74,7 +75,7 @@ function($, Content, AttachmentListView, OembedView) {
 
             describe('creates an attachment view', function() {
                 var attachmentListView = new AttachmentListView({ content: content });
-                var oembedView = attachmentListView._createOembedView(oembedAttachment);
+                var oembedView = OembedViewFactory.createOembedView({oembed: oembedAttachment});
                 it('is instance of OembedView', function() {
                     expect(oembedView).toBeDefined();
                     expect(oembedView instanceof OembedView).toBe(true);

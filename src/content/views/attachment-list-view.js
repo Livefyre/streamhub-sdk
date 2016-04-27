@@ -1,10 +1,10 @@
 define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/view',
-    'streamhub-sdk/content/views/oembed-view',
+    'streamhub-sdk/content/views/oembed-view-factory',
     'hgn!streamhub-sdk/content/templates/attachment-list',
     'inherits'],
-function($, View, OembedView, AttachmentListTemplate, inherits) {
+function($, View, OembedViewFactory, AttachmentListTemplate, inherits) {
     'use strict';
    
     /**
@@ -116,7 +116,7 @@ function($, View, OembedView, AttachmentListTemplate, inherits) {
      * @returns {AttachmentListView} By convention, return this instance for chaining
      */
     AttachmentListView.prototype.add = function(oembed) {
-        var oembedView = this._createOembedView(oembed);
+        var oembedView = OembedViewFactory.createOembedView({oembed: oembed});
 
         this.oembedViews.push(oembedView);
 
@@ -148,18 +148,6 @@ function($, View, OembedView, AttachmentListTemplate, inherits) {
         // Remove from this.oembedViews[]
         this.oembedViews.splice(this.oembedViews.indexOf(oembedView), 1);
         return true;
-    };
-
-    /**
-     * Creates the view to render the oembed content object
-     * @param oembed {Oembed} A Oembed instance to render in the View
-     * @returns {OembedView} 
-     */
-    AttachmentListView.prototype._createOembedView = function(oembed) {
-        var oembedView = new OembedView({
-            oembed: oembed
-        });
-        return oembedView;
     };
 
     /**

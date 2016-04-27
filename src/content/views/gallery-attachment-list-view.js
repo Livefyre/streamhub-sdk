@@ -2,14 +2,13 @@ define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/view',
     'streamhub-sdk/content/views/tiled-attachment-list-view',
-    'streamhub-sdk/content/views/oembed-view',
+    'streamhub-sdk/content/views/oembed-view-factory',
     'hgn!streamhub-sdk/content/templates/gallery-attachment-list',
     'streamhub-sdk/content/content-header-view-factory',
+    'streamhub-sdk/util/analytics',
     'inherits'],
-function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemplate, ContentHeaderViewFactory, inherits) {
+function($, View, TiledAttachmentListView, OembedViewFactory, GalleryAttachmentListTemplate, ContentHeaderViewFactory, analyticsUtil, inherits) {
     'use strict';
-
-    var AUTOPLAY_PROVIDER_REGEX = /YouTube|Livefyre/;
 
     /**
      * A view that displays a content's attachments as a gallery
@@ -84,6 +83,14 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
     GalleryAttachmentListView.prototype.attachmentMetaSelector = '.content-attachments-meta';
     GalleryAttachmentListView.prototype.actualImageSelector = '.content-attachment-actual-image';
 
+    /** @override */
+    GalleryAttachmentListView.prototype.destroy = function () {
+        for (var i = 0; i < this.oembedViews; i++) {
+            this.oembedViews[i].destroy();
+        }
+        View.prototype.destroy.call(this);
+    };
+
     GalleryAttachmentListView.prototype.events = TiledAttachmentListView.prototype.events.extended({
         click: function (e) {
             /**
@@ -92,7 +99,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
              */
             this.$el.trigger('hideModal.hub', this);
         },
-        'focusContent.hub': function(e, context) {
+        'focusContent.hub': function (e, context) {
             if (context.content) {
                 for (var i=0; i < context.content.attachments; i++) {
                     this.add(context.content.attachments[i]);
@@ -100,6 +107,9 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
             }
             this.setFocusedAttachment(context.attachmentToFocus);
             this.render();
+        },
+        'insights:local': function (e, data) {
+            data.context = analyticsUtil.contentObjectEntityFromModel(this.content);
         }
     }, function (events) {
         var pagingSelectors = [
@@ -241,7 +251,7 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
      * @param oembed {Oembed} A Oembed instance to render in the View
      */
     GalleryAttachmentListView.prototype.focus = function (oembed) {
-        if (!oembed && !this.oembedViews.length) {
+        if (!oembed && !this.oembedViews.length || !this._rendered) {
             return;
         }
         oembed = oembed ? oembed : this._focusedAttachment || this.oembedViews[0].oembed;
@@ -254,30 +264,19 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         var focusedAttachmentsEl = this.$el.find(this.focusedAttachmentsSelector);
         focusedAttachmentsEl.empty();
 
-        var oembedView = new OembedView({ oembed: oembed });
+        var isVideo = oembed.type === 'video';
+        var oembedView = this._focusedAttachmentView = OembedViewFactory.createOembedView({
+            oembed: oembed,
+            showVideo: true
+        });
         oembedView.render();
-        var focusedEl = oembedView.$el.clone();
-        focusedEl.appendTo(focusedAttachmentsEl);
+        oembedView.$el.appendTo(focusedAttachmentsEl);
+        isVideo && oembedView.maybePlay();
 
-        var photoContentEl = focusedEl.find('.content-attachment-photo');
-        photoContentEl.addClass(this.focusedAttachmentClassName);
-        if (this._focusedAttachment.type === 'video') {
-            var playButtonEl = focusedEl.find('.content-attachment-controls-play');
-            playButtonEl.hide();
-            photoContentEl.hide().removeClass(this.focusedAttachmentClassName);
-            var videoContentEl = focusedEl.find('.content-attachment-video');
-            videoContentEl.addClass(this.focusedAttachmentClassName);
-            videoContentEl.html(this.getAttachmentVideoHtml());
-            var videoIframe = videoContentEl.find('iframe');
-            if (this.tile) {
-                videoIframe.css({'width': '100%', 'height': '100%'});
-            }
-            if (oembed.width && oembed.height) {
-                videoIframe.attr('width', oembed.width);
-                videoIframe.attr('height', oembed.height);
-            }
-            videoContentEl.show();
-        }
+        var contentEl = oembedView.$el.find(isVideo ?
+            '.content-attachment-video' :
+            '.content-attachment-photo');
+        contentEl.addClass(this.focusedAttachmentClassName);
 
         // Update page count and focused index
         var attachmentsCount = this.tileableCount();
@@ -338,42 +337,6 @@ function($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemp
         } else {
             this.resizeFocusedAttachment();
         }
-    };
-
-    /**
-     * Gets the attachment's video html embed string. If supported, also attach
-     * the autoplay query param so that the video will auto-play.
-     * @return {string} Attachment's html embed.
-     */
-    GalleryAttachmentListView.prototype.getAttachmentVideoHtml = function () {
-        var attachment = this._focusedAttachment;
-
-        // If the provider is not available for autoplay, nothing more to do.
-        if (!AUTOPLAY_PROVIDER_REGEX.test(attachment.provider_name)) {
-            return attachment.html;
-        }
-
-        var $html = $(attachment.html);
-        var iframe = $html[0].tagName === 'IFRAME' ? $html[0] : $html.find('iframe')[0];
-
-        // If there isn't an iframe in the attachment html, nothing more to do.
-        if (!iframe) {
-          return attachment.html;
-        }
-
-        var queryChar = iframe.src.indexOf('?') > -1 ? '&' : '?';
-        iframe.src += queryChar + 'autoplay=1';
-
-        // make youtube videos not show related videos
-        var srcIndex = iframe.src.indexOf('src=');
-        var youtubeIndex = iframe.src.indexOf('youtube', srcIndex);
-        var nextAmpersand = iframe.src.indexOf('&', srcIndex);
-        // youtube is in the source
-        if (youtubeIndex < nextAmpersand && srcIndex > -1 && nextAmpersand > -1) {
-            iframe.src = iframe.src.substring(0, nextAmpersand) + '%26rel%3D0' + iframe.src.substring(nextAmpersand);
-        }
-
-        return $('<div>').append($html).html();
     };
 
     /**

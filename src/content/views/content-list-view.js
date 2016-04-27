@@ -27,7 +27,7 @@ var log = debug('streamhub-sdk/content/views/content-list-view');
 var ContentListView = function (opts) {
     opts = opts || {};
 
-    this.modal = hasAttachmentModal(this, opts.modal);
+    this.modal = hasAttachmentModal(this, opts.modal, opts.skipEvents);
 
     var listOpts = $.extend({}, opts);
     listOpts.autoRender = false;
