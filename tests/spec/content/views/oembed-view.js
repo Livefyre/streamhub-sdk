@@ -1,13 +1,14 @@
 define([
     'jquery',
     'jasmine-jquery',
+    'streamhub-sdk/config',
     'streamhub-sdk/content/views/oembed-view',
     'hgn!streamhub-sdk/content/templates/oembed-photo',
     'hgn!streamhub-sdk/content/templates/oembed-video',
     'hgn!streamhub-sdk/content/templates/oembed-video-promise',
     'hgn!streamhub-sdk/content/templates/oembed-link',
     'hgn!streamhub-sdk/content/templates/oembed-rich'],
-function($, jasmineJquery, OembedView, OembedPhotoTemplate, OembedVideoTemplate, OembedVideoPromiseTemplate, OembedLinkTemplate, OembedRichTemplate) {
+function($, jasmineJquery, config, OembedView, OembedPhotoTemplate, OembedVideoTemplate, OembedVideoPromiseTemplate, OembedLinkTemplate, OembedRichTemplate) {
     'use strict';
 
     describe('OembedView', function () {
@@ -18,6 +19,13 @@ function($, jasmineJquery, OembedView, OembedPhotoTemplate, OembedVideoTemplate,
             url: "http://pbs.twimg.com/media/BQGNgs9CEAEhmEF.jpg"
         };
 
+        var mediaFyreCoAttachment = {
+            provider_name: 'LivefyreFP',
+            provider_url: 'livefyre.com',
+            type: 'photo',
+            url: 'http://media.fyre.co/abc.png'
+        };
+
         describe('when constructed', function() {
 
             describe('with options.oembed', function() {
@@ -26,6 +34,26 @@ function($, jasmineJquery, OembedView, OembedPhotoTemplate, OembedVideoTemplate,
                 it('is instance of OembedView', function() {
                     expect(oembedView).toBeDefined();
                     expect(oembedView instanceof OembedView).toBe(true);
+                });
+
+                it('replaces media.fyre.co urls with secure cloudfront equivalent', function () {
+                    config.set('isSecure', false);
+                    oembedView = new OembedView({ oembed: mediaFyreCoAttachment });
+                    expect(oembedView.oembed.url).toEqual(mediaFyreCoAttachment.url);
+
+                    config.set('isSecure', true);
+                    oembedView = new OembedView({ oembed: mediaFyreCoAttachment });
+                    expect(oembedView.oembed.url).toEqual('https://d2kmm3vx031a1h.cloudfront.net/abc.png');
+                });
+
+                it('does not replace media.fyre.co if not media.fyre.co or not secure', function () {
+                    config.set('isSecure', false);
+                    oembedView = new OembedView({ oembed: oembedAttachment });
+                    expect(oembedView.oembed.url).toEqual(oembedAttachment.url);
+
+                    config.set('isSecure', true);
+                    oembedView = new OembedView({ oembed: oembedAttachment });
+                    expect(oembedView.oembed.url).toEqual(oembedAttachment.url);
                 });
             });
         });
