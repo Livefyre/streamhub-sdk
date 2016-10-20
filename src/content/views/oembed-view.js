@@ -1,5 +1,6 @@
 define([
     'streamhub-sdk/jquery',
+    'streamhub-sdk/config',
     'streamhub-sdk/view',
     'hgn!streamhub-sdk/content/templates/oembed-photo',
     'hgn!streamhub-sdk/content/templates/oembed-video',
@@ -8,8 +9,15 @@ define([
     'hgn!streamhub-sdk/content/templates/oembed-rich',
     'inherits'
 ],
-function($, View, OembedPhotoTemplate, OembedVideoTemplate, OembedVideoPromiseTemplate, OembedLinkTemplate, OembedRichTemplate, inherits) {
+function($, config, View, OembedPhotoTemplate, OembedVideoTemplate, OembedVideoPromiseTemplate, OembedLinkTemplate, OembedRichTemplate, inherits) {
     'use strict';
+
+    /**
+     * Uploaded content path that must be rewritten to be secure.
+     * @const
+     * @type {RegExp}
+     */
+    var MEDIA_FYRE_RE = /http:\/\/media\.fyre\.co/;
 
     /**
      * A view that renders oembed attachments
@@ -30,6 +38,7 @@ function($, View, OembedPhotoTemplate, OembedVideoTemplate, OembedVideoPromiseTe
             return;
         }
         this.template = this.OEMBED_TEMPLATES[this.oembed.type];
+        this.oembed.url = this.mediaFyreToHttps(this.oembed.url);
     };
     inherits(OembedView, View);
 
@@ -55,6 +64,19 @@ function($, View, OembedPhotoTemplate, OembedVideoTemplate, OembedVideoPromiseTe
             return {height: parseFloat(((9/16) * 100).toFixed(2)), width: 100};
         }
         return {height: 100, width: 100};
+    };
+
+    /**
+     * Convert media.fyre.co embed urls into a cloudfront secure url if the
+     * current protocol is secure.
+     * @param {string} url - The url to convert.
+     * @return {string}
+     */
+    OembedView.prototype.mediaFyreToHttps = function (url) {
+        if (!config.get('isSecure') || !MEDIA_FYRE_RE.test(url)) {
+            return url;
+        }
+        return url.replace(MEDIA_FYRE_RE, config.get('secureFpUrl'));
     };
 
     /**
