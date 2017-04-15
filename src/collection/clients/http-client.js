@@ -1,4 +1,4 @@
-define(['streamhub-sdk/jquery'], function($) {
+define(['jquery'], function($) {
     'use strict';
 
     /**
