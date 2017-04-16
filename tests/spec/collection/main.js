@@ -498,6 +498,17 @@ Auth, Writable, Readable) {
                         collection.write(new Content('k'));
                         expect(collection._writer.write).toHaveBeenCalled();
                     });
+
+                    it('calls an errback that is provided for the written content', function () {
+                        var flag = false;
+                        var bringingErrBack = function () { flag = true };
+                        var content = new Content('mrr');
+                        content.errback = bringingErrBack;
+                        collection.write(content);
+                        waitsFor(function () {
+                            return flag;
+                        }, 'errback failed' , 5000);
+                    });
                 });
             });
         });
