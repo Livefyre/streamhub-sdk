@@ -9,7 +9,12 @@
     {{/feedUrl}}
 {{/title}}
 
-<div class="content-body-main">{{{ body }}}</div>
+<div class="content-body-main">
+    {{{ body }}} 
+    {{#truncated}}
+        <button type="button" class= "content-body-show-more">{{{ showMoreText }}}</button>
+    {{/truncated}}
+</div>
 
 {{#featured}}
     <div class="content-featured">{{{ featuredText }}}</div>

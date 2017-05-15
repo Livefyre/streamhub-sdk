@@ -1,0 +1,157 @@
+@import (reference) "./mixins/content-default.less";
+
+.hub-modal.modal-content-card {
+    .content-default();
+
+    .hub-modal-close {
+        right: 0px;
+    }
+
+    .content .content-body .content-body-main {
+        margin-top: 0px;
+        margin-bottom: 0px;
+
+        p {
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+
+        .content-body-show-more {
+            width: 80px;
+
+            font-size: 10px;
+            color: #BFCAD2;
+            border-style: solid;
+            border-color: #BFCAD2;
+            border-radius: 2px;
+            background-color: rgba(0,0,0,0);
+        }
+    }
+
+    
+
+    @media (min-width: 1260px) {
+        //For desktop
+        .hub-modal-content-view {
+            width: calc(~"90% - 400px") !important;
+        }
+        .hub-modal-close {
+            right: calc(~"5% + 200px");
+        }
+    }
+
+    @media (min-width: 1040px) and (max-width: 1260px) {
+        //For desktop
+        .hub-modal-content-view {
+            width: 90% !important;
+        }
+        .hub-modal-close {
+            right: 5%;
+        }
+    }
+
+    @media (min-width: 950px) and (max-width: 1040px) {
+        //For desktop
+        .hub-modal-content-view {
+            width: 95% !important;
+        }
+        .hub-modal-close {
+            right: 2.5%;
+        }
+    }
+
+    @media (min-width: 775px) and (max-width: 950px) {
+        //For desktop
+        .hub-modal-content-view {
+            width: 100% !important;
+        }
+        .hub-modal-close {
+            right: 0px;
+        }
+    }
+
+    @media (min-width: 775px) {
+        //For desktop
+
+        .hub-modal-content-view {
+            padding: 0;
+
+            &> div {
+                display: inline-block;
+                width: 55%;
+                min-width: 400px;
+                min-height: 400px;
+            }
+
+            .content {
+                display: inline-block;
+                vertical-align: top;
+                width: 45%;
+                margin-bottom: 0;
+                padding-bottom: 20px;
+                div[class*="content-attachment-"] {
+                    box-shadow: none !important;
+                }
+            }
+        }
+    }
+
+    @media not screen and (min-width: 775px) {
+        //For desktop
+        div.hub-modal-content-view {
+            padding: 0px;
+            margin: 0px !important;
+            width: 100% !important;
+            height: 100%;
+
+            .hub-modal-close {
+                right: 0px;
+            }
+
+            &> div {
+                display: inline-block;
+                vertical-align: middle;
+                width: 100%;
+            }
+
+            .content {
+                display: inline-block;
+                vertical-align: top;
+                width: 100%;
+
+                div[class*="content-attachment-"] {
+                    box-shadow: none !important;
+                }
+            }
+        }
+    }
+
+    @media (max-height: 600px) {
+        .hub-modal-content > .hub-modal-content-view.content {
+            margin-top: 0px;
+            margin-bottom: 0px;
+
+            .product-carousel {
+                margin-top: 5px;
+            }
+
+            .content-header-inner {
+                padding-top: 10px;
+            }
+
+            .content-body-main { 
+                margin-top: 0px;
+
+                p {
+                    margin-top: 0px;
+                    margin-bottom: 0px;
+                }
+            }
+
+            article.content { 
+                padding-bottom: 0px;
+            }
+        }
+    }
+
+}
