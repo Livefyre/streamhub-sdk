@@ -1,7 +1,9 @@
 @import (reference) "./mixins/content-default.less";
 
 .hub-modal.modal-content-card {
-    .content-default();
+    .content-container {
+        .content-default();
+    }
 
     .hub-modal-close {
         right: 0px;
@@ -42,7 +44,49 @@
     }
 
     .hub-modal-content {
-        > .content {
+        .hub-modal-content-view {
+            margin: 70px auto 0;
+            position: relative;
+
+            .hub-modal-arrow-left, .hub-modal-arrow-right {
+                color: #fff;
+                cursor: pointer;
+                display: block;
+                font-family: "fycons-@{fycon-font-version}";
+                font-size: 16px;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                width: 5%;
+
+                &.hub-modal-arrow-disable {
+                    color: rgba(255, 255, 255, 0.25);
+                }
+
+                &:before {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                }
+            }
+
+            .hub-modal-arrow-left {
+                .fycon-arrow-left;
+                left: -30px;
+            }
+            .hub-modal-arrow-right {
+                .fycon-arrow-right;
+                right: -30px;
+
+                &:before {
+                    right: 0;
+                }
+            }
+        }
+        .content-container > .content {
+            margin-bottom: 0;
+            padding-bottom: 0;
+
             > .attachment-carousel {
                 display: block;
                 float: left;
@@ -70,6 +114,7 @@
             }
 
             &.text-only {
+                margin: 0 auto;
                 max-width: 600px !important;
 
                 .attachment-carousel {
@@ -102,68 +147,75 @@
         }
     }
 
-    @media (min-width: 775px) and (max-width: 1040px) {
+    @media (min-width: 800px) and (max-width: 1040px) {
         //For desktop
         .hub-modal-content-view {
-            width: 95% !important;
+            width: 90% !important;
         }
         .hub-modal-close {
-            right: 2.5%;
+            right: 5%;
         }
     }
 
-    @media (min-width: 775px) {
+    @media (min-width: 800px) {
         //For desktop
 
-        .hub-modal-content-view {
+        .hub-modal-content-view > .content-container {
             padding: 0;
 
-            > .attachment-carousel {
-                width: 55%;
-                min-width: 400px;
-                min-height: 400px;
-            }
-
             .content {
-                vertical-align: top;
-                width: 45%;
-                margin-bottom: 0;
-                padding-bottom: 20px;
-                div[class*="content-attachment-"] {
-                    box-shadow: none !important;
+                > .attachment-carousel {
+                    width: 55%;
+                    min-width: 400px;
+                    min-height: 400px;
+                }
+
+                .content {
+                    vertical-align: top;
+                    width: 45%;
+                    margin-bottom: 0;
+                    padding-bottom: 20px;
+
+                    div[class*="content-attachment-"] {
+                        box-shadow: none !important;
+                    }
                 }
             }
         }
     }
 
-    @media not screen and (min-width: 775px) {
+    @media not screen and (min-width: 800px) {
         //For desktop
-        div.hub-modal-content-view {
+        .hub-modal-content-view {
             max-width: 500px;
             padding: 0px;
-            width: 95% !important;
+            width: 90% !important;
 
-            > .attachment-carousel {
-                vertical-align: middle;
-                width: 100%;
-            }
+            > .content-container {
+                > .content {
+                    > .attachment-carousel {
+                        vertical-align: middle;
+                        width: 100%;
+                    }
 
-            .content {
-                vertical-align: top;
-                width: 100%;
+                    .content {
+                        vertical-align: top;
+                        width: 100%;
 
-                div[class*="content-attachment-"] {
-                    box-shadow: none !important;
+                        div[class*="content-attachment-"] {
+                            box-shadow: none !important;
+                        }
+                    }
                 }
             }
         }
         .hub-modal-close {
-            right: 2.5%;
+            right: 5%;
         }
     }
 
     @media (max-height: 600px) {
-        .hub-modal-content > .hub-modal-content-view.content {
+        .hub-modal-content > .hub-modal-content-view {
             margin-top: 0px;
             margin-bottom: 0px;
 

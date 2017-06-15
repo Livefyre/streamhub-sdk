@@ -1,7 +1,7 @@
 var AttachmentGalleryModal = require('streamhub-sdk/modal/views/attachment-gallery-modal');
+var CarouselContentView = require('streamhub-sdk/content/views/carousel-content-view');
 var GalleryAttachmentListView = require('streamhub-sdk/content/views/gallery-attachment-list-view');
 var get = require('mout/object/get');
-var ModalContentCardView = require('streamhub-sdk/content/views/modal-content-card-view');
 var ModalView = require('streamhub-sdk/modal');
 
 'use strict';
@@ -25,8 +25,10 @@ function hasAttachmentModal(view, opts) {
                     view.attachmentsView.focus(context.attachmentToFocus);
                 }
             } else if (opts.useNewModal) {
-                modal.show(new ModalContentCardView({
+                modal.show(new CarouselContentView({
+                    collection: this._collection.internalCollection,
                     content: context.content,
+                    listView: this,
                     productOptions: opts.productOptions || {}
                 }));
             } else {
