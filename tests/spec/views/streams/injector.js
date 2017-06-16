@@ -27,10 +27,10 @@ function ($, Injector, ContentListView, Content, MockCollection) {
                 var opts;
                 beforeEach(function () {
                     opts = {
-                            interval: 6,
-                            count: 3,
-                            target: target,
-                            source: source
+                        interval: 6,
+                        count: 3,
+                        target: target,
+                        source: source
                     };
                     injector = new Injector(opts);
                 });

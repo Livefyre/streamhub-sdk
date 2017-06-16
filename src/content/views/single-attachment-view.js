@@ -40,7 +40,7 @@ SingleAttachmentListView.prototype.retile = function (index) {
     visibleItemEl = visibleItemEl[index];
     if (visibleItemEl) {
         visibleItemEl = $(visibleItemEl);
-        $('.'+this.squareTileClassName).removeClass(this.squareTileClassName);
+        this.$el.find('.'+this.squareTileClassName).removeClass(this.squareTileClassName);
         visibleItemEl.addClass(this.squareTileClassName);
         if (this.tileableCount() > 1 && visibleItemEl.find(this.additionalImagesSelector).length === 0) {
             var imageCountDom = '<span class="content-attachment-additional-images">+' + (this.tileableCount() - 1) + '</span>';

@@ -38,7 +38,9 @@ ContentHeaderView.prototype.elTag = 'section';
 ContentHeaderView.prototype.elClass = 'content-header';
 
 ContentHeaderView.prototype.headerElSelector = '.content-header';
+ContentHeaderView.prototype.innerSelector = '.content-header-inner';
 ContentHeaderView.prototype.avatarClass = 'content-author-avatar';
+ContentHeaderView.prototype.hasAvatarClass = 'has-avatar';
 ContentHeaderView.prototype.sourceIconElSelector = '.content-source-logo';
 ContentHeaderView.prototype.authorNameElSelector = '.content-author-name';
 ContentHeaderView.prototype.authorUserNameElSelector = '.content-author-username';
@@ -92,6 +94,7 @@ ContentHeaderView.prototype.positionSourceIcon = function () {
 ContentHeaderView.prototype._handleAvatarError = function (e) {
     log('avatar error, hiding it', e);
     this.$(this.avatarSelector).remove();
+    this.$el.find(this.innerSelector).removeClass(this.hasAvatarClass);
 };
 
 ContentHeaderView.prototype.getTemplateContext = function () {

@@ -258,6 +258,22 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
     };
 
     /**
+     * Return whether this Content has products or not.
+     * @return {boolean}
+     */
+    LivefyreContent.prototype.hasProducts = function () {
+        return ((this.links || {}).product || []).length > 0;
+    };
+
+    /**
+     * Return whether this Content has rights granted or not.
+     * @return {boolean}
+     */
+    LivefyreContent.prototype.hasRightsGranted = function () {
+        return (this.rights || {}).status === 'granted';
+    };
+
+    /**
      * The set of sources as defined by Livefyre's Stream API
      */
     LivefyreContent.SOURCES = [

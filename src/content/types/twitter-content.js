@@ -16,5 +16,21 @@ define(['streamhub-sdk/content', 'inherits'], function(Content, inherits) {
     };
     inherits(TwitterContent, Content);
 
+    /**
+     * Return whether this Content has products or not.
+     * @return {boolean}
+     */
+    TwitterContent.prototype.hasProducts = function () {
+        return ((this.links || {}).product || []).length > 0;
+    };
+
+    /**
+     * Return whether this Content has rights granted or not.
+     * @return {boolean}
+     */
+    TwitterContent.prototype.hasRightsGranted = function () {
+        return (this.rights || {}).status === 'granted';
+    };
+
     return TwitterContent;
 });

@@ -1,10 +1,11 @@
 var $ = require('streamhub-sdk/jquery');
-var CompositeView = require('view/composite-view');
 var AttachmentCarouselView = require('streamhub-sdk/content/views/attachment-carousel-view');
-var ProductContentView = require('streamhub-sdk/content/views/product-content-view');
-var inherits = require('inherits');
+var CompositeView = require('view/composite-view');
+var ContentBodyView = require('streamhub-sdk/content/views/spectrum/content-body-view');
 var debug = require('debug');
 var impressionUtil = require('streamhub-sdk/impressionUtil');
+var inherits = require('inherits');
+var ProductContentView = require('streamhub-sdk/content/views/product-content-view');
 
 'use strict';
 
@@ -35,11 +36,11 @@ var ModalContentCardView = function (opts) {
     impressionUtil.recordImpression(opts.content);
 
     if (this.content) {
-        this.content.on("change:body", function(newVal, oldVal){
+        this.content.on('change:body', function(newVal, oldVal) {
             this._handleBodyChange();
         }.bind(this));
 
-        this.content.on("change:attachments", function(newVal, oldVal){
+        this.content.on('change:attachments', function(newVal, oldVal) {
             this._handleAttachmentsChange();
         }.bind(this));
 
@@ -49,6 +50,7 @@ var ModalContentCardView = function (opts) {
             }
         });
     }
+    window.addEventListener('resize', this._resizeModalImage.bind(this));
 };
 inherits(ModalContentCardView, CompositeView);
 
@@ -57,8 +59,12 @@ ModalContentCardView.prototype.elClass = 'content';
 ModalContentCardView.prototype.contentWithImageClass = 'content-with-image';
 ModalContentCardView.prototype.imageLoadingClass = 'hub-content-image-loading';
 ModalContentCardView.prototype.invalidClass = 'content-invalid';
+ModalContentCardView.prototype.rightsGrantedClass = 'content-rights-granted';
+ModalContentCardView.prototype.textOnlyClass = 'text-only';
 ModalContentCardView.prototype.attachmentsElSelector = '.content-attachments';
 ModalContentCardView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
+ModalContentCardView.prototype.modalSelector = '.hub-modal';
+ModalContentCardView.prototype.modalAnnotationClass = 'modal-content-card';
 
 ModalContentCardView.prototype.events = CompositeView.prototype.events.extended({
     'imageLoaded.hub': function(e) {
@@ -86,20 +92,19 @@ ModalContentCardView.prototype.events = CompositeView.prototype.events.extended(
  * @param {boolean=} shouldRender
  */
 ModalContentCardView.prototype._addInitialChildViews = function (opts, shouldRender) {
-    shouldRender = shouldRender || false;
+    var renderOpts = {render: !!shouldRender};
 
     this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
-    this.add(this._attachmentsView, { render: shouldRender });
+    this.add(this._attachmentsView, renderOpts);
 
     this._productContentView = opts.productContentView || new ProductContentView(opts);
-    this.add(this._productContentView, { render: shouldRender });
+    this.add(this._productContentView, renderOpts);
 };
 
 ModalContentCardView.prototype._removeInitialChildViews = function () {
-    this.remove(this._attachmentsView);
-    if (this._productContentView) {
-        this.remove(this._productContentView);
-    }
+    this._attachmentsView && this.remove(this._attachmentsView);
+    this._bodyView && this.remove(this._bodyView);
+    this._productContentView && this.remove(this._productContentView);
 };
 
 /**
@@ -118,6 +123,7 @@ ModalContentCardView.prototype.setElement = function (el) {
         this.$el.attr('data-content-id', this.content.id);
     }
 
+    this.$el.toggleClass(this.rightsGrantedClass, this.content.hasRightsGranted());
     return this;
 };
 
@@ -126,8 +132,7 @@ ModalContentCardView.prototype.setElement = function (el) {
  * @returns {Content} The content object this view was instantiated with.
  */
 ModalContentCardView.prototype.getTemplateContext = function () {
-    var context = $.extend({}, this.content);
-    return context;
+    return $.extend({}, this.content);
 };
 
 /**
@@ -153,9 +158,27 @@ ModalContentCardView.prototype._handleAttachmentsChange = function () {
     this._addInitialChildViews(this.opts, true);
 };
 
+ModalContentCardView.prototype._resizeModalImage = function () {
+    // Unsure if this is still needed. It causes a bug when there are multiple
+    // attachments because it sets the padding on the first image. When a
+    // thumbnail is clicked, the first image stays visible while the thumbnail
+    // is expanded, so both images are displayed.
+    return;
+    var modal = this.$el.closest(this.modalSelector);
+    var attachment = modal.find('.hub-modal-content .attachment-carousel .content-attachment.content-attachment-square-tile');
+    var winHeight = $(window).height();
+    if (winHeight <= 600 && attachment.outerHeight() > winHeight) {
+        attachment.css('padding-bottom', winHeight + 'px');
+    } else {
+        attachment.css('padding-bottom', '100%');
+    }
+};
+
 ModalContentCardView.prototype.destroy = function () {
     CompositeView.prototype.destroy.call(this);
     this.content = null;
+    this.$el.closest(this.modalSelector).removeClass(this.modalAnnotationClass);
+    window.removeEventListener('resize', this._resizeModalImage);
 };
 
 /**
@@ -163,17 +186,11 @@ ModalContentCardView.prototype.destroy = function () {
  * @returns {ModalContentCardView}
  */
 ModalContentCardView.prototype.render = function () {
-    var self = this;
     CompositeView.prototype.render.call(this);
 
-    /*setTimeout(function (){
-        // position the attachements vertically centered
-        var attachmentsHeight = self._thumbnailAttachmentsView.$el.height();
-        var modalHeight = self._thumbnailAttachmentsView.$el.parent().parent().height();
-        self._thumbnailAttachmentsView.$el.css('margin-top', (modalHeight - attachmentsHeight) / 2);
-    }, 0);*/
-
-
+    this.$el.toggleClass(this.textOnlyClass, !this.content.attachments.length);
+    this.$el.closest(this.modalSelector).addClass(this.modalAnnotationClass);
+    this._resizeModalImage();
     return this;
 };
 

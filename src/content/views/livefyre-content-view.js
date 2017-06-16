@@ -26,4 +26,12 @@ var LivefyreContentView = function (opts) {
 };
 inherits(LivefyreContentView, CardContentView);
 
+LivefyreContentView.prototype.rightsGrantedClass = 'content-rights-granted';
+
+LivefyreContentView.prototype.setElement = function (el) {
+    CardContentView.prototype.setElement.apply(this, arguments);
+    this.$el.toggleClass(this.rightsGrantedClass, this.content.hasRightsGranted());
+    return this;
+};
+
 module.exports = LivefyreContentView;

@@ -1,16 +1,17 @@
 var $ = require('streamhub-sdk/jquery');
+var BlockAttachmentListView = require('streamhub-sdk/content/views/block-attachment-list-view');
 var CompositeView = require('view/composite-view');
-var ContentHeaderView = require('streamhub-sdk/content/views/content-header-view');
-var ProductHeaderView = require('streamhub-sdk/content/views/product-header-view');
 var ContentBodyView = require('streamhub-sdk/content/views/content-body-view');
 var ContentFooterView = require('streamhub-sdk/content/views/content-footer-view');
-var TiledAttachmentListView = require('streamhub-sdk/content/views/tiled-attachment-list-view');
-var BlockAttachmentListView = require('streamhub-sdk/content/views/block-attachment-list-view');
+var ContentHeaderView = require('streamhub-sdk/content/views/content-header-view');
 var ContentHeaderViewFactory = require('streamhub-sdk/content/content-header-view-factory');
 var ContentThumbnailViewFactory = require('streamhub-sdk/content/content-thumbnail-view-factory');
-var inherits = require('inherits');
 var debug = require('debug');
+var get = require('mout/object/get');
+var hasSpectrum = require('streamhub-sdk/content/views/mixins/spectrum-content-view-mixin');
 var impressionUtil = require('streamhub-sdk/impressionUtil');
+var inherits = require('inherits');
+var TiledAttachmentListView = require('streamhub-sdk/content/views/tiled-attachment-list-view');
 
 'use strict';
 
@@ -34,6 +35,7 @@ var log = debug('streamhub-sdk/content/views/content-view');
  */
 var ContentView = function (opts) {
     opts = opts || {};
+    opts.spectrum && hasSpectrum(this);
 
     this.content = opts.content;
     this.createdAt = new Date(); // store construction time to use for ordering if this.content has no dates
@@ -109,38 +111,28 @@ ContentView.prototype.events = CompositeView.prototype.events.extended({
  * @param {boolean=} shouldRender
  */
 ContentView.prototype._addInitialChildViews = function (opts, shouldRender) {
-    shouldRender = shouldRender || false;
-    this._headerView = opts.headerView || this._headerViewFactory.createHeaderView(opts.content);
-    this.add(this._headerView, { render: shouldRender });
+    var renderOpts = {render: !!shouldRender};
 
-    if (opts.content.links && opts.content.links.product && opts.content.links.product.length > 0) {
-      this._productHeaderView = this._headerViewFactory.createHeaderView(opts.content, {
-        productIndicationText: opts.productIndicationText,
-        showProduct: opts.showProduct
-      });
-      this.add(this._productHeaderView, { render: shouldRender });
-    }
+    this._headerView = opts.headerView || this._headerViewFactory.createHeaderView(opts.content);
+    this.add(this._headerView, renderOpts);
 
     this._thumbnailAttachmentsView = this._thumbnailViewFactory.createThumbnailView(opts);
     this._blockAttachmentsView = new BlockAttachmentListView(opts);
     this._attachmentsView = opts.attachmentsView || new CompositeView(this._thumbnailAttachmentsView, this._blockAttachmentsView);
-    this.add(this._attachmentsView, { render: shouldRender });
+    this.add(this._attachmentsView, renderOpts);
 
     this._bodyView = opts.bodyView || new ContentBodyView(opts);
-    this.add(this._bodyView, { render: shouldRender });
+    this.add(this._bodyView, renderOpts);
 
     this._footerView = opts.footerView || new ContentFooterView(opts);
-    this.add(this._footerView, { render: shouldRender });
+    this.add(this._footerView, renderOpts);
 };
 
 ContentView.prototype._removeInitialChildViews = function () {
-    this.remove(this._headerView);
-    this.remove(this._attachmentsView);
-    this.remove(this._bodyView);
-    this.remove(this._footerView);
-    if (this._productHeaderView) {
-      this.remove(this._productHeaderView);
-    }
+    this._headerView && this.remove(this._headerView);
+    this._attachmentsView && this.remove(this._attachmentsView);
+    this._bodyView && this.remove(this._bodyView);
+    this._footerView && this.remove(this._footerView);
 };
 
 /**
@@ -151,9 +143,8 @@ ContentView.prototype._removeInitialChildViews = function () {
 ContentView.prototype.setElement = function (el) {
     CompositeView.prototype.setElement.apply(this, arguments);
 
-    if (this._thumbnailAttachmentsView && this._thumbnailAttachmentsView.tileableCount()) {
-        this.$el.addClass(this.imageLoadingClass);
-    }
+    var tileable = this._thumbnailAttachmentsView && this._thumbnailAttachmentsView.tileableCount();
+    this.$el.toggleClass(this.imageLoadingClass, tileable);
 
     if (this.content && this.content.id) {
         this.$el.attr('data-content-id', this.content.id);
@@ -167,8 +158,7 @@ ContentView.prototype.setElement = function (el) {
  * @returns {Content} The content object this view was instantiated with.
  */
 ContentView.prototype.getTemplateContext = function () {
-    var context = $.extend({}, this.content);
-    return context;
+    return $.extend({}, this.content);
 };
 
 /**

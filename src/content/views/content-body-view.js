@@ -1,4 +1,5 @@
 var $ = require('streamhub-sdk/jquery');
+var canTruncateBody = require('streamhub-sdk/content/views/mixins/body-truncate-mixin');
 var i18n = require('streamhub-sdk/i18n');
 var inherits = require('inherits');
 var template = require('hgn!streamhub-sdk/content/templates/content-body');
@@ -17,6 +18,7 @@ var View = require('streamhub-sdk/view');
 var ContentBodyView = function (opts) {
     opts = opts || {};
     View.call(this, opts);
+    canTruncateBody(this, opts);
 
     this._content = opts.content;
 };
@@ -29,10 +31,11 @@ ContentBodyView.prototype.elClass = 'content-body';
 ContentBodyView.prototype.getTemplateContext = function () {
     var context = $.extend({}, this._content);
     var attachments = context.attachments;
+    var body = context.bodyOrig || context.body;
+
     // Ensure that content.body has a p tag
-    var isHtml = /^\s*<(p|div)/;
-    if ( ! isHtml.test(context.body)) {
-        context.body = '<p>'+context.body+'</p>';
+    if (!/^<p/.test($.trim(body))) {
+        context.body = '<p>' + $.trim(body) + '</p>';
     }
 
     // If there an duplicate link title + content title, then
@@ -64,6 +67,8 @@ ContentBodyView.prototype.render = function () {
     if (this._content.title) {
         this.$el.addClass('content-has-title');
     }
+
+    return this;
 };
 
 module.exports = ContentBodyView;

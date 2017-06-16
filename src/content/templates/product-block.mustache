@@ -1,12 +1,12 @@
-{{#productDetailPhotoShow}}
-  <a href="{{ product.url }}" target="_blank">
+<a href="{{ productUrl }}" target="_blank">
+  {{#productDetailPhotoShow}}
     <img class="product-media" src="{{ product.oembed.url }}" alt="{{ product.oembed.title }}"></img>
-  </a>
-{{/productDetailPhotoShow}}
-{{#productDetailTitleShow}}
-  <div class="product-name">{{ product.title }}</div>
-{{/productDetailTitleShow}}
-{{#productDetailPriceShow}}
-  <div class="product-price">{{ product.price }}</div>
-{{/productDetailPriceShow}}
-<a class="buy-button lf-input-btn" href="{{ product.url }}" target="_blank">{{ productButtonText }}</a>
+  {{/productDetailPhotoShow}}
+  {{#productDetailTitleShow}}
+    <span class="product-name" title="{{ product.title }}">{{ product.title }}</span>
+  {{/productDetailTitleShow}}
+  {{#productDetailPriceShow}}
+    <span class="product-price" title="{{ product.price }}">{{ product.price }}</span>
+  {{/productDetailPriceShow}}
+  <span class="buy-button">{{ productButtonText }}</span>
+</a>

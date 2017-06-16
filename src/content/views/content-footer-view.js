@@ -3,7 +3,8 @@ var auth = require('auth');
 var inherits = require('inherits');
 var View = require('streamhub-sdk/view');
 var template = require('hgn!streamhub-sdk/content/templates/content-footer');
-var util = require('streamhub-sdk/util/date');
+var dateUtil = require('streamhub-sdk/util/date');
+var util = require('streamhub-sdk/content/util/main');
 
 'use strict';
 
@@ -35,7 +36,7 @@ ContentFooterView.prototype.template = template;
 ContentFooterView.prototype.elTag = 'section';
 ContentFooterView.prototype.elClass = 'content-footer';
 
-ContentFooterView.prototype.formatDate = util.formatDate;
+ContentFooterView.prototype.formatDate = dateUtil.formatDate;
 
 ContentFooterView.prototype.footerLeftSelector = '.content-footer-left > .content-control-list';
 ContentFooterView.prototype.footerRightSelector = '.content-footer-right > .content-control-list';
@@ -135,8 +136,8 @@ ContentFooterView.prototype.getTemplateContext = function () {
     var context = $.extend({}, this._content);
     if (this._content && this._content.createdAt) {
         context.formattedCreatedAt = this.formatDate(this._content.createdAt);
+        context.createdAtUrl = util.getContentPermalink(this._content.source, this._content);
     }
-
     return context;
 };
 

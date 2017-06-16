@@ -41,6 +41,11 @@ var I18N_MAP = {
     shareButtonText: ['shareButtonText'],
     showMoreButtonText: ['showMoreButtonText'],
 
+    // Products
+    productButtonText: ['productButtonText'],
+    productCarouselTitleText: ['productCarouselTitleText'],
+    productIndicationText: ['productIndicationText'],
+
     // Editor error translations
     'ERRORS.ATTACHMENTS_REQUIRED': ['ERRORS.ATTACHMENTS_REQUIRED'],
     editorErrorAttachmentsRequired: ['ERRORS.ATTACHMENTS_REQUIRED'],

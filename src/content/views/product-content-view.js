@@ -1,13 +1,17 @@
 var $ = require('streamhub-sdk/jquery');
+var asLivefyreContentView = require('streamhub-sdk/content/views/mixins/livefyre-content-view-mixin');
+var asTwitterContentView = require('streamhub-sdk/content/views/mixins/twitter-content-view-mixin');
 var CompositeView = require('view/composite-view');
-var ContentHeaderView = require('streamhub-sdk/content/views/content-header-view');
-var ContentBodyView = require('streamhub-sdk/content/views/content-body-view');
-var ContentFooterView = require('streamhub-sdk/content/views/content-footer-view');
+var ContentBodyView = require('streamhub-sdk/content/views/spectrum/content-body-view');
+var ContentFooterView = require('streamhub-sdk/content/views/spectrum/content-footer-view');
+var ContentHeaderView = require('streamhub-sdk/content/views/spectrum/content-header-view');
 var ContentHeaderViewFactory = require('streamhub-sdk/content/content-header-view-factory');
-var ProductCarouselView = require('streamhub-sdk/content/views/product-carousel-view');
 var ContentViewFactory = require('streamhub-sdk/content/content-view-factory');
-var inherits = require('inherits');
 var debug = require('debug');
+var get = require('mout/object/get');
+var inherits = require('inherits');
+var ProductCarouselView = require('streamhub-sdk/content/views/product-carousel-view');
+var util = require('streamhub-sdk/util');
 
 'use strict';
 
@@ -36,12 +40,11 @@ var ProductContentView = function (opts) {
     this.createdAt = new Date(); // store construction time to use for ordering if this.content has no dates
     this._headerViewFactory = opts.headerViewFactory || new ContentHeaderViewFactory();
     this._contentViewFactory = new ContentViewFactory();
-    this._mixin = this._contentViewFactory.getMixinForTypeOfContent(this.content);
 
     CompositeView.call(this, opts);
 
     this._addInitialChildViews(opts);
-    this._mixin(this, opts);
+    this._applyMixin(opts);
 
     if (this.content) {
         this.content.on("change:body", function(newVal, oldVal){
@@ -54,6 +57,7 @@ inherits(ProductContentView, CompositeView);
 ProductContentView.prototype.elTag = 'article';
 ProductContentView.prototype.elClass = 'content';
 ProductContentView.prototype.invalidClass = 'content-invalid';
+ProductContentView.prototype.spectrumClass = 'spectrum-content';
 ProductContentView.prototype.attachmentsElSelector = '.content-attachments';
 ProductContentView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
 
@@ -62,28 +66,47 @@ ProductContentView.prototype.attachmentFrameElSelector = '.content-attachment-fr
  * @param {boolean=} shouldRender
  */
 ProductContentView.prototype._addInitialChildViews = function (opts, shouldRender) {
-    shouldRender = shouldRender || false;
-    this._headerView = opts.headerView || this._headerViewFactory.createHeaderView(opts.content);
-    this.add(this._headerView, { render: shouldRender });
+    var renderOpts = {render: !!shouldRender};
 
-    this._bodyView = opts.bodyView || new ContentBodyView({content: opts.content});
-    this.add(this._bodyView, { render: shouldRender });
+    this._headerView = opts.headerView || new ContentHeaderView(
+        this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
+    this.add(this._headerView, renderOpts);
 
-    this._footerView = opts.footerView || new ContentFooterView({content: opts.content});
-    this.add(this._footerView, { render: shouldRender });
+    this._bodyView = opts.bodyView || new ContentBodyView({
+        content: opts.content,
+        showMoreEnabled: true
+    });
+    this.add(this._bodyView, renderOpts);
 
-    var products = opts.content.links && opts.content.links.product;
-    if (opts.showProduct && products) {
+    this._footerView = opts.footerView || new ContentFooterView(opts);
+    this.add(this._footerView, renderOpts);
+
+    var rightsGranted = opts.productOptions.requireRights ? opts.content.hasRightsGranted() : true;
+    if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
         this._productView = opts.productView || new ProductCarouselView(opts);
-        this.add(this._productView, { render: shouldRender });
+        this.add(this._productView, renderOpts);
     }
 };
 
+ProductContentView.prototype._applyMixin = function (opts) {
+    var mixin = this._contentViewFactory.getMixinForTypeOfContent(this.content);
+    mixin(this, opts);
+    // If the assigned mixin was either Livefyre or Twitter, no need to continue
+    // since those are the two base mixins.
+    if ([asLivefyreContentView, asTwitterContentView].indexOf(mixin) > -1) {
+        return;
+    }
+    // All other social provider mixins should also have the Livefyre mixin
+    // applied because that is what adds additional functionality such as the
+    // footer buttons.
+    asLivefyreContentView(this, opts);
+};
+
 ProductContentView.prototype._removeInitialChildViews = function () {
-    this.remove(this._headerView);
-    this.remove(this._bodyView);
-    this.remove(this._footerView);
-    this.remove(this._productView);
+    this._headerView && this.remove(this._headerView);
+    this._bodyView && this.remove(this._bodyView);
+    this._footerView && this.remove(this._footerView);
+    this._productView && this.remove(this._productView);
 };
 
 /**
@@ -98,6 +121,7 @@ ProductContentView.prototype.setElement = function (el) {
         this.$el.attr('data-content-id', this.content.id);
     }
 
+    this.$el.addClass(this.spectrumClass);
     return this;
 };
 
@@ -106,8 +130,7 @@ ProductContentView.prototype.setElement = function (el) {
  * @returns {Content} The content object this view was instantiated with.
  */
 ProductContentView.prototype.getTemplateContext = function () {
-    var context = $.extend({}, this.content);
-    return context;
+    return $.extend({}, this.content);
 };
 
 /**
@@ -154,6 +177,17 @@ ProductContentView.prototype.render = function () {
     }
 
     CompositeView.prototype.render.call(this);
+
+    util.raf($.proxy(function () {
+        if (!this._productView) {
+            return;
+        }
+        var productHeight = this._productView.$el.height() + 20;
+        if (productHeight) {
+            this.$el.css('paddingBottom', productHeight + 'px');
+        }
+    }, this));
+
     return this;
 };
 

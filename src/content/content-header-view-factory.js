@@ -1,6 +1,6 @@
 var ContentHeaderView = require('streamhub-sdk/content/views/content-header-view');
-var ProductHeaderView = require('streamhub-sdk/content/views/product-header-view');
 var TYPE_URNS = require('streamhub-sdk/content/types/type-urns');
+var util = require('streamhub-sdk/content/util/main');
 
 'use strict';
 
@@ -10,19 +10,13 @@ var TYPE_URNS = require('streamhub-sdk/content/types/type-urns');
  * Specifically, Facebook, Twitter, and the rest have different display
  * requirements.
  */
-var ContentHeaderViewFactory = function (opts) {
-    opts = opts || {};
+function ContentHeaderViewFactory() {}
+
+ContentHeaderViewFactory.prototype.createHeaderView = function (content) {
+    return new ContentHeaderView(this.getHeaderViewOptsForContent(content));
 };
 
-ContentHeaderViewFactory.prototype.createHeaderView = function (content, productOpts) {
-    var opts = this._getHeaderViewOptsForContent(content);
-    if (productOpts) {
-      return new ProductHeaderView(opts, productOpts);
-    }
-    return new ContentHeaderView(opts);
-};
-
-ContentHeaderViewFactory.prototype._getHeaderViewOptsForContent = function (content) {
+ContentHeaderViewFactory.prototype.getHeaderViewOptsForContent = function (content) {
     var opts = {};
     opts.author =  content.author;
 
@@ -55,6 +49,11 @@ ContentHeaderViewFactory.prototype._getHeaderViewOptsForContent = function (cont
         opts.contentSourceUrl = 'https://facebook.com';
         opts.contentSourceTooltipText = 'View on Facebook';
     } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_INSTAGRAM) {
+        if (content.author && typeof content.author.profileUrl === 'string') {
+            opts.authorUserNamePrefix = '@';
+            opts.authorUserName = content.author.handle;
+            opts.authorUrl = content.author.profileUrl;
+        }
         opts.contentSourceName = 'instagram';
         opts.contentSourceUrl = 'https://instagram.com';
         opts.contentSourceTooltipText = 'View on Instagram';
@@ -72,6 +71,8 @@ ContentHeaderViewFactory.prototype._getHeaderViewOptsForContent = function (cont
         opts.contentSourceName = 'livefyre';
     }
 
+    opts.createdAt = content.createdAt;
+    opts.createdAtUrl = util.getContentPermalink(opts.contentSourceName, content);
     return opts;
 };
 

@@ -172,5 +172,13 @@ define([
         changeSet.links = {};
     };
 
+    Annotator.prototype.added.rights = function(changeSet, annotationValue) {
+        changeSet.rights = annotationValue;
+    };
+
+    Annotator.prototype.removed.rights = function(changeSet) {
+        changeSet.rights = {};
+    };
+
     return Annotator;
 });

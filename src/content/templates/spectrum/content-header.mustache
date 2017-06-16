@@ -1,0 +1,48 @@
+<div class="content-header-inner {{#author.avatar}}has-avatar{{/author.avatar}}">
+    {{#author.avatar}}
+        <a class="content-author-avatar" {{#authorAvatarUrl}}href="{{authorAvatarUrl}}" target="_blank" arial-label="{{ author.displayName }} stream"{{/authorAvatarUrl}}>
+            <img src="{{ author.avatar }}" alt="{{ author.displayName }} avatar"/>
+        </a>
+    {{/author.avatar}}
+
+    <div class="content-byline">
+        <div class="content-author-name">
+            {{#authorUrl}}
+                <a href="{{ authorUrl }}" target="_blank" aria-label="{{ author.displayName }} profile">{{ author.displayName }}</a>
+            {{/authorUrl}}
+            {{^authorUrl}}
+                <span>{{ author.displayName }}</span>
+            {{/authorUrl}}
+        </div>
+        {{#authorVerified}}
+            <span class="content-author-verified" aria-label="author is verified"></span>
+        {{/authorVerified}}
+        {{#authorUserName}}
+            {{#authorUrl}}
+                <div class="content-author-username">
+                    <a href="{{authorUrl}}" target="_blank" aria-label="{{ author.displayName }} profile">{{authorUserNamePrefix}}{{ authorUserName }}</a>
+                </div>
+            {{/authorUrl}}
+        {{/authorUserName}}
+    </div>
+</div>
+<div class="content-header-right">
+    {{#contentSourceUrl}}
+        <a class="content-source-logo" href="{{contentSourceUrl}}" target="_blank" {{#contentSourceTooltipText}}aria-label="{{contentSourceTooltipText}}"{{/contentSourceTooltipText}}></a>
+    {{/contentSourceUrl}}
+    {{^contentSourceUrl}}
+        <span class="content-source-logo" {{#contentSourceName}}aria-label="{{contentSourceName}} icon"{{/contentSourceName}}></span>
+    {{/contentSourceUrl}}
+
+    {{#formattedCreatedAt}}
+        <div class="content-created-at">
+            {{#createdAtUrl}}
+            <a href="{{createdAtUrl}}" target="_blank">
+            {{/createdAtUrl}}
+            {{{formattedCreatedAt}}}
+            {{#createdAtUrl}}
+            </a>
+            {{/createdAtUrl}}
+        </div>
+    {{/formattedCreatedAt}}
+</div>

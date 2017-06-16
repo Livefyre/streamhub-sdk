@@ -16,7 +16,8 @@ require.config({
     mout: 'lib/mout/src',
     observer: 'lib/observer/src/observer',
     debug: 'lib/debug/debug',
-    urnlib: 'lib/urnlib.js/index'
+    urnlib: 'lib/urnlib.js/index',
+    'js-truncate-html': 'lib/js-truncate-html/src/js-truncate-html'
   },
   packages: [{
     name: "streamhub-sdk",

@@ -1,0 +1,192 @@
+@import (reference) "./mixins/content-default.less";
+
+.hub-modal.modal-content-card {
+    .content-default();
+
+    .hub-modal-close {
+        right: 0px;
+    }
+
+    .content-body .content-body-main {
+        font-size: 15px;
+        line-height: 25px;
+        margin-bottom: 0px;
+        margin-top: 0px;
+
+        p {
+            margin-bottom: 0px;
+            margin-top: 0px;
+        }
+
+        .content-body-show-more {
+            color: #b3b3b3 !important;
+            cursor: pointer;
+            display: inline-block;
+            font-family: inherit;
+            font-size: 10px;
+            margin-left: 6px;
+            text-decoration: none;
+
+            &:after {
+                font-family: "fycons-@{fycon-font-version}";
+                font-size: 6px;
+                margin-left: 6px;
+            }
+            &.view-less:after {
+                content: "\e019";
+            }
+            &.view-more:after {
+                content: "\e015";
+            }
+        }
+    }
+
+    .hub-modal-content {
+        > .content {
+            > .attachment-carousel {
+                display: block;
+                float: left;
+            }
+
+            article.content.spectrum-content {
+                display: block;
+                float: right;
+
+                .content-footer {
+                    padding-top: 12px;
+
+                    .content-footer-left {
+                        .hub-btn.hub-content-share {
+                            margin-left: 0;
+                        }
+                    }
+                }
+            }
+
+            &:after {
+                clear: both;
+                content: '';
+                display: block;
+            }
+
+            &.text-only {
+                max-width: 600px !important;
+
+                .attachment-carousel {
+                    display: none;
+                }
+                article.content {
+                    width: 100%;
+                }
+            }
+        }
+    }
+
+    @media (min-width: 1260px) {
+        //For desktop
+        .hub-modal-content-view {
+            width: calc(~"90% - 400px") !important;
+        }
+        .hub-modal-close {
+            right: calc(~"5% + 200px");
+        }
+    }
+
+    @media (min-width: 1040px) and (max-width: 1260px) {
+        //For desktop
+        .hub-modal-content-view {
+            width: 90% !important;
+        }
+        .hub-modal-close {
+            right: 5%;
+        }
+    }
+
+    @media (min-width: 775px) and (max-width: 1040px) {
+        //For desktop
+        .hub-modal-content-view {
+            width: 95% !important;
+        }
+        .hub-modal-close {
+            right: 2.5%;
+        }
+    }
+
+    @media (min-width: 775px) {
+        //For desktop
+
+        .hub-modal-content-view {
+            padding: 0;
+
+            > .attachment-carousel {
+                width: 55%;
+                min-width: 400px;
+                min-height: 400px;
+            }
+
+            .content {
+                vertical-align: top;
+                width: 45%;
+                margin-bottom: 0;
+                padding-bottom: 20px;
+                div[class*="content-attachment-"] {
+                    box-shadow: none !important;
+                }
+            }
+        }
+    }
+
+    @media not screen and (min-width: 775px) {
+        //For desktop
+        div.hub-modal-content-view {
+            max-width: 500px;
+            padding: 0px;
+            width: 95% !important;
+
+            > .attachment-carousel {
+                vertical-align: middle;
+                width: 100%;
+            }
+
+            .content {
+                vertical-align: top;
+                width: 100%;
+
+                div[class*="content-attachment-"] {
+                    box-shadow: none !important;
+                }
+            }
+        }
+        .hub-modal-close {
+            right: 2.5%;
+        }
+    }
+
+    @media (max-height: 600px) {
+        .hub-modal-content > .hub-modal-content-view.content {
+            margin-top: 0px;
+            margin-bottom: 0px;
+
+            .product-carousel {
+                margin-top: 5px;
+            }
+
+            .content-header-inner {
+                padding-top: 10px;
+            }
+
+            .content-body-main { 
+                margin-top: 0px;
+
+                p {
+                    margin-top: 0px;
+                    margin-bottom: 0px;
+                }
+            }
+
+            article.content { 
+                padding-bottom: 0px;
+            }
+        }
+    }
+}

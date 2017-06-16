@@ -1,4 +1,4 @@
-<div class="content-header-inner">
+<div class="content-header-inner {{#author.avatar}}has-avatar{{/author.avatar}}">
     {{#author.avatar}}
         <a class="content-author-avatar" {{#authorAvatarUrl}}href="{{authorAvatarUrl}}" target="_blank" arial-label="{{ author.displayName }} stream"{{/authorAvatarUrl}}>
             <img src="{{ author.avatar }}" alt="{{ author.displayName }} avatar"/>

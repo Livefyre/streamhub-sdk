@@ -1,4 +1,4 @@
-@import "../../content/css/product.less";
+@import "../../content/css/product-modal.less";
 
 .hub-modal {
     position: fixed;
@@ -42,6 +42,10 @@
     .hub-modal-content {
         height: 100%;
         overflow: auto;
+
+        > .content {
+            padding-bottom: 0px;
+        }
     }
 
     .hub-modal-content > .hub-modal-content-view.content,
@@ -213,6 +217,16 @@
         .content-author-username, .content-created-at {
             font-size: 12px;
             font-weight: normal;
+        }
+    }
+
+    .content.spectrum-content {
+        height: 100%;
+        position: static;
+
+        .product-carousel {
+            bottom: 0;
+            position: absolute;
         }
     }
 }

@@ -69,6 +69,22 @@ define([
     };
 
     /**
+     * Return whether this Content has linked products or not.
+     * @return {boolean}
+     */
+    Content.prototype.hasProducts = function () {
+        return false;
+    };
+
+    /**
+     * Return whether this Content has rights granted or not.
+     * @return {boolean}
+     */
+    Content.prototype.hasRightsGranted = function () {
+        return false;
+    };
+
+    /**
      * Set some properties and emit 'change' and 'change:{property}' events
      * @param newProperties {Object} An object of properties to set on this Content
      * @param silence [boolean] Mute any events that would be fired
