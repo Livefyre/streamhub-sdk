@@ -34,6 +34,7 @@ ProductCalloutView.prototype.createPopover = function () {
     if (this.popover) {
         document.getElementById(this.popoverDivClass).appendChild(this.popover.el);
         this.popover.resizeAndReposition(this.el.children[0]);
+        this.popover.setProductPopoverWidth(this.el.children[0]);
         this.popover.positionArrowSmart(this.el.children[0]);
         return;
     }
@@ -51,8 +52,6 @@ ProductCalloutView.prototype.createPopover = function () {
     $el.appendTo(document.body);
 
     this.popover = new Popover({
-        maxWidth: width + 10,
-        minWidth: width + 10,
         el: $childEl
     });
     
@@ -61,6 +60,7 @@ ProductCalloutView.prototype.createPopover = function () {
     this.popover.setContentNode(product_popup.el);
 
     this.popover.resizeAndReposition(this.el.children[0]);
+    this.popover.setProductPopoverWidth(this.el.children[0]);
     this.popover.positionArrowSmart(this.el.children[0]); 
 
     this.popover.$el.on('mouseleave', function() {
@@ -75,7 +75,6 @@ ProductCalloutView.prototype.events = View.prototype.events.extended({
             return;
         }
         this.createPopover();
-
     },
 
     'mouseleave': function(e) {
@@ -90,7 +89,7 @@ ProductCalloutView.prototype.events = View.prototype.events.extended({
         var tOut = setTimeout(function() {hidePopover()}, 100);
         
         $(this.popover.$el).mouseover(function() { clearTimeout(tOut); });
-    } 
+    }
 });
 
 module.exports = ProductCalloutView;
