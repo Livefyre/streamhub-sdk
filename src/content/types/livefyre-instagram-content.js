@@ -28,7 +28,9 @@ define([
                     var attachment = this.attachments[i];
                     if (attachment.type === 'video') {
                         attachment.thumbnail_url = attachment.link + 'media';
-                        attachment.html = '<iframe class="instagram-video" src="' + attachment.link + 'embed"></iframe>';
+                        attachment.html = '<iframe class="instagram-video" src="' + attachment.link + 'embed"' +
+                            ' style="width:100%; height:100%; max-width:' + attachment.width +
+                            'px; max-height:' + attachment.height + 'px;"></iframe>';
                     }
                 }
             }
