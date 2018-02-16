@@ -4,7 +4,7 @@ define([
     'streamhub-sdk/content/views/gallery-attachment-list-view',
     'hgn!streamhub-sdk/modal/templates/modal',
     'inherits'
-], function($, View, GalleryAttachmentListView, ModalTemplate, inherits) {
+], function ($, View, GalleryAttachmentListView, ModalTemplate, inherits) {
     'use strict';
 
     /**
@@ -94,7 +94,7 @@ define([
         $('body').css('overflow', 'hidden');
 
         this.$el.show();
-        if ( ! this._attached) {
+        if (!this._attached) {
             this._attach();
         }
 
@@ -115,13 +115,21 @@ define([
      * Makes the modal and its content not visible
      */
     ModalView.prototype.hide = function () {
+        document.removeEventListener('focus', this.adjustFocus);
         this.$el.trigger('hiding');
         this.$el.hide();
         this._detach();
         this.visible = false;
         $('body').css('overflow', 'auto');
         this.$el.trigger('hidden');
-        document.removeEventListener('focus', this.adjustFocus);
+        if (this._modalSubView && this._modalSubView.opts.content) {
+            var elInApp = document.querySelector('[data-content-id="' + this._modalSubView.opts.content.id + '"]');
+            if (elInApp) {
+                // Moves up to the top most level of the content card
+                elInApp.parentElement.focus();
+                elInApp.parentElement.scrollIntoView();
+            }
+        }
     };
 
 
@@ -212,7 +220,7 @@ define([
         var stackLength = ModalView._stackedInstances.length,
             top;
         if (stackLength === 0) {
-        //Return early if the stack is empty
+            //Return early if the stack is empty
             return;
         }
 
@@ -221,13 +229,13 @@ define([
         this === top && ModalView._stackedInstances.pop() && stackLength--;
 
         if (stackLength > 0) {
-        //If there is a next modal, show it
+            //If there is a next modal, show it
             ModalView._stackedInstances[stackLength - 1].show(undefined, false);
         }
     };
 
     ModalView.prototype.adjustFocus = function (event) {
-        if ( this.visible && !this.el.contains( event.target ) ) {
+        if (this.visible && !this.el.contains(event.target)) {
             event.stopPropagation();
             // move focus to the modal
             var modalCloseButtonEl = this.$el.find(ModalView.prototype.closeButtonSelector);

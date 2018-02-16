@@ -32,7 +32,7 @@ TiledAttachmentListView.prototype.contentAttachmentSelector = '.content-attachme
 
 TiledAttachmentListView.prototype._clickOrKey = function (e) {
     var targetOembed;
-    for (var i=0; i < this.oembedViews.length; i++) {
+    for (var i = 0; i < this.oembedViews.length; i++) {
         var oembedView = this.oembedViews[i];
         if ($.contains(oembedView.el, e.target)) {
             targetOembed = oembedView.oembed;
@@ -58,6 +58,20 @@ TiledAttachmentListView.prototype.events = AttachmentListView.prototype.events.e
 TiledAttachmentListView.prototype.render = function () {
     AttachmentListView.prototype.render.call(this);
     this.retile();
+
+    var oembed;
+    for (var i = 0; i < this.oembedViews.length; i++) {
+        if (this.isTileableAttachment(this.oembedViews[i].oembed)) {
+            oembed = this.oembedViews[i].oembed;
+        }
+    }
+
+
+    if (oembed) {
+        this.el.setAttribute('tabindex', 0);
+        this.el.setAttribute('role', 'button');
+        this.el.setAttribute('aria-label', 'Clicking this button expands the ' + oembed.provider_name + ' ' + oembed.type + ' in a modal');
+    }
 };
 
 
@@ -79,7 +93,7 @@ TiledAttachmentListView.prototype.isTileableAttachment = function (oembed) {
 TiledAttachmentListView.prototype.tileableCount = function () {
     var attachmentsCount = 0;
 
-    for (var i=0; i < this.oembedViews.length; i++) {
+    for (var i = 0; i < this.oembedViews.length; i++) {
         if (this.isTileableAttachment(this.oembedViews[i].oembed)) {
             attachmentsCount++;
         }
@@ -118,7 +132,7 @@ TiledAttachmentListView.prototype.remove = function (oembed) {
  * Retiles all attachments of the content
  */
 TiledAttachmentListView.prototype.retile = function () {
-    if ( ! this.el) {
+    if (!this.el) {
         return;
     }
     var tiledAttachmentsEl = this.$el.find(this.tiledAttachmentsSelector);
@@ -156,7 +170,7 @@ TiledAttachmentListView.prototype.retile = function () {
  */
 TiledAttachmentListView.prototype.count = function () {
     var count = 0;
-    for (var i=0; i < this.oembedViews.length; i++) {
+    for (var i = 0; i < this.oembedViews.length; i++) {
         if (this.isTileableAttachment(this.oembedViews[i].oembed)) {
             count++;
         }
