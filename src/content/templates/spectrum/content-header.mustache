@@ -1,6 +1,6 @@
 <div class="content-header-inner {{#author.avatar}}has-avatar{{/author.avatar}}">
     {{#author.avatar}}
-        <a class="content-author-avatar" {{#authorAvatarUrl}}href="{{authorAvatarUrl}}" target="_blank" arial-label="{{ author.displayName }} stream"{{/authorAvatarUrl}}>
+        <a class="content-author-avatar" {{#authorAvatarUrl}}href="{{authorAvatarUrl}}" target="_blank" arial-label="{{ authorUrlLabel }}"{{/authorAvatarUrl}}>
             <img src="{{ author.avatar }}" alt="{{ author.displayName }} avatar"/>
         </a>
     {{/author.avatar}}
@@ -8,7 +8,7 @@
     <div class="content-byline">
         <div class="content-author-name">
             {{#authorUrl}}
-                <a href="{{ authorUrl }}" target="_blank" aria-label="{{ author.displayName }} profile">{{ author.displayName }}</a>
+                <a href="{{ authorUrl }}" target="_blank" aria-label="{{ authorUrlLabel }}" tabindex="-1">{{ author.displayName }}</a>
             {{/authorUrl}}
             {{^authorUrl}}
                 <span>{{ author.displayName }}</span>
@@ -20,7 +20,7 @@
         {{#authorUserName}}
             {{#authorUrl}}
                 <div class="content-author-username">
-                    <a href="{{authorUrl}}" target="_blank" aria-label="{{ author.displayName }} profile">{{authorUserNamePrefix}}{{ authorUserName }}</a>
+                    <a href="{{authorUrl}}" target="_blank" aria-label="{{ authorUrlLabel }}" tabindex="-1">{{authorUserNamePrefix}}{{ authorUserName }}</a>
                 </div>
             {{/authorUrl}}
         {{/authorUserName}}

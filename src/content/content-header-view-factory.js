@@ -40,14 +40,14 @@ ContentHeaderViewFactory.prototype.getHeaderViewOptsForContent = function (conte
         opts.authorVerified = content.twitterVerified;
         opts.contentSourceName = 'twitter';
         opts.contentSourceUrl = 'https://twitter.com';
-        opts.contentSourceTooltipText = 'View on Twitter';
+        opts.contentSourceTooltipText = 'Twitter Homepage';
     } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_FACEBOOK) {
         if (content.author) {
             opts.authorUrl = content.author.profileUrl;
         }
         opts.contentSourceName = 'facebook'
         opts.contentSourceUrl = 'https://facebook.com';
-        opts.contentSourceTooltipText = 'View on Facebook';
+        opts.contentSourceTooltipText = 'Facebook Homepage';
     } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_INSTAGRAM) {
         if (content.author && typeof content.author.profileUrl === 'string') {
             opts.authorUserNamePrefix = '@';
@@ -56,15 +56,15 @@ ContentHeaderViewFactory.prototype.getHeaderViewOptsForContent = function (conte
         }
         opts.contentSourceName = 'instagram';
         opts.contentSourceUrl = 'https://instagram.com';
-        opts.contentSourceTooltipText = 'View on Instagram';
+        opts.contentSourceTooltipText = 'Instagram Homepage';
     } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_WEIBO) {
         opts.contentSourceName = 'weibo';
         opts.contentSourceUrl = 'http://weibo.com/';
-        opts.contentSourceTooltipText = 'View on Weibo';
+        opts.contentSourceTooltipText = 'Weibo Homepage';
     } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_YOUTUBE) {
         opts.contentSourceName = 'youtube';
         opts.contentSourceUrl = 'https://youtube.com';
-        opts.contentSourceTooltipText = 'View on YouTube';
+        opts.contentSourceTooltipText = 'YouTube Homepage';
     } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_FEED) {
         opts.contentSourceName = 'rss';
     } else if (content.typeUrn === TYPE_URNS.LIVEFYRE) {

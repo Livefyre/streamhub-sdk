@@ -1,9 +1,10 @@
 var $ = require('streamhub-sdk/jquery');
-var inherits = require('inherits');
-var View = require('streamhub-sdk/view');
-var template = require('hgn!streamhub-sdk/content/templates/content-header');
 var debug = require('debug');
+var inherits = require('inherits');
+var properCase = require('mout/string/properCase');
+var template = require('hgn!streamhub-sdk/content/templates/content-header');
 var util = require('streamhub-sdk/util');
+var View = require('streamhub-sdk/view');
 
 var log = debug('streamhub-sdk/content/views/content-header-view');
 
@@ -102,6 +103,11 @@ ContentHeaderView.prototype.getTemplateContext = function () {
     context.authorAvatarUrl = this.author ? this.author.profileUrl : undefined;
     // Falling back to `false` because mustache doesn't think "" is falsy...
     context.authorUrl = (context.authorUrl ? context.authorUrl : context.authorAvatarUrl) || false;
+    context.authorUrlLabel = [
+        context.author.displayName + '\'s',
+        properCase(this.opts.contentSourceName),
+        'profile'
+    ].join(' ');
     return context;
 };
 
