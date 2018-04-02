@@ -1,0 +1,125 @@
+@import "../../css/fycons.less";
+@import "lib/livefyre-bootstrap/src/styles/fycon-chars.less";
+
+.call-to-action-bar {
+  border-top: 1px solid #e1e1e1;
+  margin: 0px 20px;
+  padding: 15px 0px;
+
+  .call-to-action-icon {
+    height: 15px;
+    width: 15px;
+  }
+
+  .call-to-actions {
+    margin: 0px auto;
+    font-size: 0px;
+  }
+
+  a.call-to-action { 
+    display: inline-block;
+    width: 125px;
+    height: 36px;
+    border-radius: 4px;
+    background-color: #e0e1e3;
+    box-shadow: 0 1px 2px 0 rgba(133, 133, 133, 0.5);
+    color: rgb(47,52,64,0.8);
+    
+    text-align: center;
+    vertical-align: top;
+
+    margin-right: 7px;
+
+    &:last-child {
+      margin-right: 0px;
+    }
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    .call-to-action-text {
+      display: block;
+      padding: 11px 0px;
+
+      font-family: HelveticaNeue-Medium;
+      font-size: 12px;
+      font-weight: 500;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: 1.17;
+      letter-spacing: 0.3px;
+      color: rgba(47, 52, 64, 0.8);
+    }
+  }
+
+  .additional-call-to-action-button {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background-color: #e0e1e3;
+    box-shadow: 0 1px 2px 0 rgba(133, 133, 133, 0.5);
+    color: rgb(47,52,64,0.8);
+
+    .button-icon {
+      padding-top: 12px;
+      text-align: center;
+      font-family: "fycons-@{fycon-font-version}";
+      font-size: 12px;
+      font-weight: 500;
+      font-style: normal;
+      font-stretch: normal;
+
+      &.open {
+        .fycon-arrow-down;
+      }
+      &.closed{
+        .fycon-arrow-up;
+      }
+    }
+    
+    .call-to-action-popover {
+      display: none;
+      position: absolute;
+      top: 36px;
+      border-radius: 2px;
+      background-color: #ffffff;
+      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+      
+      a.extra-call-to-action {
+        display: block;
+        padding: 10px 15px;
+        width: 105px;
+        height: 18px;
+        text-decoration: none;
+
+        &:hover{
+          text-decoration: none;
+        }
+
+        &:hover{
+          background-color: #f7f7f7;
+        }
+
+        .call-to-action-text {
+          font-family: HelveticaNeue-Medium;
+          font-size: 12px;
+          font-weight: 500;
+          font-style: normal;
+          font-stretch: normal;
+          line-height: 1.5;
+          letter-spacing: normal;
+          text-align: left;
+          text-decoration: none;
+          color: #595d66;
+        }
+      }
+    
+      &.show {
+        display: block;
+      }
+    }
+  }
+}

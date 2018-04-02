@@ -19,13 +19,13 @@ var logError = (function () {
     if (typeof console.error === 'function') {
         return function () {
             var args = [].slice.call(arguments);
-            return console.error.apply(console, args);            
+            return console.error.apply(console, args);
         };
     }
     if (typeof console.log === 'function') {
         return function () {
             var args = [].slice.call(arguments);
-            return console.log.apply(console, args);            
+            return console.log.apply(console, args);
         };
     }
     return log;
@@ -47,7 +47,7 @@ var logError = (function () {
  * @exports streamhub-sdk/views/list-view
  * @constructor
  */
-var ListView = function(opts) {
+var ListView = function (opts) {
     opts = opts || {};
     opts.autoRender = opts.autoRender === undefined ? true : opts.autoRender;
     if (opts.template) {
@@ -65,7 +65,7 @@ var ListView = function(opts) {
         showMoreButton: opts.showMoreButton,
         getButtonEl: function () {
             var el = this.$(this.showMoreElSelector)[0];
-            if ( ! el) {
+            if (!el) {
                 throw new Error("Can't get show more button for ListView");
             }
             return el;
@@ -201,7 +201,7 @@ ListView.prototype.render = function () {
  */
 ListView.prototype._write = function (view, requestMore) {
     try {
-        this.add(view);        
+        this.add(view);
     } catch (err) {
         this.emit('error.add', err);
     }
@@ -225,7 +225,7 @@ ListView.prototype.comparator = null;
  * @returns {!boolean}
  * @protected
  */
-ListView.prototype._isIndexedView = function(view) {
+ListView.prototype._isIndexedView = function (view) {
     return (view && view.uid && this._indexedViews[view.uid]) ? true : false;
 };
 
@@ -234,7 +234,7 @@ ListView.prototype._isIndexedView = function(view) {
  * @param view {!View}
  * @private
  */
-ListView.prototype._recordIndexedView = function(view) {
+ListView.prototype._recordIndexedView = function (view) {
     this._indexedViews[view.uid] = true;
 };
 
@@ -246,7 +246,7 @@ ListView.prototype._recordIndexedView = function(view) {
  * @param [array] {[]} Array to search through. Defaults to this.views.
  * @return {!number}
  */
-ListView.prototype._binarySearch = function(newView, array) {
+ListView.prototype._binarySearch = function (newView, array) {
     array = array || this.views;
     if (!this.comparator) {
         throw new Error("Tried to _binarySearch without this.comparator.");
@@ -258,21 +258,21 @@ ListView.prototype._binarySearch = function(newView, array) {
         comp = array[mid];
 
         while (this._isIndexedView(comp) && mid > low) {
-        //Try to get a comp that isn't indexed
-        //Move lower looking for a comparable view
+            //Try to get a comp that isn't indexed
+            //Move lower looking for a comparable view
             comp = array[--mid];
         }
         if (this._isIndexedView(comp)) {
-        //If nothing was found...
+            //If nothing was found...
             if (low === 0) {
-            //...and we're at the beginning, then just add it to the beginning
+                //...and we're at the beginning, then just add it to the beginning
                 high = low;
             } else {
-            //...and we aren't at the beginning, continue to move towards the end
+                //...and we aren't at the beginning, continue to move towards the end
                 low = origMid + 1;
             }
         } else {
-        //Set new low or high and start again
+            //Set new low or high and start again
             if (this.comparator(comp, newView) < 0) {
                 low = mid + 1;
             } else {
@@ -292,17 +292,17 @@ ListView.prototype._binarySearch = function(newView, array) {
  * @param [forcedIndex] {number} location for the new view
  * @returns the newly added View
  */
-ListView.prototype.add = function(newView, forcedIndex) {
+ListView.prototype.add = function (newView, forcedIndex) {
     log("add", newView, forcedIndex);
     var index;
     var self = this;
 
-    if ( ! newView) {
+    if (!newView) {
         log("Called add with a falsy parameter, returning");
         return;
     }
 
-    if (typeof(forcedIndex) !== 'number' || Math.abs(forcedIndex) > this.views.length) {
+    if (typeof (forcedIndex) !== 'number' || Math.abs(forcedIndex) > this.views.length) {
         if (this.comparator) {
             index = this._binarySearch(newView);
         } else {
@@ -318,6 +318,9 @@ ListView.prototype.add = function(newView, forcedIndex) {
     // Add to DOM
     insertOrThrow(newView, forcedIndex);
     this.emit('added', newView);
+    if (newView.onInsert) {
+        newView.onInsert();
+    }
     return newView;
 
     /**
@@ -413,7 +416,7 @@ ListView.prototype._insert = function (view, forcedIndex) {
  */
 ListView.prototype.catchListViewAddError = function (err) {
     var badView = err && err.view;
-    if ( ! badView) {
+    if (!badView) {
         return;
     }
     // Try to remove the bad view
@@ -429,7 +432,7 @@ ListView.prototype.catchListViewAddError = function (err) {
  * Removes references to list item views.
  */
 ListView.prototype.clear = function () {
-    for (var i=0; i < this.views.length; i++) {
+    for (var i = 0; i < this.views.length; i++) {
         this.views[i].detach();
     }
     this.views = [];
@@ -440,4 +443,4 @@ ListView.prototype.destroy = function () {
     this.views = null;
 };
 
-module.exports =  ListView;
+module.exports = ListView;

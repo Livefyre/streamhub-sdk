@@ -4,6 +4,7 @@ var CompositeView = require('view/composite-view');
 var ContentBodyView = require('streamhub-sdk/content/views/spectrum/content-body-view');
 var ContentFooterView = require('streamhub-sdk/content/views/spectrum/content-footer-view');
 var ContentHeaderView = require('streamhub-sdk/content/views/spectrum/content-header-view');
+var CTABarView = require('streamhub-sdk/content/views/call-to-action-bar-view');
 var get = require('mout/object/get');
 var ProductCarouselView = require('streamhub-sdk/content/views/product-carousel-view');
 
@@ -28,7 +29,7 @@ module.exports = function (contentView) {
      * @override
      */
     contentView._addInitialChildViews = function (opts, shouldRender) {
-        var renderOpts = {render: !!shouldRender};
+        var renderOpts = { render: !!shouldRender };
 
         this._thumbnailAttachmentsView = this._thumbnailViewFactory.createThumbnailView(opts);
         this._blockAttachmentsView = new BlockAttachmentListView(opts);
@@ -51,8 +52,13 @@ module.exports = function (contentView) {
 
         var rightsGranted = opts.productOptions.requireRights ? opts.content.hasRightsGranted() : true;
         if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
-            this._productCarouselView = new ProductCarouselView($.extend({cardsInView: 2}, opts));
+            this._productCarouselView = new ProductCarouselView($.extend({ cardsInView: 2 }, opts));
             this.add(this._productCarouselView, renderOpts);
+        }
+
+        // There should only be products OR CTAs, but check just in case to avoid display issues for weird / bad data
+        if (!this._productCarouselView && this.content.links.cta && this.content.links.cta.length > 0) {
+            this._ctaView = opts.ctaView || new CTABarView(opts);
         }
     };
 
@@ -62,5 +68,12 @@ module.exports = function (contentView) {
     contentView._removeInitialChildViews = function (opts, shouldRender) {
         originalRemoveInitialChildViews.call(contentView, opts, shouldRender);
         this._productCarouselView && this.remove(this._productCarouselView);
+        this._ctaView && this._ctaView.destroy();
     };
+
+    contentView.onInsert = function () {
+        this._ctaView.opts = this.opts;
+        this._ctaView.render();
+        this.el.appendChild(this._ctaView.el);
+    }
 };

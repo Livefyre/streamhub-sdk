@@ -1,0 +1,28 @@
+<div class="call-to-actions" style="{{#width}} width:{{width}}px; {{/width}} ">
+  {{#mainCTAs}}
+    <a class="call-to-action" target="_blank" href="{{url}}" 
+      style="{{#buttonColor}} background-color:{{buttonColor}}; {{/buttonColor}} {{#textColor}}color:{{textColor}};{{/textColor}}">
+    <div class="call-to-action-text">
+      <span class="call-to-action-icon {{icon}}"></span>
+      {{text}}
+    </div>
+    </a>
+  {{/mainCTAs}}
+
+  {{#additionalCTAs}}
+  <div class="additional-call-to-action-button" tabindex="0" aria-label="" role="button">
+    <div class="button-icon closed"></div>
+    <div class="call-to-action-popover">
+      {{#ctas}}
+        <a class="extra-call-to-action" target="_blank" href="{{url}}" 
+          style="{{#buttonColor}} background-color:{{buttonColor}}; {{/buttonColor}} {{#textColor}}color:{{textColor}};{{/textColor}}">
+          <div class="call-to-action-text">
+            <span class="call-to-action-icon {{icon}}"></span>
+            {{text}}
+          </div>
+        </a>
+      {{/ctas}}
+    </div>
+  </div>
+  {{/additionalCTAs}}
+</div>
