@@ -164,7 +164,11 @@ ContentListView.prototype._insert = function (contentView, forcedIndex) {
         // Beginning!
         $wrappedEl.prependTo(this.$listEl);
 
-        $wrappedEl.css('margin-top', (-1*$wrappedEl.height())+'px');
+        // Don't update the margin if the content isn't being animated into the
+        // list view.
+        if (this._animate) {
+            $wrappedEl.css('margin-top', (-1*$wrappedEl.height())+'px');
+        }
 
         // Wait for the element to be rendered, before removing class which
         // transitions the margin-top from -100% to 0
