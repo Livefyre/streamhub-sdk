@@ -1,6 +1,7 @@
 'use strict';
 
 var $ = require('jquery');
+var find = require('mout/array/find');
 var inherits = require('inherits');
 var View = require('streamhub-sdk/view');
 
@@ -30,6 +31,17 @@ MediaMask.prototype.events = {
 };
 MediaMask.prototype.showBtnSelector = '.show-embed';
 MediaMask.prototype.template = require('hgn!streamhub-sdk/content/templates/media-mask');
+
+/**
+ * List of providers whose videos can't be whitelisted via the whitelist array.
+ * @const {Array.<string>}
+ */
+var NON_WHITELISTABLE_PROVIDERS = [
+    'facebook',
+    'instagram',
+    'twitter',
+    'youtube'
+];
 
 /**
  * Supported oembed types that should be masked.
@@ -91,7 +103,7 @@ MediaMask.prototype.render = function () {
  * @param {boolean} canShow
  * @return {boolean}
  */
-MediaMask.shouldShowMask = function (oembed, canShow) {
+MediaMask.shouldShowMask = function (oembed, canShow, whitelist) {
     var supportsMask = SUPPORTED_TYPES.indexOf(oembed.type) > -1;
     var providerName = (oembed.provider_name || '').toLowerCase();
     var videoSrc = oembed.html || oembed.url || '';
@@ -99,13 +111,32 @@ MediaMask.shouldShowMask = function (oembed, canShow) {
     // needs to be pulled from another location.
     var livefyreVideoSrc = oembed.url || oembed.link || '';
 
+    // If argument says we can't show, the oembed type is not a supported mask
+    // type, or the mask has been dismissed already, don't show the mask.
     if (!canShow || !supportsMask || oembed.viewed) {
         return false;
     }
+    // Video html tags can't be tracked.
+    if (videoSrc.match(/^<video[^>]*>$/)) {
+        return false;
+    }
+    // Twitter supports DNT and we add meta to the page if it's not there
+    // already to ensure it's handled correctly on their end.
     if (providerName === 'twitter' && videoSrc.indexOf('twimg.com') > -1) {
         return false;
     }
+    // Livefyre providers with cloudfront videos are uploaded by users on our
+    // platform, so we control it and know there is no tracking.
     if (providerName === 'livefyre' && livefyreVideoSrc.indexOf('cloudfront.net') > -1) {
+        return false;
+    }
+    // Don't allow whitelisting of social providers because this is only
+    // targeted at customers using their own hosted media.
+    if (NON_WHITELISTABLE_PROVIDERS.indexOf(providerName) > -1) {
+        return true;
+    }
+    // If any of the whitelisted domains are in the source, don't show the mask.
+    if (find(whitelist, function (domain) {return videoSrc.indexOf(domain) > -1})) {
         return false;
     }
     return true;
