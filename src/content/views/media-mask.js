@@ -94,7 +94,10 @@ MediaMask.prototype.render = function () {
 MediaMask.shouldShowMask = function (oembed, canShow) {
     var supportsMask = SUPPORTED_TYPES.indexOf(oembed.type) > -1;
     var providerName = (oembed.provider_name || '').toLowerCase();
-    var videoSrc = oembed.html;
+    var videoSrc = oembed.html || oembed.url || '';
+    // Livefyre videos do not have the domain of the video in the html, so it
+    // needs to be pulled from another location.
+    var livefyreVideoSrc = oembed.url || oembed.link || '';
 
     if (!canShow || !supportsMask || oembed.viewed) {
         return false;
@@ -102,7 +105,7 @@ MediaMask.shouldShowMask = function (oembed, canShow) {
     if (providerName === 'twitter' && videoSrc.indexOf('twimg.com') > -1) {
         return false;
     }
-    if (providerName === 'livefyre' && videoSrc.indexOf('cloudfront.net') > -1) {
+    if (providerName === 'livefyre' && livefyreVideoSrc.indexOf('cloudfront.net') > -1) {
         return false;
     }
     return true;
