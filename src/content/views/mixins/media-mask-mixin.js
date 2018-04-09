@@ -20,15 +20,16 @@ module.exports = function (view, opts) {
      * @param {function} callback
      */
     view.renderMediaMask = function (oembed, canShow, callback) {
-        canShow = canShow && opts.doNotTrack.browser;
-        if (!MediaMask.shouldShowMask(oembed, canShow, opts.doNotTrack.whitelist)) {
+        var doNotTrack = opts.doNotTrack || {};
+        canShow = canShow && doNotTrack.browser;
+        if (!MediaMask.shouldShowMask(oembed, canShow, doNotTrack.whitelist)) {
             callback && callback();
             return;
         }
         view._mask && view._mask.destroy();
         view._mask = new MediaMask({
             callback: callback,
-            delegate: opts.doNotTrack.delegate,
+            delegate: doNotTrack.delegate,
             oembed: oembed
         });
         view.$el.find('.content-attachments-tiled').append(view._mask.render().$el);
