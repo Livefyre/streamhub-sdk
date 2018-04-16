@@ -72,8 +72,10 @@ module.exports = function (contentView) {
     };
 
     contentView.onInsert = function () {
-        this._ctaView.opts = this.opts;
-        this._ctaView.render();
-        this.el.appendChild(this._ctaView.el);
+        if (this._ctaView) {
+            this._ctaView.opts = this.opts;
+            this._ctaView.render();
+            this.el.appendChild(this._ctaView.el);
+        }
     }
 };
