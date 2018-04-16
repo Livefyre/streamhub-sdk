@@ -1,6 +1,10 @@
 {
   "name": "streamhub-sdk",
+<<<<<<< HEAD
   "version": "2.31.5",
+=======
+  "version": "2.32.0",
+>>>>>>> 2505ab53... Version bump
   "main": [
     "./src/main.js"
   ],

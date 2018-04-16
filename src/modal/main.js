@@ -107,6 +107,10 @@ define([
         this.visible = true;
         this.$el.trigger('shown');
 
+        if (modalSubView) {
+            modalSubView.onInsert();
+        }
+
         document.addEventListener('focus', this.adjustFocus.bind(this), true);
     };
 

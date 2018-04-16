@@ -49,7 +49,7 @@ CallToActionBar.prototype.events = View.prototype.events.extended({}, function (
 });
 
 CallToActionBar.prototype.render = function () {
-    if (!this.opts.content.links.cta || this.opts.content.links.cta.length === 0) {
+    if (!this.opts.showCTA || !this.opts.content.links.cta || this.opts.content.links.cta.length === 0) {
         return;
     }
 

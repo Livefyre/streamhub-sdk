@@ -7,6 +7,7 @@ var ContentFooterView = require('streamhub-sdk/content/views/spectrum/content-fo
 var ContentHeaderView = require('streamhub-sdk/content/views/spectrum/content-header-view');
 var ContentHeaderViewFactory = require('streamhub-sdk/content/content-header-view-factory');
 var ContentViewFactory = require('streamhub-sdk/content/content-view-factory');
+var CTABarView = require('streamhub-sdk/content/views/call-to-action-bar-view');
 var debug = require('debug');
 var get = require('mout/object/get');
 var inherits = require('inherits');
@@ -47,7 +48,7 @@ var ProductContentView = function (opts) {
     this._applyMixin(opts);
 
     if (this.content) {
-        this.content.on("change:body", function(newVal, oldVal){
+        this.content.on("change:body", function (newVal, oldVal) {
             this._handleBodyChange();
         }.bind(this));
     }
@@ -66,7 +67,7 @@ ProductContentView.prototype.attachmentFrameElSelector = '.content-attachment-fr
  * @param {boolean=} shouldRender
  */
 ProductContentView.prototype._addInitialChildViews = function (opts, shouldRender) {
-    var renderOpts = {render: !!shouldRender};
+    var renderOpts = { render: !!shouldRender };
 
     this._headerView = opts.headerView || new ContentHeaderView(
         this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
@@ -85,6 +86,11 @@ ProductContentView.prototype._addInitialChildViews = function (opts, shouldRende
     if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
         this._productView = opts.productView || new ProductCarouselView(opts);
         this.add(this._productView, renderOpts);
+    }
+
+    // There should only be products OR CTAs, but check just in case to avoid display issues for weird / bad data
+    if (!this._productCarouselView && this.content.links.cta && this.content.links.cta.length > 0) {
+        this._ctaView = opts.ctaView || new CTABarView(opts);
     }
 };
 
@@ -196,7 +202,15 @@ ProductContentView.prototype.render = function () {
     return this;
 };
 
-ProductContentView.prototype._testHasInnerHtmlBug = function() {
+ProductContentView.prototype.onInsert = function () {
+    if (this._ctaView) {
+        this._ctaView.opts = this.opts;
+        this._ctaView.render();
+        this.el.appendChild(this._ctaView.el);
+    }
+};
+
+ProductContentView.prototype._testHasInnerHtmlBug = function () {
     // only test once
     if (hasInnerHtmlBug !== null) {
         return hasInnerHtmlBug

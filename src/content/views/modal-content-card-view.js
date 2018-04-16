@@ -1,9 +1,9 @@
 var $ = require('streamhub-sdk/jquery');
 var AttachmentCarouselView = require('streamhub-sdk/content/views/attachment-carousel-view');
 var CompositeView = require('view/composite-view');
-var ContentBodyView = require('streamhub-sdk/content/views/spectrum/content-body-view');
 var debug = require('debug');
 var find = require('mout/array/find');
+var get = require('mout/object/get');
 var impressionUtil = require('streamhub-sdk/impressionUtil');
 var inherits = require('inherits');
 var ProductContentView = require('streamhub-sdk/content/views/product-content-view');
@@ -37,11 +37,11 @@ var ModalContentCardView = function (opts) {
     impressionUtil.recordImpression(opts.content);
 
     if (this.content) {
-        this.content.on('change:body', function(newVal, oldVal) {
+        this.content.on('change:body', function (newVal, oldVal) {
             this._handleBodyChange();
         }.bind(this));
 
-        this.content.on('change:attachments', function(newVal, oldVal) {
+        this.content.on('change:attachments', function (newVal, oldVal) {
             this._handleAttachmentsChange();
         }.bind(this));
 
@@ -68,14 +68,14 @@ ModalContentCardView.prototype.modalSelector = '.hub-modal';
 ModalContentCardView.prototype.modalAnnotationClass = 'modal-content-card';
 
 ModalContentCardView.prototype.events = CompositeView.prototype.events.extended({
-    'imageLoaded.hub': function(e) {
+    'imageLoaded.hub': function (e) {
         this.$el.addClass(this.contentWithImageClass);
         this.$el.removeClass(this.imageLoadingClass);
 
         e.stopPropagation();
         this.$el.parent().trigger('imageLoaded.hub', { ModalContentCardView: this });
     },
-    'imageError.hub': function(e, oembed) {
+    'imageError.hub': function (e, oembed) {
         this.content.removeAttachment(oembed);
 
         if (this._thumbnailAttachmentsView && !this._thumbnailAttachmentsView.tileableCount()) {
@@ -93,7 +93,7 @@ ModalContentCardView.prototype.events = CompositeView.prototype.events.extended(
  * @param {boolean=} shouldRender
  */
 ModalContentCardView.prototype._addInitialChildViews = function (opts, shouldRender) {
-    var renderOpts = {render: !!shouldRender};
+    var renderOpts = { render: !!shouldRender };
 
     this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
     this.add(this._attachmentsView, renderOpts);
@@ -106,6 +106,7 @@ ModalContentCardView.prototype._removeInitialChildViews = function () {
     this._attachmentsView && this.remove(this._attachmentsView);
     this._bodyView && this.remove(this._bodyView);
     this._productContentView && this.remove(this._productContentView);
+    this._ctaView && this._ctaView.destroy();
 };
 
 /**
@@ -203,6 +204,15 @@ ModalContentCardView.prototype.render = function () {
     this.$el.closest(this.modalSelector).addClass(this.modalAnnotationClass);
     this._resizeModalImage();
     return this;
+};
+
+ModalContentCardView.prototype.onInsert = function () {
+    for (var i = 0; i < this._childViews.length; i++) {
+        var view = this._childViews[i];
+        if (view.onInsert) {
+            view.onInsert();
+        }
+    }
 };
 
 module.exports = ModalContentCardView;
