@@ -1,47 +1,47 @@
 {
   "name": "streamhub-sdk",
-  "version": "2.31.2",
+  "version": "2.31.3",
   "main": [
     "./src/main.js"
   ],
   "dependencies": {
-    "jquery": "~1.10.2",
+    "auth": "git://github.com/Livefyre/auth.git#~0.2.0",
     "base64": "git://github.com/ross-pfahler/Base64.js#~0.4.0",
-    "hogan": "3.0.0",
-    "requirejs": "~2.1.5",
     "cajon": "git://github.com/requirejs/cajon.git#~0.1.11",
-    "requirejs-text": "~2.0.5",
+    "debug": "visionmedia/debug#~0.7.4",
+    "event-emitter": "git://github.com/Livefyre/event-emitter.git#0.1",
+    "hogan": "3.0.0",
+    "inherits": "git://github.com/Livefyre/inherits.git",
+    "jquery": "~1.10.2",
+    "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#v1.4.19",
+    "mout": "0.11.1",
+    "requirejs": "~2.1.5",
     "requirejs-hogan-plugin": "git://github.com/millermedeiros/requirejs-hogan-plugin.git#~0.2.1",
     "requirejs-plugins": "~1.0.2",
+    "requirejs-text": "~2.0.5",
     "stream": "git://github.com/Livefyre/stream.git#~0.1",
-    "event-emitter": "git://github.com/Livefyre/event-emitter.git#0.1",
-    "inherits": "git://github.com/Livefyre/inherits.git",
-    "view": "git://github.com/Livefyre/view.git#1.4.1",
-    "auth": "git://github.com/Livefyre/auth.git#~0.2.0",
-    "debug": "visionmedia/debug#~0.7.4",
-    "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#v1.4.19",
-    "streamhub-input": "Livefyre/streamhub-input#0.10.2",
+    "streamhub-input": "Livefyre/streamhub-input#~0.12.0",
     "streamhub-share": "git://github.com/Livefyre/streamhub-share.git#0.5.2",
     "streamhub-ui": "git://github.com/Livefyre/streamhub-ui.git#0.4.6",
     "urnlib.js": "git://github.com/Livefyre/urnlib.js.git#0.0.4",
-    "mout": "0.11.1"
+    "view": "git://github.com/Livefyre/view.git#1.4.1"
   },
   "devDependencies": {
+    "almond": "0.2.5",
     "jasmine": "1.3.1",
     "jasmine-jquery": "1.6.0",
-    "almond": "0.2.5",
     "livefyre-auth": "git://github.com/livefyre/livefyre-auth.git"
   },
   "resolutions": {
     "auth": "~0.2.0",
-    "livefyre-bootstrap": "~1.4.19",
-    "event-emitter": "0.1",
-    "view": "1.4.1",
     "base64": "~0.4.0",
-    "mout": "0.11.1",
     "cajon": "0.1.12",
+    "event-emitter": "0.1",
+    "livefyre-bootstrap": "~1.4.19",
+    "mout": "0.11.1",
     "streamhub-sdk": "2.26.4",
     "streamhub-share": "0.5.2",
-    "streamhub-ui": "0.4.6"
+    "streamhub-ui": "0.4.6",
+    "view": "1.4.1"
   }
 }
