@@ -57,7 +57,7 @@ module.exports = function (contentView) {
         }
 
         // There should only be products OR CTAs, but check just in case to avoid display issues for weird / bad data
-        if (!this._productCarouselView && this.content.links.cta && this.content.links.cta.length > 0) {
+        if (!this._productCarouselView && (get(this, 'content.links.cta') || []).length > 0) {
             this._ctaView = opts.ctaView || new CTABarView(opts);
         }
     };
