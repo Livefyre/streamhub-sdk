@@ -57,6 +57,7 @@ inherits(ModalContentCardView, CompositeView);
 
 ModalContentCardView.prototype.elTag = 'article';
 ModalContentCardView.prototype.elClass = 'content';
+ModalContentCardView.prototype.contentWithAudioClass = 'content-with-audio';
 ModalContentCardView.prototype.contentWithImageClass = 'content-with-image';
 ModalContentCardView.prototype.imageLoadingClass = 'hub-content-image-loading';
 ModalContentCardView.prototype.invalidClass = 'content-invalid';
@@ -116,9 +117,14 @@ ModalContentCardView.prototype._removeInitialChildViews = function () {
 ModalContentCardView.prototype.setElement = function (el) {
     CompositeView.prototype.setElement.apply(this, arguments);
 
-    if (this.content.attachments.length) {
+    var len = this.content.attachments.length;
+    if (len) {
         var tileable = !!(this._thumbnailAttachmentsView && this._thumbnailAttachmentsView.tileableCount());
         this.$el.toggleClass(this.imageLoadingClass, tileable);
+
+        if (len === 1 && this.content.attachments[0].type === 'audio') {
+            this.$el.addClass(this.contentWithAudioClass);
+        }
     }
 
     if (this.content && this.content.id) {

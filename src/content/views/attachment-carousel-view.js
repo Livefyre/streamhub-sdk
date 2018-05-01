@@ -1,5 +1,6 @@
 var $ = require('streamhub-sdk/jquery');
 var asMediaMaskMixin = require('streamhub-sdk/content/views/mixins/media-mask-mixin');
+var audioTemplate = require('hgn!streamhub-sdk/content/templates/oembed-audio-tag');
 var CarouselAttachmentListView = require('streamhub-sdk/content/views/carousel-attachment-list-view');
 var CompositeView = require('view/composite-view');
 var inherits = require('inherits');
@@ -55,35 +56,49 @@ AttachmentCarouselView.prototype._onThumbnailClick = function (e) {
     var oembedView = this._singleAttachmentView.oembedViews[index];
     this._singleAttachmentView.retile(index);
     this.renderMediaMask(oembedView.oembed, true, function () {
-        this._insertVideo(oembedView);
+        this._insertMedia(oembedView);
     }.bind(this));
 };
 
-AttachmentCarouselView.prototype._insertVideo = function (oembedView) {
+AttachmentCarouselView.prototype._insertMedia = function (oembedView) {
     if (!oembedView) {
         return;
     }
     var focusedEl = oembedView.$el;
-    if (oembedView.oembed.type === 'video') {
-        var photoContentEl = focusedEl.find('.content-attachment-photo');
-        setTimeout(function() { photoContentEl.hide(); }, 0);
-        var videoContentEl = focusedEl.find('.content-attachment-video');
-        videoContentEl.html(this._getAttachmentVideoHtml(oembedView.oembed));
-        var videoIframe = videoContentEl.find('iframe');
-        videoIframe.css({'width': '100%', 'height': '100%'});
+    var oembed = oembedView.oembed;
 
-        // Add poster if missing
-        var videoEl = videoContentEl.find('video');
-        if (videoEl.length > 0) {
-            videoEl.attr('poster', oembedView.oembed.thumbnail_url);
-            videoEl.css({'width': '100%', 'height': '100%'});
-        }
-
-        videoContentEl.show();
+    if (['audio', 'video'].indexOf(oembed.type) === -1) {
+        return;
     }
+
+    var photoContentEl = focusedEl.find('.content-attachment-photo');
+    setTimeout(function() { photoContentEl.hide(); }, 0);
+
+    var mediaContentEl = focusedEl.find('.content-attachment-' + oembed.type);
+    mediaContentEl.html(this._getAttachmentHtml(oembed));
+    var mediaIframe = mediaContentEl.find('iframe');
+    mediaIframe.css({height: '100%', width: '100%'});
+
+    if (oembed.type === 'video') {
+        // Add poster if missing
+        var videoEl = mediaContentEl.find('video');
+        if (videoEl.length > 0) {
+            videoEl.attr('poster', oembed.thumbnail_url);
+            videoEl.css({height: '100%', width: '100%'});
+        }
+    }
+    mediaContentEl.show();
 };
 
-AttachmentCarouselView.prototype._getAttachmentVideoHtml = function (attachment) {
+AttachmentCarouselView.prototype._getAttachmentHtml = function (attachment) {
+    // It's possible that the audio is not an iframe, so build an audio tag html
+    // embed. We should encode audio to mp3 if it's not submitted as such. The
+    // reason is that all browsers support mp3 but support for other types is
+    // spotty at best.
+    if (attachment.type === 'audio' && !attachment.html) {
+        return audioTemplate({url: attachment.url, type: 'audio/mpeg'});
+    }
+
     var AUTOPLAY_PROVIDER_REGEX = /youtube|livefyre|facebook/;
     // If the provider is not available for autoplay, nothing more to do.
     if (!attachment.provider_name || !AUTOPLAY_PROVIDER_REGEX.test(attachment.provider_name.toLowerCase())) {
@@ -102,6 +117,10 @@ AttachmentCarouselView.prototype._getAttachmentVideoHtml = function (attachment)
     if (iframe) {
         var queryChar = iframe.src.indexOf('?') > -1 ? '&' : '?';
         iframe.src += queryChar + 'autoplay=1';
+
+        if (attachment.type === 'audio') {
+            iframe.src += '&backgroundColor=%231F242C';
+        }
 
         // make youtube videos not show related videos
         var srcIndex = iframe.src.indexOf('src=');
@@ -209,7 +228,7 @@ AttachmentCarouselView.prototype.render = function (view, opts) {
 
     var oembedViews = this._singleAttachmentView.oembedViews;
     oembedViews.length && this.renderMediaMask(oembedViews[0].oembed, true, function () {
-        this._insertVideo(oembedViews[0]);
+        this._insertMedia(oembedViews[0]);
     }.bind(this));
 
     if (!this.$el.find(this.stackedAttachmentsSelector).length) {

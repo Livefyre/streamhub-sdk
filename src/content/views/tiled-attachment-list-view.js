@@ -82,16 +82,12 @@ TiledAttachmentListView.prototype.render = function () {
     }
 };
 
-
 /**
  * Checks whether attachment is tileable
  * @returns {boolean} Whether an attachment is tileable
  */
 TiledAttachmentListView.prototype.isTileableAttachment = function (oembed) {
-    if (oembed.type === 'photo' || oembed.type === 'video') {
-        return true;
-    }
-    return false;
+    return ['audio', 'photo', 'video'].indexOf(oembed.type) > -1;
 };
 
 /**

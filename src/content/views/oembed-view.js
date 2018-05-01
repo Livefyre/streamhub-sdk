@@ -1,5 +1,6 @@
 var $ = require('streamhub-sdk/jquery');
 var inherits = require('inherits');
+var OembedAudioTemplate = require('hgn!streamhub-sdk/content/templates/oembed-audio');
 var OembedLinkTemplate = require('hgn!streamhub-sdk/content/templates/oembed-link');
 var OembedPhotoTemplate = require('hgn!streamhub-sdk/content/templates/oembed-photo');
 var OembedRichTemplate = require('hgn!streamhub-sdk/content/templates/oembed-rich');
@@ -43,11 +44,12 @@ OembedView.prototype.elClass = 'oembed';
  * @enum {Template}
  */
 OembedView.prototype.OEMBED_TEMPLATES = {
-    'photo': OembedPhotoTemplate,
-    'video': OembedVideoTemplate,
-    'video_promise': OembedVideoPromiseTemplate,
-    'link': OembedLinkTemplate,
-    'rich': OembedRichTemplate
+    audio: OembedAudioTemplate,
+    link: OembedLinkTemplate,
+    photo: OembedPhotoTemplate,
+    rich: OembedRichTemplate,
+    video: OembedVideoTemplate,
+    video_promise: OembedVideoPromiseTemplate
 };
 
 /**
@@ -96,8 +98,19 @@ OembedView.prototype.getAspectRatio = function (done) {
 
 OembedView.prototype.getTemplateContext = function () {
     var context = $.extend({}, this.oembed);
-    if (['photo', 'video'].indexOf(this.oembed.type) > -1 && context.title) {
-        context.title = util.getTextContent(context.title);
+
+    if (['audio', 'photo', 'video'].indexOf(this.oembed.type) > -1 && context.title) {
+        var div = document.createElement('div');
+        try {
+            div.innerHTML = context.title;
+            context.title = div.textContent || div.innerText || '';
+        } catch (e) {
+            // Just incase someone gives up some bad html
+        }
+    }
+
+    if (this.oembed.type === 'audio') {
+        context.isAudioTag = this.oembed.url && !this.oembed.html;
     }
     return context;
 };
@@ -119,7 +132,11 @@ OembedView.prototype.render = function () {
 
     this.$el.html(this.template(this.getTemplateContext()));
 
-    if (this.oembed.type !== 'photo' && this.oembed.type !== 'video') {
+    if (this.oembed.type === 'audio') {
+        this.$el.trigger('imageLoaded.hub');
+    }
+
+    if (['photo', 'video'].indexOf(this.oembed.type) === -1) {
         return;
     }
 

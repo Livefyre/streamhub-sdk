@@ -50,7 +50,7 @@ function getSortOrder(order) {
  * @return {boolean}
  */
 function isMediaOnly(attachments) {
-    return attachments.length && ['video', 'photo'].indexOf(attachments[0].type) > -1;
+    return attachments.length && ['audio', 'photo', 'video'].indexOf(attachments[0].type) > -1;
 }
 
 /**

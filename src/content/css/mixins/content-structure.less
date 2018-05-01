@@ -367,6 +367,59 @@
         display: none;
     }
 
+    &.content-with-audio {
+        .content-attachment-audio {
+            background: #1F242C;
+            display: none;
+            height: 70px;
+            padding: 0;
+
+            &:before {
+                color: white;
+                float: left;
+                line-height: 70px;
+                text-align: center;
+                width: 10%;
+            }
+
+            iframe {
+                box-sizing: border-box;
+                min-width: 163px;
+                padding-right: 8px;
+                width: 90% !important;
+            }
+
+            &.content-attachment-audio-tag {
+                background: #FAFAFA;
+                border-bottom: 1px solid #D9D9D9;
+                box-sizing: border-box;
+
+                &:before {
+                    color: #1F242C;
+                }
+
+                audio {
+                    margin-top: 19px;
+                    width: 88%;
+                }
+            }
+        }
+    }
+    .content-attachment-audio-thumbnail {
+        background: #3c3c3c;
+        height: 100%;
+        text-align: center;
+        width: 100%;
+
+        &:before {
+            color: #dadada;
+            font-size: 120px;
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+
     .content-actions {
         list-style-type:none;
         padding: 0;
