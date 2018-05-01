@@ -34,8 +34,8 @@ ContentHeaderViewFactory.prototype.getHeaderViewOptsForContent = function (conte
     if (content.typeUrn === TYPE_URNS.LIVEFYRE_TWITTER || content.typeUrn === TYPE_URNS.TWITTER) {
         if (content.author && typeof content.author.profileUrl === 'string') {
             opts.authorUserNamePrefix = '@';
-            opts.authorUserName = content.author.profileUrl.split('/').pop();
-            opts.authorUrl = 'https://twitter.com/intent/user?user_id=' + content.author.twitterUserId;
+            opts.authorUserName = content.author.handle || content.author.profileUrl.split('/').pop();
+            opts.authorUrl = content.author.profileUrl;
         }
         opts.authorVerified = content.twitterVerified;
         opts.contentSourceName = 'twitter';
