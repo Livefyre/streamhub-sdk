@@ -2,11 +2,7 @@
   "name": "streamhub-sdk",
   "description": "Livefyre Streamhub SDK",
   "author": "Livefyre <support@livefyre.com>",
-<<<<<<< HEAD
-  "version": "2.31.5",
-=======
   "version": "2.32.0",
->>>>>>> 2505ab53... Version bump
   "dependencies": {
     "bower": "1.3.6",
     "http-server": "*",
