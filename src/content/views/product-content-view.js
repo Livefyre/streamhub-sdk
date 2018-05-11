@@ -89,7 +89,7 @@ ProductContentView.prototype._addInitialChildViews = function (opts, shouldRende
     }
 
     // There should only be products OR CTAs, but check just in case to avoid display issues for weird / bad data
-    if (!this._productCarouselView && (get(this, 'content.links.cta' || []).length) {
+    if (!this._productCarouselView && (get(this, 'content.links.cta' || []).length)) {
         this._ctaView = opts.ctaView || new CTABarView(opts);
     }
 };
