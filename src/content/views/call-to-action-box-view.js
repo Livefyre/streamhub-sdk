@@ -23,7 +23,7 @@ CallToActionBoxView.prototype.events = CTABarView.prototype.events.extended({}, 
 CallToActionBoxView.prototype.getTemplateContext = function () {
   return {
     ctas: this.opts.content.links.cta,
-    additionalCTAs: this.opts.content.links.cta && this.opts.content.links.cta.length > 1
+    additionalCTAs: this.opts.content.links.cta.length > 1
   };
 };
 
