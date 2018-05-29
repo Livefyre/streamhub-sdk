@@ -97,7 +97,7 @@ OembedView.prototype.getAspectRatio = function (done) {
 OembedView.prototype.getTemplateContext = function () {
     var context = $.extend({}, this.oembed);
     if (['photo', 'video'].indexOf(this.oembed.type) > -1 && context.title) {
-        context.title = util.getTextContent(context.title);
+        context.title = util.getTextContent(context.title, true);
     }
     return context;
 };
