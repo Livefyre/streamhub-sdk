@@ -47,7 +47,7 @@
     .hub-modal-content {
         article.content { 
             iframe.instagram-media {
-                margin: 10px;
+                margin: 10px 10px 0px 10px;
                 width: calc(~"100% - 20px");
             }
         }
@@ -141,6 +141,12 @@
             }
         }
     }
+}
+
+// Extremely specific override to default style above for instagram video share button alignment
+.hub-modal.modal-content-card.instagram-video .hub-modal-content .content-container > .content article.content.spectrum-content .content-footer{ 
+    padding-top: 0px;
+    padding-left: 10px;
 }
 
 .hub-modal.modal-content-card:not(.instagram-video) { 

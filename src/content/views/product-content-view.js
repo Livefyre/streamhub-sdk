@@ -79,18 +79,15 @@ ProductContentView.prototype._addInitialChildViews = function (opts, shouldRende
             showMoreEnabled: true
         });
         this.add(this._bodyView, renderOpts);
+    }
 
-        this._footerView = opts.footerView || new ContentFooterView(opts);
-        this.add(this._footerView, renderOpts);
+    this._footerView = opts.footerView || new ContentFooterView(opts);
+    this.add(this._footerView, renderOpts);
 
-        var rightsGranted = opts.productOptions.requireRights ? opts.content.hasRightsGranted() : true;
-        if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
-            this._productView = opts.productView || new ProductCarouselView(opts);
-            this.add(this._productView, renderOpts);
-        }
-    } else {
-        this._footerView = opts.footerView || new ContentFooterView(opts);
-        this.add(this._footerView, renderOpts);
+    var rightsGranted = opts.productOptions.requireRights ? opts.content.hasRightsGranted() : true;
+    if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
+        this._productView = opts.productView || new ProductCarouselView(opts);
+        this.add(this._productView, renderOpts);
     }
 
     // There should only be products OR CTAs, but check just in case to avoid display issues for weird / bad data

@@ -29,7 +29,7 @@ var ModalContentCardView = function (opts) {
     opts = opts || {};
 
     this.content = opts.content;
-    this._isInstagramVideo = this.content.source === "instagram" && this.content.attachments[0].type === 'video';
+    this._isInstagramVideo = this.content.source === "instagram" && this.content.attachments.length > 0 && this.content.attachments[0].type === 'video';
     this.createdAt = new Date(); // store construction time to use for ordering if this.content has no dates
 
     CompositeView.call(this, opts);
@@ -208,6 +208,7 @@ ModalContentCardView.prototype.render = function () {
     this.$el.closest(this.modalSelector).addClass(this.modalAnnotationClass);
     if (this._isInstagramVideo) {
         this.$el.closest(this.modalSelector).addClass('instagram-video');
+        this.$el.find('iframe').removeAttr('style');
     }
 
     this._resizeModalImage();
