@@ -67,29 +67,34 @@ ProductContentView.prototype.attachmentFrameElSelector = '.content-attachment-fr
  * @param {boolean=} shouldRender
  */
 ProductContentView.prototype._addInitialChildViews = function (opts, shouldRender) {
-    var renderOpts = { render: !!shouldRender };
+    var renderOpts = {render: !!shouldRender};
 
-    this._headerView = opts.headerView || new ContentHeaderView(
-        this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
-    this.add(this._headerView, renderOpts);
+    if (!opts.isInstagramVideo) {
+        this._headerView = opts.headerView || new ContentHeaderView(
+            this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
+        this.add(this._headerView, renderOpts);
 
-    this._bodyView = opts.bodyView || new ContentBodyView({
-        content: opts.content,
-        showMoreEnabled: true
-    });
-    this.add(this._bodyView, renderOpts);
+        this._bodyView = opts.bodyView || new ContentBodyView({
+            content: opts.content,
+            showMoreEnabled: true
+        });
+        this.add(this._bodyView, renderOpts);
 
-    this._footerView = opts.footerView || new ContentFooterView(opts);
-    this.add(this._footerView, renderOpts);
+        this._footerView = opts.footerView || new ContentFooterView(opts);
+        this.add(this._footerView, renderOpts);
 
-    var rightsGranted = opts.productOptions.requireRights ? opts.content.hasRightsGranted() : true;
-    if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
-        this._productView = opts.productView || new ProductCarouselView(opts);
-        this.add(this._productView, renderOpts);
+        var rightsGranted = opts.productOptions.requireRights ? opts.content.hasRightsGranted() : true;
+        if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
+            this._productView = opts.productView || new ProductCarouselView(opts);
+            this.add(this._productView, renderOpts);
+        }
+    } else {
+        this._footerView = opts.footerView || new ContentFooterView(opts);
+        this.add(this._footerView, renderOpts);
     }
 
     // There should only be products OR CTAs, but check just in case to avoid display issues for weird / bad data
-    if (!this._productCarouselView && (get(this, 'content.links.cta' || []).length)) {
+    if (!this._productCarouselView && (get(this, 'content.links.cta') || []).length) {
         this._ctaView = opts.ctaView || new CTABarView(opts);
     }
 };
@@ -151,12 +156,12 @@ ProductContentView.prototype.remove = function () {
      * @event ProductContentView#removeProductContentView.hub
      * @type {{ProductContentView: ProductContentView}}
      */
-    this.$el.trigger('removeProductContentView.hub', { ProductContentView: this });
+    this.$el.trigger('removeProductContentView.hub', {ProductContentView: this});
     this.$el.detach();
 };
 
 ProductContentView.prototype._handleBodyChange = function (newVal, oldVal) {
-    this._bodyView.render();
+    this._bodyView && this._bodyView.render();
 };
 
 ProductContentView.prototype.destroy = function () {
@@ -180,11 +185,23 @@ ProductContentView.prototype.render = function () {
      * this.innerHTML is set, they are not cleared.
      * bit.ly/1no8mNk
      */
-    if (hasInnerHtmlBug = this._testHasInnerHtmlBug()) {
+    if (this._footerView && this._testHasInnerHtmlBug()) {
         this._footerView._detachButtons();
     }
 
     CompositeView.prototype.render.call(this);
+
+    if (this.opts.isInstagramVideo) {
+        this.el.insertAdjacentHTML('afterbegin', this.content.html);
+
+        if (!window.instgrm) {
+            var script = document.createElement('script');
+            script.src = "//instagram.com/embed.js";
+            this.el.appendChild(script);
+        } else {
+            window.instgrm.Embeds.process();
+        }
+    }
 
     var self = this;
     setTimeout(function () {

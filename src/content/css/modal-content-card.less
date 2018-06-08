@@ -42,8 +42,16 @@
             }
         }
     }
+    
 
     .hub-modal-content {
+        article.content { 
+            iframe.instagram-media {
+                margin: 10px;
+                width: calc(~"100% - 20px");
+            }
+        }
+
         .hub-modal-content-view {
             margin: 70px auto 0;
             min-height: 600px;
@@ -133,6 +141,9 @@
             }
         }
     }
+}
+
+.hub-modal.modal-content-card:not(.instagram-video) { 
 
     @media (min-width: 1260px) {
         //For desktop
@@ -187,6 +198,45 @@
                         box-shadow: none !important;
                     }
                 }
+            }
+        }
+    }
+}
+
+.hub-modal.modal-content-card {
+    &.instagram-video {
+        @media (min-width: 810px) {
+            .hub-modal-content-view {
+                margin: 0 auto !important;
+                max-width: 500px;
+                min-height: calc(~"100%") !important;
+                padding: 0px;
+                width: 90% !important;
+    
+                > .content-container {
+                    > .content {
+                        > .attachment-carousel {
+                            vertical-align: middle;
+                            width: 100%;
+                        }
+    
+                        .content {
+                            vertical-align: top;
+                            width: 100%;
+    
+                            div[class*="content-attachment-"] {
+                                box-shadow: none !important;
+                            }
+                        }
+    
+                        .product-carousel {
+                            position: relative !important;
+                        }
+                    }
+                }
+            }
+            .hub-modal-close {
+                right: 5% !important;
             }
         }
     }

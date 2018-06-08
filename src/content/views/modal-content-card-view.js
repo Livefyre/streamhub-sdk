@@ -29,6 +29,7 @@ var ModalContentCardView = function (opts) {
     opts = opts || {};
 
     this.content = opts.content;
+    this._isInstagramVideo = this.content.source === "instagram" && this.content.attachments[0].type === 'video';
     this.createdAt = new Date(); // store construction time to use for ordering if this.content has no dates
 
     CompositeView.call(this, opts);
@@ -73,7 +74,7 @@ ModalContentCardView.prototype.events = CompositeView.prototype.events.extended(
         this.$el.removeClass(this.imageLoadingClass);
 
         e.stopPropagation();
-        this.$el.parent().trigger('imageLoaded.hub', { ModalContentCardView: this });
+        this.$el.parent().trigger('imageLoaded.hub', {ModalContentCardView: this});
     },
     'imageError.hub': function (e, oembed) {
         this.content.removeAttachment(oembed);
@@ -84,7 +85,7 @@ ModalContentCardView.prototype.events = CompositeView.prototype.events.extended(
         }
 
         e.stopPropagation();
-        this.$el.parent().trigger('imageError.hub', { oembed: oembed, ModalContentCardView: this });
+        this.$el.parent().trigger('imageError.hub', {oembed: oembed, ModalContentCardView: this});
     }
 });
 
@@ -93,10 +94,13 @@ ModalContentCardView.prototype.events = CompositeView.prototype.events.extended(
  * @param {boolean=} shouldRender
  */
 ModalContentCardView.prototype._addInitialChildViews = function (opts, shouldRender) {
-    var renderOpts = { render: !!shouldRender };
+    var renderOpts = {render: !!shouldRender};
+    opts.isInstagramVideo = this._isInstagramVideo;
 
-    this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
-    this.add(this._attachmentsView, renderOpts);
+    if (!opts.isInstagramVideo) {
+        this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
+        this.add(this._attachmentsView, renderOpts);
+    }
 
     this._productContentView = opts.productContentView || new ProductContentView(opts);
     this.add(this._productContentView, renderOpts);
@@ -148,7 +152,7 @@ ModalContentCardView.prototype.remove = function () {
      * @event ModalContentCardView#removeModalContentCardView.hub
      * @type {{ModalContentCardView: ModalContentCardView}}
      */
-    this.$el.trigger('removeModalContentCardView.hub', { ModalContentCardView: this });
+    this.$el.trigger('removeModalContentCardView.hub', {ModalContentCardView: this});
     this.$el.detach();
 };
 
@@ -202,7 +206,12 @@ ModalContentCardView.prototype.render = function () {
 
     this.$el.toggleClass(this.textOnlyClass, this._isTextOnly());
     this.$el.closest(this.modalSelector).addClass(this.modalAnnotationClass);
+    if (this._isInstagramVideo) {
+        this.$el.closest(this.modalSelector).addClass('instagram-video');
+    }
+
     this._resizeModalImage();
+
     return this;
 };
 
