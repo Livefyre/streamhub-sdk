@@ -19,7 +19,7 @@ function hasAttachmentModal(view, opts) {
     }
 
     view.events = view.events.extended({
-        'focusContent.hub': function(e, context) {
+        'focusContent.hub': function (e, context) {
             if (!modal) {
                 if (typeof get(view, 'attachmentsView.focus') === 'function') {
                     view.attachmentsView.focus(context.attachmentToFocus);
@@ -32,7 +32,8 @@ function hasAttachmentModal(view, opts) {
                     hideSocialBrandingWithRights: opts.hideSocialBrandingWithRights,
                     listView: this,
                     modal: true,
-                    productOptions: opts.productOptions || {}
+                    productOptions: opts.productOptions || {},
+                    showMask: true
                 }));
             } else {
                 modal.show(new GalleryAttachmentListView(context));

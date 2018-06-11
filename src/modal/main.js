@@ -107,7 +107,7 @@ define([
         this.visible = true;
         this.$el.trigger('shown');
 
-        if (modalSubView) {
+        if (modalSubView && modalSubView.onInsert) {
             modalSubView.onInsert();
         }
 
