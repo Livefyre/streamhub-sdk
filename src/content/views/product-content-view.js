@@ -54,9 +54,6 @@ var ProductContentView = function (opts) {
             this._handleBodyChange();
         }.bind(this));
     }
-
-
-
 };
 inherits(ProductContentView, CompositeView);
 
@@ -202,14 +199,14 @@ ProductContentView.prototype.render = function () {
         this.renderMediaMask(this.opts.content.attachments[0], true, function () {
             if (!window.instgrm) {
                 var script = document.createElement('script');
-                script.src = "//instagram.com/embed.js";
+                script.src = '//instagram.com/embed.js';
                 this.el.append(script);
             } else {
                 window.instgrm.Embeds.process();
             }
 
             if (this.iframeInterval) {
-                clearInterval(this.iframeInterval)
+                clearInterval(this.iframeInterval);
             }
             setInterval(this.removeIframeStyles.bind(this), 500);
 
@@ -233,8 +230,8 @@ ProductContentView.prototype.render = function () {
 };
 
 ProductContentView.prototype.removeIframeStyles = function () {
-    var iframe = this.$el.find('iframe')
-    if (iframe && iframe.length > 0) {
+    var iframe = this.$el.find('iframe');
+    if (iframe.length > 0) {
         iframe.removeAttr('style');
     }
     clearInterval(this.iframeInterval);
