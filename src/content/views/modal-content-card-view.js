@@ -208,7 +208,7 @@ ModalContentCardView.prototype.render = function () {
     this.$el.closest(this.modalSelector).addClass(this.modalAnnotationClass);
     if (this._isInstagramVideo) {
         this.$el.closest(this.modalSelector).addClass('instagram-video');
-        this.$el.find('iframe').removeAttr('style');
+        this.$el.find('iframe')[0].removeAttr('style');
     }
 
     this._resizeModalImage();

@@ -52,6 +52,9 @@ var ProductContentView = function (opts) {
             this._handleBodyChange();
         }.bind(this));
     }
+
+
+
 };
 inherits(ProductContentView, CompositeView);
 
@@ -189,15 +192,17 @@ ProductContentView.prototype.render = function () {
     CompositeView.prototype.render.call(this);
 
     if (this.opts.isInstagramVideo) {
-        this.el.insertAdjacentHTML('afterbegin', this.content.html);
-
-        if (!window.instgrm) {
-            var script = document.createElement('script');
-            script.src = "//instagram.com/embed.js";
-            this.el.appendChild(script);
-        } else {
-            window.instgrm.Embeds.process();
-        }
+        this.el.insertAdjacentHTML('afterbegin', this.content.attachments[0].html);
+        var placeholder = this.$el.find('blockquote');
+        this.renderMediaMask(this.opts.content.attachments[0], true, function () {
+            if (!window.instgrm) {
+                var script = document.createElement('script');
+                script.src = "//instagram.com/embed.js";
+                this.el.appendChild(script);
+            } else {
+                window.instgrm.Embeds.process();
+            }
+        }, placeholder);
     }
 
     var self = this;
