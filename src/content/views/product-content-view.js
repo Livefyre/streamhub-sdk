@@ -1,5 +1,6 @@
 var $ = require('streamhub-sdk/jquery');
 var asLivefyreContentView = require('streamhub-sdk/content/views/mixins/livefyre-content-view-mixin');
+var asMediaMaskMixin = require('streamhub-sdk/content/views/mixins/media-mask-mixin');
 var asTwitterContentView = require('streamhub-sdk/content/views/mixins/twitter-content-view-mixin');
 var CompositeView = require('view/composite-view');
 var ContentBodyView = require('streamhub-sdk/content/views/spectrum/content-body-view');
@@ -46,6 +47,7 @@ var ProductContentView = function (opts) {
 
     this._addInitialChildViews(opts);
     this._applyMixin(opts);
+    asMediaMaskMixin(this, opts);
 
     if (this.content) {
         this.content.on("change:body", function (newVal, oldVal) {
@@ -64,6 +66,7 @@ ProductContentView.prototype.invalidClass = 'content-invalid';
 ProductContentView.prototype.spectrumClass = 'spectrum-content';
 ProductContentView.prototype.attachmentsElSelector = '.content-attachments';
 ProductContentView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
+ProductContentView.prototype.modalSelector = '.hub-modal';
 
 /**
  * @param {Object} opts
@@ -192,17 +195,25 @@ ProductContentView.prototype.render = function () {
     CompositeView.prototype.render.call(this);
 
     if (this.opts.isInstagramVideo) {
+        this.$el.closest(this.modalSelector).addClass('instagram-video');
         this.el.insertAdjacentHTML('afterbegin', this.content.attachments[0].html);
+
         var placeholder = this.$el.find('blockquote');
         this.renderMediaMask(this.opts.content.attachments[0], true, function () {
             if (!window.instgrm) {
                 var script = document.createElement('script');
                 script.src = "//instagram.com/embed.js";
-                this.el.appendChild(script);
+                this.el.append(script);
             } else {
                 window.instgrm.Embeds.process();
             }
-        }, placeholder);
+
+            if (this.iframeInterval) {
+                clearInterval(this.iframeInterval)
+            }
+            setInterval(this.removeIframeStyles.bind(this), 500);
+
+        }.bind(this), placeholder);
     }
 
     var self = this;
@@ -219,6 +230,14 @@ ProductContentView.prototype.render = function () {
     }, 0);
 
     return this;
+};
+
+ProductContentView.prototype.removeIframeStyles = function () {
+    var iframe = this.$el.find('iframe')
+    if (iframe && iframe.length > 0) {
+        iframe.removeAttr('style');
+    }
+    clearInterval(this.iframeInterval);
 };
 
 ProductContentView.prototype.onInsert = function () {

@@ -34,7 +34,7 @@ module.exports = function (view, opts) {
             oembed: oembed
         });
         if (el) {
-            el.appendChild(view._mask.render().el);
+            el.append(view._mask.render().el);
         } else {
             view.$el.find('.content-attachments-tiled').append(view._mask.render().$el);
         }
