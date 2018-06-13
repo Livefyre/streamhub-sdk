@@ -195,11 +195,9 @@ ProductContentView.prototype.render = function () {
         this.$el.closest(this.modalSelector).addClass('instagram-video');
 
         // Remove the instagram embed script to avoid load order issues
-        var div = document.createElement('div');
-        div.innerHTML = this.content.attachments[0].html;
-        div.removeChild(div.querySelector('script'));
-
-        this.el.insertAdjacentHTML('afterbegin', div.innerHTML);
+        var scriptRemovalRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+        var html = this.content.attachments[0].html.replace(scriptRemovalRegex, '');
+        this.el.insertAdjacentHTML('afterbegin', html);
 
         var placeholder = this.$el.find('blockquote');
         this.renderMediaMask(this.opts.content.attachments[0], true, function () {
