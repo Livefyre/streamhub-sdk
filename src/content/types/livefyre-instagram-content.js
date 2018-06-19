@@ -13,6 +13,7 @@ define([
         var LivefyreInstagramContent = function (json) {
             LivefyreContent.call(this, json);
             this._setBody();
+            this._removeScriptTags();
         };
         inherits(LivefyreInstagramContent, LivefyreContent);
 
@@ -23,6 +24,16 @@ define([
                 this.body = this.attachments[0].title
             }
         };
+
+        LivefyreInstagramContent.prototype._removeScriptTags = function () {
+            // Remove the instagram embed script to avoid load order issues
+            var scriptRemovalRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
+            this.attachments.forEach(function (attachment) {
+                if (attachment.type === 'video') {
+                    attachment.html = attachment.html.replace(scriptRemovalRegex, '');
+                }
+            });
+        }
 
         return LivefyreInstagramContent;
     });
