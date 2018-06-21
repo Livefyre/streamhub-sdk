@@ -5,8 +5,9 @@ define([
     'streamhub-sdk/content/views/oembed-view',
     'hgn!streamhub-sdk/content/templates/gallery-attachment-list',
     'streamhub-sdk/content/content-header-view-factory',
+    'streamhub-sdk/content/views/sandbox',
     'inherits'],
-    function ($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemplate, ContentHeaderViewFactory, inherits) {
+    function ($, View, TiledAttachmentListView, OembedView, GalleryAttachmentListTemplate, ContentHeaderViewFactory, Sandbox, inherits) {
         'use strict';
 
         var AUTOPLAY_PROVIDER_REGEX = /youtube|livefyre|facebook/;
@@ -276,33 +277,41 @@ define([
                 photoContentEl.hide().removeClass(this.focusedAttachmentClassName);
                 var videoContentEl = focusedEl.find('.content-attachment-video');
                 videoContentEl.addClass(this.focusedAttachmentClassName);
-                videoContentEl.html(this.getAttachmentVideoHtml());
-                var videoIframe = videoContentEl.find('iframe');
 
-                if (this.tile) {
-                    videoIframe.css({ 'width': '100%', 'height': '100%' });
-                }
-
-                // Add poster if missing
-                var videoEl = videoContentEl.find('video');
-                if (videoEl.length > 0) {
-                    videoEl.attr('poster', oembed.thumbnail_url);
-                }
-
-                // Must attempt to set iframe width/height due to issues surrounding
-                // certain embeds not adjusting correctly to resizing.
-                if (oembed.width && oembed.height) {
-                    videoIframe.attr('width', oembed.width);
-                    videoIframe.attr('height', oembed.height);
-                    videoContentEl.show();
+                // Instagram videos now display as a native embed. Instead of
+                // rendering the video the normal way, let the Sandbox iframe
+                // handle the rendering.
+                if (this._focusedAttachment.provider_name === 'instagram') {
+                    var sandbox = new Sandbox({embed: this._focusedAttachment});
+                    videoContentEl.append(sandbox.render().$el);
                 } else {
-                    oembedView.getAspectRatio(function (aspectRatio) {
-                        videoIframe.attr('width', 200 * aspectRatio);
-                        videoIframe.attr('height', 200 * (1 / aspectRatio));
-                        videoContentEl.show();
-                    });
-                }
+                    videoContentEl.html(this.getAttachmentVideoHtml());
+                    var videoIframe = videoContentEl.find('iframe');
 
+                    if (this.tile) {
+                        videoIframe.css({ 'width': '100%', 'height': '100%' });
+                    }
+
+                    // Add poster if missing
+                    var videoEl = videoContentEl.find('video');
+                    if (videoEl.length > 0) {
+                        videoEl.attr('poster', oembed.thumbnail_url);
+                    }
+
+                    // Must attempt to set iframe width/height due to issues surrounding
+                    // certain embeds not adjusting correctly to resizing.
+                    if (oembed.width && oembed.height) {
+                        videoIframe.attr('width', oembed.width);
+                        videoIframe.attr('height', oembed.height);
+                        videoContentEl.show();
+                    } else {
+                        oembedView.getAspectRatio(function (aspectRatio) {
+                            videoIframe.attr('width', 200 * aspectRatio);
+                            videoIframe.attr('height', 200 * (1 / aspectRatio));
+                            videoContentEl.show();
+                        });
+                    }
+                }
             }
 
             // Update page count and focused index
