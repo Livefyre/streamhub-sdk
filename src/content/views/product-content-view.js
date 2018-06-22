@@ -1,5 +1,6 @@
 var $ = require('streamhub-sdk/jquery');
 var asLivefyreContentView = require('streamhub-sdk/content/views/mixins/livefyre-content-view-mixin');
+var asMediaMaskMixin = require('streamhub-sdk/content/views/mixins/media-mask-mixin');
 var asTwitterContentView = require('streamhub-sdk/content/views/mixins/twitter-content-view-mixin');
 var CompositeView = require('view/composite-view');
 var ContentBodyView = require('streamhub-sdk/content/views/spectrum/content-body-view');
@@ -7,6 +8,7 @@ var ContentFooterView = require('streamhub-sdk/content/views/spectrum/content-fo
 var ContentHeaderView = require('streamhub-sdk/content/views/spectrum/content-header-view');
 var ContentHeaderViewFactory = require('streamhub-sdk/content/content-header-view-factory');
 var ContentViewFactory = require('streamhub-sdk/content/content-view-factory');
+var CTABarView = require('streamhub-sdk/content/views/call-to-action-bar-view');
 var debug = require('debug');
 var get = require('mout/object/get');
 var inherits = require('inherits');
@@ -45,9 +47,10 @@ var ProductContentView = function (opts) {
 
     this._addInitialChildViews(opts);
     this._applyMixin(opts);
+    asMediaMaskMixin(this, opts);
 
     if (this.content) {
-        this.content.on("change:body", function(newVal, oldVal){
+        this.content.on("change:body", function (newVal, oldVal) {
             this._handleBodyChange();
         }.bind(this));
     }
@@ -60,6 +63,7 @@ ProductContentView.prototype.invalidClass = 'content-invalid';
 ProductContentView.prototype.spectrumClass = 'spectrum-content';
 ProductContentView.prototype.attachmentsElSelector = '.content-attachments';
 ProductContentView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
+ProductContentView.prototype.modalSelector = '.hub-modal';
 
 /**
  * @param {Object} opts
@@ -68,15 +72,17 @@ ProductContentView.prototype.attachmentFrameElSelector = '.content-attachment-fr
 ProductContentView.prototype._addInitialChildViews = function (opts, shouldRender) {
     var renderOpts = {render: !!shouldRender};
 
-    this._headerView = opts.headerView || new ContentHeaderView(
-        this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
-    this.add(this._headerView, renderOpts);
+    if (!opts.isInstagramVideo) {
+        this._headerView = opts.headerView || new ContentHeaderView(
+            this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
+        this.add(this._headerView, renderOpts);
 
-    this._bodyView = opts.bodyView || new ContentBodyView({
-        content: opts.content,
-        showMoreEnabled: true
-    });
-    this.add(this._bodyView, renderOpts);
+        this._bodyView = opts.bodyView || new ContentBodyView({
+            content: opts.content,
+            showMoreEnabled: true
+        });
+        this.add(this._bodyView, renderOpts);
+    }
 
     this._footerView = opts.footerView || new ContentFooterView(opts);
     this.add(this._footerView, renderOpts);
@@ -85,6 +91,11 @@ ProductContentView.prototype._addInitialChildViews = function (opts, shouldRende
     if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
         this._productView = opts.productView || new ProductCarouselView(opts);
         this.add(this._productView, renderOpts);
+    }
+
+    // There should only be products OR CTAs, but check just in case to avoid display issues for weird / bad data
+    if (!this._productCarouselView && (get(this, 'content.links.cta') || []).length) {
+        this._ctaView = opts.ctaView || new CTABarView(opts);
     }
 };
 
@@ -145,12 +156,12 @@ ProductContentView.prototype.remove = function () {
      * @event ProductContentView#removeProductContentView.hub
      * @type {{ProductContentView: ProductContentView}}
      */
-    this.$el.trigger('removeProductContentView.hub', { ProductContentView: this });
+    this.$el.trigger('removeProductContentView.hub', {ProductContentView: this});
     this.$el.detach();
 };
 
 ProductContentView.prototype._handleBodyChange = function (newVal, oldVal) {
-    this._bodyView.render();
+    this._bodyView && this._bodyView.render();
 };
 
 ProductContentView.prototype.destroy = function () {
@@ -174,11 +185,33 @@ ProductContentView.prototype.render = function () {
      * this.innerHTML is set, they are not cleared.
      * bit.ly/1no8mNk
      */
-    if (hasInnerHtmlBug = this._testHasInnerHtmlBug()) {
+    if (this._footerView && this._testHasInnerHtmlBug()) {
         this._footerView._detachButtons();
     }
 
     CompositeView.prototype.render.call(this);
+
+    if (this.opts.isInstagramVideo) {
+        this.$el.closest(this.modalSelector).addClass('instagram-video');
+        this.el.insertAdjacentHTML('afterbegin', this.content.attachments[0].html);
+
+        var placeholder = this.$el.find('blockquote');
+        this.renderMediaMask(this.opts.content.attachments[0], true, function () {
+            if (!window.instgrm) {
+                var script = document.createElement('script');
+                script.src = '//instagram.com/embed.js';
+                this.el.append(script);
+            } else {
+                window.instgrm.Embeds.process();
+            }
+
+            if (this.iframeInterval) {
+                clearInterval(this.iframeInterval);
+            }
+            setInterval(this.removeIframeStyles.bind(this), 500);
+
+        }.bind(this), placeholder);
+    }
 
     var self = this;
     setTimeout(function () {
@@ -196,7 +229,23 @@ ProductContentView.prototype.render = function () {
     return this;
 };
 
-ProductContentView.prototype._testHasInnerHtmlBug = function() {
+ProductContentView.prototype.removeIframeStyles = function () {
+    var iframe = this.$el.find('iframe');
+    if (iframe.length > 0) {
+        iframe.removeAttr('style');
+    }
+    clearInterval(this.iframeInterval);
+};
+
+ProductContentView.prototype.onInsert = function () {
+    if (this._ctaView) {
+        this._ctaView.opts = this.opts;
+        this._ctaView.render();
+        this.el.appendChild(this._ctaView.el);
+    }
+};
+
+ProductContentView.prototype._testHasInnerHtmlBug = function () {
     // only test once
     if (hasInnerHtmlBug !== null) {
         return hasInnerHtmlBug

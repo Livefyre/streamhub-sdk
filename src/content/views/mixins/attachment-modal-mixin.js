@@ -19,7 +19,7 @@ function hasAttachmentModal(view, opts) {
     }
 
     view.events = view.events.extended({
-        'focusContent.hub': function(e, context) {
+        'focusContent.hub': function (e, context) {
             if (!modal) {
                 if (typeof get(view, 'attachmentsView.focus') === 'function') {
                     view.attachmentsView.focus(context.attachmentToFocus);

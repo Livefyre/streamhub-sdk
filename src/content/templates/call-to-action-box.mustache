@@ -1,0 +1,27 @@
+{{#additionalCTAs}}
+<div class="call-to-action-more" tabindex="0" aria-label="Click or hover to display more associated links" role="button">
+  <div class="call-to-action-more-text">&hellip;</div>
+  <div class="call-to-action-popover">
+    {{#ctas}}
+      <a class="extra-call-to-action" target="_blank" href="{{url}}" 
+        style="{{#buttonColor}} background-color:{{buttonColor}}; {{/buttonColor}} {{#textColor}}color:{{textColor}};{{/textColor}}">
+        <div class="call-to-action-text">
+          <span class="call-to-action-icon {{icon}}"></span>
+          {{text}}
+        </div>
+      </a>
+    {{/ctas}}
+  </div>
+</div>
+{{/additionalCTAs}}
+
+{{^additionalCTAs}}
+  {{#ctas}}
+  <a class="call-to-action" target="_blank" href="{{url}}">
+    <div class="call-to-action-text">
+      <span class="call-to-action-icon {{icon}}"></span>
+      {{text}}
+    </div>
+  </a>
+  {{/ctas}}  
+{{/additionalCTAs}}

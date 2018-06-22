@@ -1,15 +1,103 @@
 @import "../../css/fycons.less";
 @import "lib/livefyre-bootstrap/src/styles/fycon-chars.less";
 
+.call-to-action-box {
+  border-radius: 3px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: solid 2px #ffffff;
+
+  &:empty {
+    border-radius: unset;
+    border: none;
+  }
+
+  .call-to-action {
+    text-decoration: none;
+
+    .call-to-action-text {
+      padding: 4px 8px;
+      color:#ffffff;
+      font-family: Helvetica;
+      font-size: 12px;
+      letter-spacing: normal;
+      text-align: center;
+      cursor: pointer;
+
+      &:hover{
+        color: #ffffff;
+      }
+    }
+  }
+
+  .call-to-action-more {
+    padding: 0px 8px;
+  }
+
+  .call-to-action-more-text {
+    display: inline-block;
+    vertical-align: super;
+    color:#ffffff;
+    font-family: Helvetica;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: normal;
+    text-align: center;
+    user-select: none;
+  }
+
+}
+
 .call-to-action-bar {
   border-top: 1px solid #e1e1e1;
   margin: 0px 20px;
   padding: 15px 0px;
+}
 
-  .call-to-action-icon {
-    height: 15px;
-    width: 15px;
+.call-to-action-popover {
+  display: none;
+  position: absolute;
+  top: 36px;
+  right: 0px;
+  border-radius: 2px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
+  
+  a.extra-call-to-action {
+    display: block;
+    padding: 10px 15px;
+    width: 105px;
+    text-decoration: none;
+
+    &:hover{
+      text-decoration: none;
+      background-color: #f7f7f7;
+    }
+
+    .call-to-action-text {
+      font-family: HelveticaNeue-Medium;
+      font-size: 12px;
+      font-weight: 500;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      text-align: left;
+      text-decoration: none;
+      color: #595d66;
+    }
   }
+
+  &.show {
+    display: block;
+  }
+}
+
+.call-to-action-icon {
+  height: 15px;
+  width: 15px;
+}
+
+.call-to-action-bar {
 
   .call-to-actions {
     margin: 0px auto;
@@ -77,48 +165,6 @@
       }
       &.closed{
         .fycon-arrow-up;
-      }
-    }
-    
-    .call-to-action-popover {
-      display: none;
-      position: absolute;
-      top: 36px;
-      border-radius: 2px;
-      background-color: #ffffff;
-      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.4);
-      
-      a.extra-call-to-action {
-        display: block;
-        padding: 10px 15px;
-        width: 105px;
-        height: 18px;
-        text-decoration: none;
-
-        &:hover{
-          text-decoration: none;
-        }
-
-        &:hover{
-          background-color: #f7f7f7;
-        }
-
-        .call-to-action-text {
-          font-family: HelveticaNeue-Medium;
-          font-size: 12px;
-          font-weight: 500;
-          font-style: normal;
-          font-stretch: normal;
-          line-height: 1.5;
-          letter-spacing: normal;
-          text-align: left;
-          text-decoration: none;
-          color: #595d66;
-        }
-      }
-    
-      &.show {
-        display: block;
       }
     }
   }

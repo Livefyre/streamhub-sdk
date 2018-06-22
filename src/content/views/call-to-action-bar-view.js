@@ -1,6 +1,7 @@
 var $ = require('streamhub-sdk/jquery');
 var actionTemplate = require('hgn!streamhub-sdk/content/templates/call-to-action');
 var debug = require('debug');
+var get = require('mout/object/get');
 var inherits = require('inherits');
 var template = require('hgn!streamhub-sdk/content/templates/call-to-action-bar');
 var util = require('streamhub-sdk/util');
@@ -49,7 +50,7 @@ CallToActionBar.prototype.events = View.prototype.events.extended({}, function (
 });
 
 CallToActionBar.prototype.render = function () {
-    if (!this.opts.content.links.cta || this.opts.content.links.cta.length === 0) {
+    if (!this.opts.showCTA || !(get(this, 'opts.content.links.cta') || []).length) {
         return;
     }
 

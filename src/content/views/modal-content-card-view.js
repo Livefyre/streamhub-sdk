@@ -1,9 +1,9 @@
 var $ = require('streamhub-sdk/jquery');
 var AttachmentCarouselView = require('streamhub-sdk/content/views/attachment-carousel-view');
 var CompositeView = require('view/composite-view');
-var ContentBodyView = require('streamhub-sdk/content/views/spectrum/content-body-view');
 var debug = require('debug');
 var find = require('mout/array/find');
+var get = require('mout/object/get');
 var impressionUtil = require('streamhub-sdk/impressionUtil');
 var inherits = require('inherits');
 var ProductContentView = require('streamhub-sdk/content/views/product-content-view');
@@ -29,6 +29,7 @@ var ModalContentCardView = function (opts) {
     opts = opts || {};
 
     this.content = opts.content;
+    this._isInstagramVideo = this.content.source === "instagram" && this.content.attachments.length > 0 && this.content.attachments[0].type === 'video';
     this.createdAt = new Date(); // store construction time to use for ordering if this.content has no dates
 
     CompositeView.call(this, opts);
@@ -37,11 +38,11 @@ var ModalContentCardView = function (opts) {
     impressionUtil.recordImpression(opts.content);
 
     if (this.content) {
-        this.content.on('change:body', function(newVal, oldVal) {
+        this.content.on('change:body', function (newVal, oldVal) {
             this._handleBodyChange();
         }.bind(this));
 
-        this.content.on('change:attachments', function(newVal, oldVal) {
+        this.content.on('change:attachments', function (newVal, oldVal) {
             this._handleAttachmentsChange();
         }.bind(this));
 
@@ -69,14 +70,14 @@ ModalContentCardView.prototype.modalSelector = '.hub-modal';
 ModalContentCardView.prototype.modalAnnotationClass = 'modal-content-card';
 
 ModalContentCardView.prototype.events = CompositeView.prototype.events.extended({
-    'imageLoaded.hub': function(e) {
+    'imageLoaded.hub': function (e) {
         this.$el.addClass(this.contentWithImageClass);
         this.$el.removeClass(this.imageLoadingClass);
 
         e.stopPropagation();
-        this.$el.parent().trigger('imageLoaded.hub', { ModalContentCardView: this });
+        this.$el.parent().trigger('imageLoaded.hub', {ModalContentCardView: this});
     },
-    'imageError.hub': function(e, oembed) {
+    'imageError.hub': function (e, oembed) {
         this.content.removeAttachment(oembed);
 
         if (this._thumbnailAttachmentsView && !this._thumbnailAttachmentsView.tileableCount()) {
@@ -85,7 +86,7 @@ ModalContentCardView.prototype.events = CompositeView.prototype.events.extended(
         }
 
         e.stopPropagation();
-        this.$el.parent().trigger('imageError.hub', { oembed: oembed, ModalContentCardView: this });
+        this.$el.parent().trigger('imageError.hub', {oembed: oembed, ModalContentCardView: this});
     }
 });
 
@@ -95,9 +96,12 @@ ModalContentCardView.prototype.events = CompositeView.prototype.events.extended(
  */
 ModalContentCardView.prototype._addInitialChildViews = function (opts, shouldRender) {
     var renderOpts = {render: !!shouldRender};
+    opts.isInstagramVideo = this._isInstagramVideo;
 
-    this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
-    this.add(this._attachmentsView, renderOpts);
+    if (!opts.isInstagramVideo) {
+        this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
+        this.add(this._attachmentsView, renderOpts);
+    }
 
     this._productContentView = opts.productContentView || new ProductContentView(opts);
     this.add(this._productContentView, renderOpts);
@@ -107,6 +111,7 @@ ModalContentCardView.prototype._removeInitialChildViews = function () {
     this._attachmentsView && this.remove(this._attachmentsView);
     this._bodyView && this.remove(this._bodyView);
     this._productContentView && this.remove(this._productContentView);
+    this._ctaView && this._ctaView.destroy();
 };
 
 /**
@@ -153,7 +158,7 @@ ModalContentCardView.prototype.remove = function () {
      * @event ModalContentCardView#removeModalContentCardView.hub
      * @type {{ModalContentCardView: ModalContentCardView}}
      */
-    this.$el.trigger('removeModalContentCardView.hub', { ModalContentCardView: this });
+    this.$el.trigger('removeModalContentCardView.hub', {ModalContentCardView: this});
     this.$el.detach();
 };
 
@@ -208,7 +213,17 @@ ModalContentCardView.prototype.render = function () {
     this.$el.toggleClass(this.textOnlyClass, this._isTextOnly());
     this.$el.closest(this.modalSelector).addClass(this.modalAnnotationClass);
     this._resizeModalImage();
+
     return this;
+};
+
+ModalContentCardView.prototype.onInsert = function () {
+    for (var i = 0; i < this._childViews.length; i++) {
+        var view = this._childViews[i];
+        if (view.onInsert) {
+            view.onInsert();
+        }
+    }
 };
 
 module.exports = ModalContentCardView;
