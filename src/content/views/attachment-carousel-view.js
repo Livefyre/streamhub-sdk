@@ -4,6 +4,7 @@ var audioTemplate = require('hgn!streamhub-sdk/content/templates/oembed-audio-ta
 var CarouselAttachmentListView = require('streamhub-sdk/content/views/carousel-attachment-list-view');
 var CompositeView = require('view/composite-view');
 var inherits = require('inherits');
+var Sandbox = require('streamhub-sdk/content/views/sandbox');
 var SingleAttachmentView = require('streamhub-sdk/content/views/single-attachment-view');
 var util = require('streamhub-sdk/content/util/main');
 
@@ -26,6 +27,10 @@ var AttachmentCarouselView = function (opts) {
     CompositeView.call(this, opts);
     this._addInitialChildViews(opts);
     asMediaMaskMixin(this, opts);
+
+    window.addEventListener('resize', function () {
+        this.sandboxView && this.sandboxView.resize(this.$el.width());
+    }.bind(this));
 };
 inherits(AttachmentCarouselView, CompositeView);
 
@@ -73,8 +78,14 @@ AttachmentCarouselView.prototype._insertMedia = function (oembedView) {
 
     var photoContentEl = focusedEl.find('.content-attachment-photo');
     setTimeout(function() { photoContentEl.hide(); }, 0);
-
     var mediaContentEl = focusedEl.find('.content-attachment-' + oembed.type);
+
+    if (oembed.type === 'video' && oembed.provider_name === 'instagram') {
+        this.sandboxView = new Sandbox({embed: oembed});
+        mediaContentEl.append(this.sandboxView.render().$el);
+        return mediaContentEl.show();
+    }
+
     mediaContentEl.html(this._getAttachmentHtml(oembed));
     var mediaIframe = mediaContentEl.find('iframe');
     mediaIframe.css({height: '100%', width: '100%'});
@@ -257,6 +268,11 @@ AttachmentCarouselView.prototype._jsPositioning = function () {
 
 AttachmentCarouselView.prototype.getTemplateContext = function () {
     return $.extend({}, this.opts);
+};
+
+AttachmentCarouselView.prototype.destroy = function () {
+    CompositeView.prototype.destroy.call(this);
+    this.sandboxView && this.sandboxView.destroy();
 };
 
 module.exports = AttachmentCarouselView;

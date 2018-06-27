@@ -3,10 +3,10 @@ var AttachmentCarouselView = require('streamhub-sdk/content/views/attachment-car
 var CompositeView = require('view/composite-view');
 var debug = require('debug');
 var find = require('mout/array/find');
-var get = require('mout/object/get');
 var impressionUtil = require('streamhub-sdk/impressionUtil');
 var inherits = require('inherits');
 var ProductContentView = require('streamhub-sdk/content/views/product-content-view');
+var Sandbox = require('streamhub-sdk/content/views/sandbox');
 
 'use strict';
 
@@ -56,18 +56,19 @@ var ModalContentCardView = function (opts) {
 };
 inherits(ModalContentCardView, CompositeView);
 
-ModalContentCardView.prototype.elTag = 'article';
-ModalContentCardView.prototype.elClass = 'content';
+ModalContentCardView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
+ModalContentCardView.prototype.attachmentsElSelector = '.content-attachments';
 ModalContentCardView.prototype.contentWithAudioClass = 'content-with-audio';
 ModalContentCardView.prototype.contentWithImageClass = 'content-with-image';
+ModalContentCardView.prototype.elClass = 'content';
+ModalContentCardView.prototype.elTag = 'article';
 ModalContentCardView.prototype.imageLoadingClass = 'hub-content-image-loading';
+ModalContentCardView.prototype.instagramVideoClass = 'content-ig-video';
 ModalContentCardView.prototype.invalidClass = 'content-invalid';
+ModalContentCardView.prototype.modalAnnotationClass = 'modal-content-card';
+ModalContentCardView.prototype.modalSelector = '.hub-modal';
 ModalContentCardView.prototype.rightsGrantedClass = 'content-rights-granted';
 ModalContentCardView.prototype.textOnlyClass = 'text-only';
-ModalContentCardView.prototype.attachmentsElSelector = '.content-attachments';
-ModalContentCardView.prototype.attachmentFrameElSelector = '.content-attachment-frame';
-ModalContentCardView.prototype.modalSelector = '.hub-modal';
-ModalContentCardView.prototype.modalAnnotationClass = 'modal-content-card';
 
 ModalContentCardView.prototype.events = CompositeView.prototype.events.extended({
     'imageLoaded.hub': function (e) {
@@ -98,10 +99,8 @@ ModalContentCardView.prototype._addInitialChildViews = function (opts, shouldRen
     var renderOpts = {render: !!shouldRender};
     opts.isInstagramVideo = this._isInstagramVideo;
 
-    if (!opts.isInstagramVideo) {
-        this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
-        this.add(this._attachmentsView, renderOpts);
-    }
+    this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
+    this.add(this._attachmentsView, renderOpts);
 
     this._productContentView = opts.productContentView || new ProductContentView(opts);
     this.add(this._productContentView, renderOpts);
@@ -122,14 +121,16 @@ ModalContentCardView.prototype._removeInitialChildViews = function () {
 ModalContentCardView.prototype.setElement = function (el) {
     CompositeView.prototype.setElement.apply(this, arguments);
 
-    var len = this.content.attachments.length;
-    if (len) {
+    var attachments = this.content.attachments || [];
+    if (attachments.length) {
         var tileable = !!(this._thumbnailAttachmentsView && this._thumbnailAttachmentsView.tileableCount());
         this.$el.toggleClass(this.imageLoadingClass, tileable);
 
-        if (len === 1 && this.content.attachments[0].type === 'audio') {
-            this.$el.addClass(this.contentWithAudioClass);
-        }
+        var isAudio = this.content.attachments[0].type === 'audio';
+        this.$el.toggleClass(this.contentWithAudioClass, isAudio);
+
+        var isInstagramVideo = attachments[0].provider_name === 'instagram' && attachments[0].type === 'video';
+        this.$el.toggleClass(this.instagramVideoClass, isInstagramVideo);
     }
 
     if (this.content && this.content.id) {

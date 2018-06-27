@@ -191,28 +191,6 @@ ProductContentView.prototype.render = function () {
 
     CompositeView.prototype.render.call(this);
 
-    if (this.opts.isInstagramVideo) {
-        this.$el.closest(this.modalSelector).addClass('instagram-video');
-        this.el.insertAdjacentHTML('afterbegin', this.content.attachments[0].html);
-
-        var placeholder = this.$el.find('blockquote');
-        this.renderMediaMask(this.opts.content.attachments[0], true, function () {
-            if (!window.instgrm) {
-                var script = document.createElement('script');
-                script.src = '//instagram.com/embed.js';
-                this.el.append(script);
-            } else {
-                window.instgrm.Embeds.process();
-            }
-
-            if (this.iframeInterval) {
-                clearInterval(this.iframeInterval);
-            }
-            setInterval(this.removeIframeStyles.bind(this), 500);
-
-        }.bind(this), placeholder);
-    }
-
     var self = this;
     setTimeout(function () {
         util.raf(function () {

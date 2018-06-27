@@ -101,9 +101,11 @@ CarouselContentView.prototype.hideSocialBrandingWithRightsClassName = 'fyr-hide-
 CarouselContentView.prototype.arrowLeftSelector = '.hub-modal-arrow-left';
 CarouselContentView.prototype.arrowRightSelector = '.hub-modal-arrow-right';
 CarouselContentView.prototype.containerSelector = '.content-container';
+CarouselContentView.prototype.instagramVideoClass = 'ig-video';
 
 /** @override */
 CarouselContentView.prototype.events = View.prototype.events.extended({}, function (events) {
+    events['modalWidth.hub'] = this.handleModalWidth.bind(this);
     events['click .hub-modal-arrow-left'] = this.navigate.bind(this, 0);
     events['click .hub-modal-arrow-right'] = this.navigate.bind(this, 1);
     events['click'] = this.handleClick.bind(this);
@@ -114,6 +116,11 @@ CarouselContentView.prototype.events = View.prototype.events.extended({}, functi
  * @param {Content} content The content to add to the DOM.
  */
 CarouselContentView.prototype.addContentToDOM = function (content) {
+    var attachments = content.attachments || [];
+    if (!attachments.length || !(attachments[0].provider_name === 'instagram' && attachments[0].type === 'video')) {
+        this.handleModalWidth();
+    }
+
     this.view = new ModalContentCardView({
         content: content,
         doNotTrack: this.opts.doNotTrack,
@@ -157,6 +164,13 @@ CarouselContentView.prototype.handleClick = function (evt) {
             break;
         }
     }
+};
+
+CarouselContentView.prototype.handleModalWidth = function (evt, data) {
+    if (!data) {
+        return this.el.style.removeProperty('width');
+    }
+    this.el.style.setProperty('width', data.width + 'px', 'important');
 };
 
 /**
