@@ -41,7 +41,7 @@ var YoutubeContentView = require('streamhub-sdk/content/views/youtube-content-vi
  * @exports streamhub-sdk/content-view-factory
  * @constructor
  */
-var ContentViewFactory = function(opts) {
+var ContentViewFactory = function (opts) {
     opts = opts || {};
     this.showExpandButton = opts.showExpandButton;
     this.contentRegistry = this.contentRegistry.slice(0);
@@ -58,26 +58,46 @@ var ContentViewFactory = function(opts) {
  * type function, useful for conditional view selection.).
  */
 ContentViewFactory.prototype.contentRegistry = [
-    { type: LivefyreTwitterContent, view: TwitterContentView,
-        typeUrn: TYPE_URNS.LIVEFYRE_TWITTER, mixin: TwitterContentViewMixin },
-    { type: LivefyreFacebookContent, view: FacebookContentView,
-        typeUrn: TYPE_URNS.LIVEFYRE_FACEBOOK, mixin: FacebookContentViewMixin },
-    { type: LivefyreInstagramContent, view: InstagramContentView,
-        typeUrn: TYPE_URNS.LIVEFYRE_INSTAGRAM, mixin: InstagramContentViewMixin  },
-    { type: LivefyreFeedContent, view: FeedContentView,
-        typeUrn: TYPE_URNS.LIVEFYRE_FEED, mixin: TwitterContentViewMixin  },
-    { type: TwitterContent, view: TwitterContentView,
-        typeUrn: TYPE_URNS.TWITTER, mixin: TwitterContentViewMixin  },
-    { type: LivefyreUrlContent, view: UrlContentView,
-        typeUrn: TYPE_URNS.LIVEFYRE_URL, mixin: UrlContentViewMixin  },
-    { type: LivefyreContent, view: LivefyreContentView,
-        typeUrn: TYPE_URNS.LIVEFYRE, mixin: LivefyreContentViewMixin  },
-    { type: Content, view: ContentView,
-        typeUrn: TYPE_URNS.CONTENT, mixin: CardContentViewMixin  },
-    { type: LivefyreWeiboContent, view: WeiboContentView,
-        typeUrn: TYPE_URNS.LIVEFYRE_WEIBO, mixin: WeiboContentViewMixin  },
-    { type: LivefyreYoutubeContent, view: YoutubeContentView,
-        typeUrn: TYPE_URNS.LIVEFYRE_YOUTUBE, mixin: function(view) { return ThemeMixin(view, 'content-youtube') }  }
+    {
+        type: LivefyreTwitterContent, view: TwitterContentView,
+        typeUrn: TYPE_URNS.LIVEFYRE_TWITTER, mixin: TwitterContentViewMixin
+    },
+    {
+        type: LivefyreFacebookContent, view: FacebookContentView,
+        typeUrn: TYPE_URNS.LIVEFYRE_FACEBOOK, mixin: FacebookContentViewMixin
+    },
+    {
+        type: LivefyreInstagramContent, view: InstagramContentView,
+        typeUrn: TYPE_URNS.LIVEFYRE_INSTAGRAM, mixin: InstagramContentViewMixin
+    },
+    {
+        type: LivefyreFeedContent, view: FeedContentView,
+        typeUrn: TYPE_URNS.LIVEFYRE_FEED, mixin: TwitterContentViewMixin
+    },
+    {
+        type: TwitterContent, view: TwitterContentView,
+        typeUrn: TYPE_URNS.TWITTER, mixin: TwitterContentViewMixin
+    },
+    {
+        type: LivefyreUrlContent, view: UrlContentView,
+        typeUrn: TYPE_URNS.LIVEFYRE_URL, mixin: UrlContentViewMixin
+    },
+    {
+        type: LivefyreContent, view: LivefyreContentView,
+        typeUrn: TYPE_URNS.LIVEFYRE, mixin: LivefyreContentViewMixin
+    },
+    {
+        type: Content, view: ContentView,
+        typeUrn: TYPE_URNS.CONTENT, mixin: CardContentViewMixin
+    },
+    {
+        type: LivefyreWeiboContent, view: WeiboContentView,
+        typeUrn: TYPE_URNS.LIVEFYRE_WEIBO, mixin: WeiboContentViewMixin
+    },
+    {
+        type: LivefyreYoutubeContent, view: YoutubeContentView,
+        typeUrn: TYPE_URNS.LIVEFYRE_YOUTUBE, mixin: function (view) {return ThemeMixin(view, 'content-youtube')}
+    }
 ];
 
 ContentViewFactory.prototype._createAttachmentsView = function (content, opts) {
@@ -97,7 +117,7 @@ ContentViewFactory.prototype._createAttachmentsView = function (content, opts) {
  * @param opts {object} Options for displaying specific controls on the content view.
  * @returns {ContentView} A new content view object for the given piece of content.
  */
-ContentViewFactory.prototype.createContentView = function(content, opts) {
+ContentViewFactory.prototype.createContentView = function (content, opts) {
     opts = opts || {};
 
     var attachmentsView = this._createAttachmentsView(content, opts);
@@ -113,6 +133,7 @@ ContentViewFactory.prototype.createContentView = function(content, opts) {
         likeCommand: likeCommand,
         productOptions: opts.productOptions || {},
         shareCommand: shareCommand,
+        showCTA: opts.showCTA,
         showExpandButton: this.showExpandButton,
         showMask: opts.showMask,
         useSingleMediaView: this._useSingleMediaView,
@@ -121,11 +142,11 @@ ContentViewFactory.prototype.createContentView = function(content, opts) {
 };
 
 ContentViewFactory.prototype._createLikeCommand = function (content, liker) {
-    if (! liker) {
+    if (!liker) {
         liker = new Liker();
     }
     var likeCommand = new Command(function (errback) {
-        if (! content.isLiked(auth.get('livefyre').get('id'))) {
+        if (!content.isLiked(auth.get('livefyre').get('id'))) {
             liker.like(content, errback);
         } else {
             liker.unlike(content, errback);
@@ -150,7 +171,7 @@ ContentViewFactory.prototype._getViewTypeForContent = function (content, opts) {
         return LivefyreContentView;
     }
 
-    for (var i=0, len=this.contentRegistry.length; i < len; i++) {
+    for (var i = 0, len = this.contentRegistry.length; i < len; i++) {
         var current = this.contentRegistry[i];
         var sameTypeUrn = content.typeUrn && (current.typeUrn === content.typeUrn);
 
@@ -207,7 +228,7 @@ ContentViewFactory.prototype._getViewTypeForContent = function (content, opts) {
  * opts.shareCommand to the ContentView
  */
 ContentViewFactory.prototype._createShareCommand = function (content, sharer) {
-    if ( ! sharer) {
+    if (!sharer) {
         return;
     }
 
@@ -216,7 +237,7 @@ ContentViewFactory.prototype._createShareCommand = function (content, sharer) {
     }
 
     var hasDelegate = typeof sharer.hasDelegate === 'function';
-    if (hasDelegate && ! sharer.hasDelegate()) {
+    if (hasDelegate && !sharer.hasDelegate()) {
         return;
     }
 
@@ -252,7 +273,7 @@ ContentViewFactory.prototype.getMixinForTypeOfContent = function (content, opts)
         return LivefyreContentViewMixin;
     }
 
-    for (var i=0, len=this.contentRegistry.length; i < len; i++) {
+    for (var i = 0, len = this.contentRegistry.length; i < len; i++) {
         var current = this.contentRegistry[i];
         var sameTypeUrn = content.typeUrn && (current.typeUrn === content.typeUrn);
 
@@ -276,9 +297,9 @@ ContentViewFactory.prototype.getMixinForTypeOfContent = function (content, opts)
         } else if (content.typeUrn === TYPE_URNS.LIVEFYRE_FEED) {
             var feedUrl = (content.feedUrl || '').toLowerCase();
             if (feedUrl.indexOf("youtube.com") >= 0) {
-                return function(view) { return ThemeMixin(view, 'content-youtube') } ;
+                return function (view) {return ThemeMixin(view, 'content-youtube')};
             } else if (feedUrl.indexOf("tumblr.com") >= 0) {
-                return function(view) { return ThemeMixin(view, 'content-tumblr') } ;
+                return function (view) {return ThemeMixin(view, 'content-tumblr')};
             }
         }
 

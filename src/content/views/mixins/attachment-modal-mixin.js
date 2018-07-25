@@ -32,7 +32,8 @@ function hasAttachmentModal(view, opts) {
                     hideSocialBrandingWithRights: opts.hideSocialBrandingWithRights,
                     listView: this,
                     modal: true,
-                    productOptions: opts.productOptions || {}
+                    productOptions: opts.productOptions || {},
+                    showCTA: opts.showCTA
                 }));
             } else {
                 modal.show(new GalleryAttachmentListView(context));

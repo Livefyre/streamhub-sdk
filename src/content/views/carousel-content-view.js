@@ -119,17 +119,19 @@ CarouselContentView.prototype.addContentToDOM = function (content) {
         doNotTrack: this.opts.doNotTrack,
         hideSocialBrandingWithRights: this.opts.hideSocialBrandingWithRights,
         modal: this.opts.modal,
-        productOptions: this.opts.productOptions
+        productOptions: this.opts.productOptions,
+        showCTA: this.opts.showCTA
     });
     this.$el.find(this.containerSelector).html('').append(this.view.$el);
     this.view.render();
-    this.view.onInsert();
     this.repositionView();
+    this.view.onInsert();
+
 };
 
 /** @override */
 CarouselContentView.prototype.getTemplateContext = function () {
-    return { navigationEnabled: this.navigationEnabled };
+    return {navigationEnabled: this.navigationEnabled};
 };
 
 /**
@@ -275,7 +277,7 @@ CarouselContentView.prototype.repositionView = function () {
  * content on either side.
  */
 CarouselContentView.prototype.updateContentIndex = function () {
-    this.contentIdx = findIndex(this.collection.contents, { id: this.content.id });
+    this.contentIdx = findIndex(this.collection.contents, {id: this.content.id});
 };
 
 module.exports = CarouselContentView;

@@ -17,7 +17,7 @@ CallToActionBoxView.prototype.buttonSelector = '.call-to-action-more';
 
 CallToActionBoxView.prototype.events = CTABarView.prototype.events.extended({}, function (events) {
   events['mouseover ' + this.buttonSelector] = this.showPopover.bind(this);
-  events['mouseout ' + this.buttonSelector] = this.hidePopover.bind(this);
+  events['mouseout ' + this.popoverSelector] = this.dismissAllPopovers.bind(this);
 });
 
 CallToActionBoxView.prototype.getTemplateContext = function () {
@@ -27,7 +27,8 @@ CallToActionBoxView.prototype.getTemplateContext = function () {
   };
 };
 
-CallToActionBoxView.prototype.showPopover = function () {
+CallToActionBoxView.prototype.showPopover = function (e) {
+  this.dismissAllPopovers(e);
   var $popover = this.$el.find(this.popoverSelector);
   if (!$popover.hasClass(this.showClass)) {
     $popover.addClass(this.showClass);

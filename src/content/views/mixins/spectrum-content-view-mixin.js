@@ -29,7 +29,7 @@ module.exports = function (contentView) {
      * @override
      */
     contentView._addInitialChildViews = function (opts, shouldRender) {
-        var renderOpts = { render: !!shouldRender };
+        var renderOpts = {render: !!shouldRender};
 
         this._thumbnailAttachmentsView = this._thumbnailViewFactory.createThumbnailView(opts);
         this._blockAttachmentsView = new BlockAttachmentListView(opts);
@@ -52,12 +52,12 @@ module.exports = function (contentView) {
 
         var rightsGranted = opts.productOptions.requireRights ? opts.content.hasRightsGranted() : true;
         if (rightsGranted && opts.productOptions.show && opts.content.hasProducts()) {
-            this._productCarouselView = new ProductCarouselView($.extend({ cardsInView: 2 }, opts));
+            this._productCarouselView = new ProductCarouselView($.extend({cardsInView: 2}, opts));
             this.add(this._productCarouselView, renderOpts);
         }
 
         // There should only be products OR CTAs, but check just in case to avoid display issues for weird / bad data
-        if (!this._productCarouselView && (get(this, 'content.links.cta') || []).length > 0) {
+        if (!this._productCarouselView && opts.showCTA && (get(this, 'content.links.cta') || []).length > 0) {
             this._ctaView = opts.ctaView || new CTABarView(opts);
         }
     };

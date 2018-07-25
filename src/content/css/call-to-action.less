@@ -15,6 +15,7 @@
     text-decoration: none;
 
     .call-to-action-text {
+      margin: 0px 2px;
       padding: 4px 8px;
       color:#ffffff;
       font-family: Helvetica;
@@ -23,9 +24,21 @@
       text-align: center;
       cursor: pointer;
 
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+
       &:hover{
         color: #ffffff;
+        text-decoration: none!important;
+        user-select: none;
       }
+    }
+
+    &:hover{
+      color: #ffffff;
+      text-decoration: none!important;
+      user-select: none;
     }
   }
 
@@ -43,6 +56,11 @@
     letter-spacing: normal;
     text-align: center;
     user-select: none;
+
+    &:hover {
+      text-decoration: none!important;
+      user-select: none;
+    }
   }
 
 }
@@ -56,7 +74,7 @@
 .call-to-action-popover {
   display: none;
   position: absolute;
-  top: 36px;
+  bottom: 38px;
   right: 0px;
   border-radius: 2px;
   background-color: #ffffff;
@@ -66,14 +84,19 @@
     display: block;
     padding: 10px 15px;
     width: 105px;
-    text-decoration: none;
+    text-decoration: none!important;
 
     &:hover{
-      text-decoration: none;
+      text-decoration: none!important;
       background-color: #f7f7f7;
     }
 
+    &:first-child {
+      border-radius: 2px 2px 0px 0px;
+    }
+
     .call-to-action-text {
+      margin: 0px 2px;
       font-family: HelveticaNeue-Medium;
       font-size: 12px;
       font-weight: 500;
@@ -83,7 +106,10 @@
       letter-spacing: normal;
       text-align: left;
       text-decoration: none;
-      color: #595d66;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
   }
 
@@ -115,6 +141,7 @@
     
     text-align: center;
     vertical-align: top;
+    text-decoration: none!important;
 
     margin-right: 7px;
 
@@ -137,7 +164,10 @@
       font-stretch: normal;
       line-height: 1.17;
       letter-spacing: 0.3px;
-      color: rgba(47, 52, 64, 0.8);
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
   }
 

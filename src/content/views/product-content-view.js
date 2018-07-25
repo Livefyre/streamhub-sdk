@@ -240,7 +240,7 @@ ProductContentView.prototype.removeIframeStyles = function () {
 ProductContentView.prototype.onInsert = function () {
     if (this._ctaView) {
         this._ctaView.opts = this.opts;
-        this._ctaView.render();
+        this._ctaView.render(this.el);
         this.el.appendChild(this._ctaView.el);
     }
 };
