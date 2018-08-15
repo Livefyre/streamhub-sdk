@@ -50,11 +50,14 @@ CallToActionBar.prototype.events = View.prototype.events.extended({}, function (
     events['keyup a'] = this.onAnchor.bind(this);
 });
 
+CallToActionBar.prototype.setParent = function (parentEl) {
+    this.parentEl = (parentEl && parentEl instanceof HTMLElement) ? parentEl : null;
+}
+
 CallToActionBar.prototype.render = function (parentEl) {
     if (!this.opts.showCTA || !(get(this, 'opts.content.links.cta') || []).length) {
         return;
     }
-    this.parentEl = (parentEl && parentEl instanceof HTMLElement) ? parentEl : null;
     View.prototype.render.call(this);
 };
 
@@ -72,9 +75,8 @@ CallToActionBar.prototype.onAnchor = function (e) {
 };
 
 CallToActionBar.prototype.togglePopover = function (e) {
-    var isOpen = $(e.target).hasClass(this.buttonOpenClass)
     this.dismissAllPopovers(e);
-    if (!isOpen) {
+    if (!$(e.target).hasClass(this.buttonOpenClass)) {
         this.$el.find(this.popoverSelector).toggleClass(this.showClass);
         this.$el.find(this.buttonIconSelector).toggleClass([this.buttonOpenClass, this.buttonClosedClass].join(' '));
     }
