@@ -75,8 +75,10 @@ CallToActionBar.prototype.onAnchor = function (e) {
 };
 
 CallToActionBar.prototype.togglePopover = function (e) {
+    // Check isOpen before dismissAllPopovers removes all buttonOpenClasses
+    var isOpen = $(e.target).hasClass(this.buttonOpenClass)
     this.dismissAllPopovers(e);
-    if (!$(e.target).hasClass(this.buttonOpenClass)) {
+    if (!isOpen) {
         this.$el.find(this.popoverSelector).toggleClass(this.showClass);
         this.$el.find(this.buttonIconSelector).toggleClass([this.buttonOpenClass, this.buttonClosedClass].join(' '));
     }
