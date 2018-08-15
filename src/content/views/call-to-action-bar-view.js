@@ -54,7 +54,7 @@ CallToActionBar.prototype.setParent = function (parentEl) {
     this.parentEl = (parentEl && parentEl instanceof HTMLElement) ? parentEl : null;
 }
 
-CallToActionBar.prototype.render = function (parentEl) {
+CallToActionBar.prototype.render = function () {
     if (!this.opts.showCTA || !(get(this, 'opts.content.links.cta') || []).length) {
         return;
     }
@@ -76,7 +76,7 @@ CallToActionBar.prototype.onAnchor = function (e) {
 
 CallToActionBar.prototype.togglePopover = function (e) {
     // Check isOpen before dismissAllPopovers removes all buttonOpenClasses
-    var isOpen = $(e.target).hasClass(this.buttonOpenClass)
+    var isOpen = $(e.target).hasClass(this.buttonOpenClass);
     this.dismissAllPopovers(e);
     if (!isOpen) {
         this.$el.find(this.popoverSelector).toggleClass(this.showClass);
@@ -89,7 +89,6 @@ CallToActionBar.prototype.dismissAllPopovers = function (e) {
     $(this.buttonIconSelector + "." + this.buttonOpenClass).toggleClass([this.buttonOpenClass, this.buttonClosedClass].join(' '));
     $(this.popoverSelector + "." + this.showClass).toggleClass(this.showClass);
 }
-
 
 CallToActionBar.prototype.getTemplateContext = function () {
     var additionalContext = {};
