@@ -62,13 +62,13 @@ CallToActionBar.prototype.render = function () {
 };
 
 CallToActionBar.prototype.onButtonClick = function (e) {
-    if (!e.keyCode || e.keyCode === 13 || e.keyCode === 32) {
+    if (e.type === 'click' || !e.keyCode || e.keyCode === 13 || e.keyCode === 32) {
         this.togglePopover(e);
     }
 };
 
 CallToActionBar.prototype.onAnchor = function (e) {
-    if (e.keyCode === 13 || e.keyCode === 32 || e.type === 'click') {
+    if (e.type === 'click' || !e.keyCode || e.keyCode === 13 || e.keyCode === 32) {
         this.$el.trigger('insights:local', {type: this.insightsVerb});
         this.dismissAllPopovers(e);
     }
@@ -76,7 +76,7 @@ CallToActionBar.prototype.onAnchor = function (e) {
 
 CallToActionBar.prototype.togglePopover = function (e) {
     // Check isOpen before dismissAllPopovers removes all buttonOpenClasses
-    var isOpen = $(e.target).hasClass(this.buttonOpenClass);
+    var isOpen = this.$el.find(this.popoverSelector).hasClass(this.showClass);
     this.dismissAllPopovers(e);
     if (!isOpen) {
         this.$el.find(this.popoverSelector).toggleClass(this.showClass);

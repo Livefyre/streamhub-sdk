@@ -1,6 +1,6 @@
 {
   "name": "streamhub-sdk",
-  "version": "2.33.2",
+  "version": "2.33.3",
   "main": [
     "./src/main.js"
   ],
@@ -13,7 +13,7 @@
     "hogan": "3.0.0",
     "inherits": "git://github.com/Livefyre/inherits.git",
     "jquery": "~1.10.2",
-    "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#v1.5.5",
+    "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#1.5.5",
     "mout": "0.11.1",
     "requirejs": "~2.1.5",
     "requirejs-hogan-plugin": "git://github.com/millermedeiros/requirejs-hogan-plugin.git#~0.2.1",
