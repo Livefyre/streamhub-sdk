@@ -13,7 +13,7 @@
     "hogan": "3.0.0",
     "inherits": "git://github.com/Livefyre/inherits.git",
     "jquery": "~1.10.2",
-    "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#1.5.5",
+    "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#~1.5.5",
     "mout": "0.11.1",
     "requirejs": "~2.1.5",
     "requirejs-hogan-plugin": "git://github.com/millermedeiros/requirejs-hogan-plugin.git#~0.2.1",
@@ -37,10 +37,11 @@
     "base64": "~0.4.0",
     "cajon": "0.1.12",
     "event-emitter": "0.1",
-    "livefyre-bootstrap": "1.5.4",
+    "livefyre-bootstrap": "~1.5.5",
     "mout": "0.11.1",
-    "streamhub-sdk": "~2.31.3",
     "streamhub-ui": "0.4.6",
-    "view": "1.4.1"
+    "view": "1.4.1",
+    "streamhub-share": "0.5.2",
+    "streamhub-sdk": "~2.31.3"
   }
 }
