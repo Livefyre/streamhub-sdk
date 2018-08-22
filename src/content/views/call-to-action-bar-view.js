@@ -62,13 +62,13 @@ CallToActionBar.prototype.render = function () {
 };
 
 CallToActionBar.prototype.onButtonClick = function (e) {
-    if (e.type === 'click' || !e.keyCode || e.keyCode === 13 || e.keyCode === 32) {
+    if (e.type === 'click' || e.keyCode === 13 || e.keyCode === 32) {
         this.togglePopover(e);
     }
 };
 
 CallToActionBar.prototype.onAnchor = function (e) {
-    if (e.type === 'click' || !e.keyCode || e.keyCode === 13 || e.keyCode === 32) {
+    if (e.type === 'click' || e.keyCode === 13 || e.keyCode === 32) {
         this.$el.trigger('insights:local', {type: this.insightsVerb});
         this.dismissAllPopovers(e);
     }
