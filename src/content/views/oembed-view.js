@@ -45,6 +45,7 @@ OembedView.prototype.elClass = 'oembed';
  */
 OembedView.prototype.OEMBED_TEMPLATES = {
     audio: OembedAudioTemplate,
+    audio_promise: OembedAudioTemplate,
     link: OembedLinkTemplate,
     photo: OembedPhotoTemplate,
     rich: OembedRichTemplate,
