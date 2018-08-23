@@ -16,7 +16,6 @@ CallToActionBoxView.prototype.template = template;
 CallToActionBoxView.prototype.buttonSelector = '.call-to-action-more';
 
 CallToActionBoxView.prototype.events = CTABarView.prototype.events.extended({}, function (events) {
-  //events['mouseover ' + this.buttonSelector] = this.showPopover.bind(this);
   events['mouseout ' + this.popoverSelector] = this.dismissAllPopovers.bind(this);
 });
 
