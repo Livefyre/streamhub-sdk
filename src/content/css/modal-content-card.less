@@ -1,5 +1,36 @@
 @import (reference) "./mixins/content-default.less";
 
+.content-with-audio() {
+    margin: auto;
+    max-width: 500px;
+    min-width: 400px;
+    width: 50%;
+
+    > .attachment-carousel {
+        min-height: auto;
+        vertical-align: middle;
+        width: 100%;
+
+        .content-attachment {
+            padding-bottom: 70px;
+        }
+    }
+
+    .content {
+        padding-bottom: 0;
+        vertical-align: top;
+        width: 100%;
+
+        div[class*="content-attachment-"] {
+            box-shadow: none !important;
+        }
+    }
+
+    .product-carousel {
+        position: relative !important;
+    }
+}
+
 .hub-modal.modal-content-card {
     .content-container {
         .content-default();
@@ -122,34 +153,7 @@
             }
 
             &.content-with-audio {
-                margin: auto;
-                max-width: 500px;
-                min-width: 400px;
-                width: 50%;
-
-                > .attachment-carousel {
-                    min-height: auto;
-                    vertical-align: middle;
-                    width: 100%;
-
-                    .content-attachment {
-                        padding-bottom: 70px;
-                    }
-                }
-
-                .content {
-                    padding-bottom: 0;
-                    vertical-align: top;
-                    width: 100%;
-
-                    div[class*="content-attachment-"] {
-                        box-shadow: none !important;
-                    }
-                }
-
-                .product-carousel {
-                    position: relative !important;
-                }
+                .content-with-audio();
             }
 
             &:after {
@@ -225,34 +229,7 @@
                 }
 
                 &.content-with-audio {
-                    margin: auto;
-                    max-width: 500px;
-                    min-width: 400px;
-                    width: 50%;
-
-                    > .attachment-carousel {
-                        min-height: auto;
-                        vertical-align: middle;
-                        width: 100%;
-
-                        .content-attachment {
-                            padding-bottom: 70px;
-                        }
-                    }
-
-                    .content {
-                        padding-bottom: 0;
-                        vertical-align: top;
-                        width: 100%;
-
-                        div[class*="content-attachment-"] {
-                            box-shadow: none !important;
-                        }
-                    }
-
-                    .product-carousel {
-                        position: relative !important;
-                    }
+                    .content-with-audio();
                 }
 
                 .content {
@@ -291,34 +268,7 @@
                         }
 
                         &.content-with-audio {
-                            margin: auto;
-                            max-width: 500px;
-                            min-width: 400px;
-                            width: 50%;
-        
-                            > .attachment-carousel {
-                                min-height: auto;
-                                vertical-align: middle;
-                                width: 100%;
-        
-                                .content-attachment {
-                                    padding-bottom: 70px;
-                                }
-                            }
-        
-                            .content {
-                                padding-bottom: 0;
-                                vertical-align: top;
-                                width: 100%;
-        
-                                div[class*="content-attachment-"] {
-                                    box-shadow: none !important;
-                                }
-                            }
-        
-                            .product-carousel {
-                                position: relative !important;
-                            }
+                            .content-with-audio();
                         }                       
     
                         .content {
@@ -375,34 +325,7 @@
                     }
 
                     &.content-with-audio {
-                        margin: auto;
-                        max-width: 500px;
-                        min-width: 400px;
-                        width: 50%;
-    
-                        > .attachment-carousel {
-                            min-height: auto;
-                            vertical-align: middle;
-                            width: 100%;
-    
-                            .content-attachment {
-                                padding-bottom: 70px;
-                            }
-                        }
-    
-                        .content {
-                            padding-bottom: 0;
-                            vertical-align: top;
-                            width: 100%;
-    
-                            div[class*="content-attachment-"] {
-                                box-shadow: none !important;
-                            }
-                        }
-    
-                        .product-carousel {
-                            position: relative !important;
-                        }
+                        .content-with-audio();
                     }
 
                     .content {
