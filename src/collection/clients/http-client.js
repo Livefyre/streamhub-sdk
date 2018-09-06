@@ -1,4 +1,4 @@
-define(['streamhub-sdk/jquery'], function($) {
+define(['streamhub-sdk/jquery'], function ($) {
     'use strict';
 
     /**
@@ -12,6 +12,14 @@ define(['streamhub-sdk/jquery'], function($) {
     var LivefyreHttpClient = function (opts) {
         opts = opts || {};
         this._serviceName = opts.serviceName;
+
+        // Keep track of whether the page is unloading, so we don't throw exceptions
+        // if the XHR fails just because of that.
+        this._windowIsUnloading = false;
+        $(window).on('beforeunload', function () {
+            this._windowIsUnloading = true;
+        }.bind(this));
+
 
         /**
          * If the user has requested not to be tracked by web sites, content,
@@ -33,8 +41,9 @@ define(['streamhub-sdk/jquery'], function($) {
      * @param opts.dataType {string} Data type to expect in response
      * @param callback {function=} A callback to pass (err, data) to
      */
-    LivefyreHttpClient.prototype._request = function (opts, callback) {
-        callback = callback || function() {};
+    LivefyreHttpClient.prototype._request = function (opts, callback, retryCount) {
+        callback = callback || function () {};
+        retryCount = retryCount || 0;
         var xhr = $.ajax({
             type: opts.method || 'GET',
             headers: this._getHeaders(opts),
@@ -43,25 +52,30 @@ define(['streamhub-sdk/jquery'], function($) {
             dataType: opts.dataType || this._getDataType()
         });
 
-        xhr.done(function(data, status, jqXhr) {
+        xhr.done(function (data, status, jqXhr) {
             // todo: (genehallman) check livefyre stream status in data.status
+            retryCount = 0;
             callback(null, data);
         });
 
-        xhr.fail(function(jqXhr, status, err) {
-            if (windowIsUnloading) {
-                // Error fires when the user reloads the page during a long poll,
-                // But we don't want to throw an exception if the page is
-                // going away anyway.
-                return;
-            }
-            var errorMessage = err || 'LivefyreHttpClient Error';
-            var httpError = createHttpError(
-                errorMessage, jqXhr.status, jqXhr.responseJSON);
-            callback(httpError);
-        });
+        xhr.fail(function (jqXhr, status, err) {
+            this._failHandler(jqXhr, status, err, callback, retryCount, opts);
+        }.bind(this));
 
         return xhr;
+    };
+
+    LivefyreHttpClient.prototype._failHandler = function (jqXhr, status, err, callback) {
+        if (this._windowIsUnloading) {
+            // Error fires when the user reloads the page during a long poll,
+            // But we don't want to throw an exception if the page is
+            // going away anyway.
+            return;
+        }
+        var errorMessage = err || 'LivefyreHttpClient Error';
+        var httpError = this._createHttpError(
+            errorMessage, jqXhr.status, jqXhr.responseJSON);
+        callback(httpError);
     };
 
     /**
@@ -109,7 +123,7 @@ define(['streamhub-sdk/jquery'], function($) {
         var host = this._serviceName + '.' + (isLivefyreNetwork ? environment : opts.network);
         var hostParts;
         // Make like 'customer.bootstrap.fyre.co'
-        if ( ! isLivefyreNetwork ) {
+        if (!isLivefyreNetwork) {
             hostParts = opts.network.split('.');
             hostParts.splice(1, 0, this._serviceName);
             host = hostParts.join('.');
@@ -126,19 +140,12 @@ define(['streamhub-sdk/jquery'], function($) {
         return (env == 'livefyre.com');
     }
 
-    function createHttpError (message, statusCode, body) {
+    LivefyreHttpClient.prototype._createHttpError = function (message, statusCode, body) {
         var err = new Error(message);
         err.statusCode = statusCode;
         err.body = body;
         return err;
     }
-
-    // Keep track of whether the page is unloading, so we don't throw exceptions
-    // if the XHR fails just because of that.
-    var windowIsUnloading = false;
-    $(window).on('beforeunload', function () {
-        windowIsUnloading = true;
-    });
 
     return LivefyreHttpClient;
 
