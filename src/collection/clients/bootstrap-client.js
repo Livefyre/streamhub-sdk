@@ -73,9 +73,9 @@ function (LivefyreHttpClient, inherits, base64) {
         this._request({url: this._getPath(opts)}, callback || function () {});
     };
 
-    LivefyreBootstrapClient.prototype._request = function (jqXhr, status, err, callback, retries, requestOpts) {
+    LivefyreBootstrapClient.prototype._request = function (opts, callback, retries) {
         var requestRetries = retries === undefined ? 3 : retries;
-        LivefyreHttpClient.prototype._request(jqXhr, status, err, callback, 3, requestOpts);
+        LivefyreHttpClient.prototype._request(opts, callback, requestRetries);
     };
 
     return LivefyreBootstrapClient;

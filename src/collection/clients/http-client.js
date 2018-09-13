@@ -157,7 +157,7 @@ define(['streamhub-sdk/jquery'], function ($) {
 
     // Keep track of whether the page is unloading, so we don't throw exceptions
     // if the XHR fails just because of that.
-    windowIsUnloading = false;
+    var windowIsUnloading = false;
     $(window).on('beforeunload', function () {
         windowIsUnloading = true;
     });
