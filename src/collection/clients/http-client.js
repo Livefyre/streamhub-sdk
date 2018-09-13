@@ -83,7 +83,7 @@ define(['streamhub-sdk/jquery'], function ($) {
         } 
 
         var errorMessage = err || 'LivefyreHttpClient Error';
-        var httpError = this._createHttpError(
+        var httpError = createHttpError(
             errorMessage, jqXhr.status, jqXhr.responseJSON);
         callback(httpError);
     };
@@ -150,7 +150,7 @@ define(['streamhub-sdk/jquery'], function ($) {
         return (env == 'livefyre.com');
     }
 
-    LivefyreHttpClient.prototype._createHttpError = function (message, statusCode, body) {
+    function createHttpError(message, statusCode, body) {
         var err = new Error(message);
         err.statusCode = statusCode;
         err.body = body;
