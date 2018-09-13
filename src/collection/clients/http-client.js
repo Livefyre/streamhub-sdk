@@ -13,14 +13,6 @@ define(['streamhub-sdk/jquery'], function ($) {
         opts = opts || {};
         this._serviceName = opts.serviceName;
 
-        // Keep track of whether the page is unloading, so we don't throw exceptions
-        // if the XHR fails just because of that.
-        this._windowIsUnloading = false;
-        $(window).on('beforeunload', function () {
-            this._windowIsUnloading = true;
-        }.bind(this));
-
-
         /**
          * If the user has requested not to be tracked by web sites, content,
          * or advertising. This can either be determined by the Livefyre
@@ -41,9 +33,8 @@ define(['streamhub-sdk/jquery'], function ($) {
      * @param opts.dataType {string} Data type to expect in response
      * @param callback {function=} A callback to pass (err, data) to
      */
-    LivefyreHttpClient.prototype._request = function (opts, callback, retryCount) {
+    LivefyreHttpClient.prototype._request = function (opts, callback, retries) {
         callback = callback || function () {};
-        retryCount = retryCount || 0;
         var xhr = $.ajax({
             type: opts.method || 'GET',
             headers: this._getHeaders(opts),
@@ -54,28 +45,45 @@ define(['streamhub-sdk/jquery'], function ($) {
 
         xhr.done(function (data, status, jqXhr) {
             // todo: (genehallman) check livefyre stream status in data.status
-            retryCount = 0;
             callback(null, data);
         });
 
         xhr.fail(function (jqXhr, status, err) {
-            this._failHandler(jqXhr, status, err, callback, retryCount, opts);
+            this._failHandler(jqXhr, status, err, callback, retries, opts);
         }.bind(this));
 
         return xhr;
     };
 
-    LivefyreHttpClient.prototype._failHandler = function (jqXhr, status, err, callback) {
-        if (this._windowIsUnloading) {
+    /**
+     * Fail handler an HTTP Request
+     * @private
+     * @param jqXhr {object}
+     * @param status {object}
+     * @param err {object}
+     * @param callback {function=} A callback to pass (err, data) to
+     * @param retiries {number} Number of retries remaining for failed requests
+     */
+    LivefyreHttpClient.prototype._failHandler = function (jqXhr, status, err, callback, retries, requestOpts) {
+        if (windowIsUnloading) {
             // Error fires when the user reloads the page during a long poll,
             // But we don't want to throw an exception if the page is
             // going away anyway.
             return;
         }
+
+        if (retries > 0 && status[0] !== '4') {
+            setTimeout(function () {
+                this._request(requestOpts, callback, --retries);
+            }.bind(this), 1000);
+            return;
+        } 
+
         var errorMessage = err || 'LivefyreHttpClient Error';
         var httpError = this._createHttpError(
             errorMessage, jqXhr.status, jqXhr.responseJSON);
         callback(httpError);
+
     };
 
     /**
@@ -146,6 +154,13 @@ define(['streamhub-sdk/jquery'], function ($) {
         err.body = body;
         return err;
     }
+
+    // Keep track of whether the page is unloading, so we don't throw exceptions
+    // if the XHR fails just because of that.
+    windowIsUnloading = false;
+    $(window).on('beforeunload', function () {
+        windowIsUnloading = true;
+    });
 
     return LivefyreHttpClient;
 

@@ -73,24 +73,9 @@ function (LivefyreHttpClient, inherits, base64) {
         this._request({url: this._getPath(opts)}, callback || function () {});
     };
 
-    LivefyreBootstrapClient.prototype._failHandler = function (jqXhr, status, err, callback, retryCount, requestOpts) {
-        if (this._windowIsUnloading) {
-            // Error fires when the user reloads the page during a long poll,
-            // But we don't want to throw an exception if the page is
-            // going away anyway.
-            return;
-        }
-
-        if (retryCount < 3) {
-            setTimeout(function () {
-                this._request(requestOpts, callback, ++retryCount);
-            }.bind(this), 1000);
-        } else {
-            var errorMessage = err || 'LivefyreHttpClient Error';
-            var httpError = this._createHttpError(
-                errorMessage, jqXhr.status, jqXhr.responseJSON);
-            callback(httpError);
-        }
+    LivefyreBootstrapClient.prototype._request = function (jqXhr, status, err, callback, retries, requestOpts) {
+        var requestRetries = retries === undefined ? 3 : retries;
+        LivefyreHttpClient.prototype._request(jqXhr, status, err, callback, 3, requestOpts);
     };
 
     return LivefyreBootstrapClient;
