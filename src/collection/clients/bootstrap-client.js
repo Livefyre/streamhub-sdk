@@ -70,12 +70,7 @@ function (LivefyreHttpClient, inherits, base64) {
      *     bootstrap request. Callback signature is 'function(error, data)'.
      */
     LivefyreBootstrapClient.prototype.getContent = function (opts, callback) {
-        this._request({url: this._getPath(opts)}, callback || function () {});
-    };
-
-    LivefyreBootstrapClient.prototype._request = function (opts, callback, retries) {
-        var requestRetries = retries === undefined ? 3 : retries;
-        LivefyreHttpClient.prototype._request(opts, callback, requestRetries);
+        this._request({url: this._getPath(opts)}, callback || function () {}, 3);
     };
 
     return LivefyreBootstrapClient;

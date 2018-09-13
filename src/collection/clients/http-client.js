@@ -32,6 +32,7 @@ define(['streamhub-sdk/jquery'], function ($) {
      * @param opts.url {string} URL to request
      * @param opts.dataType {string} Data type to expect in response
      * @param callback {function=} A callback to pass (err, data) to
+     * @param retries {number} The number of times remaining to retry the request if it fails
      */
     LivefyreHttpClient.prototype._request = function (opts, callback, retries) {
         callback = callback || function () {};
@@ -62,7 +63,9 @@ define(['streamhub-sdk/jquery'], function ($) {
      * @param status {object}
      * @param err {object}
      * @param callback {function=} A callback to pass (err, data) to
-     * @param retiries {number} Number of retries remaining for failed requests
+     * @param retries {number} Number of retries remaining for failed requests
+     * @param requestOpts {object} Options used to make the request that invoked this fail handler, 
+     * used to retry the request
      */
     LivefyreHttpClient.prototype._failHandler = function (jqXhr, status, err, callback, retries, requestOpts) {
         if (windowIsUnloading) {
@@ -72,7 +75,7 @@ define(['streamhub-sdk/jquery'], function ($) {
             return;
         }
 
-        if (retries > 0 && status[0] !== '4') {
+        if (retries > 0 && !(jqXhr.status >= 400 && jqXhr.status <= 500)) {
             setTimeout(function () {
                 this._request(requestOpts, callback, --retries);
             }.bind(this), 1000);
@@ -83,7 +86,6 @@ define(['streamhub-sdk/jquery'], function ($) {
         var httpError = this._createHttpError(
             errorMessage, jqXhr.status, jqXhr.responseJSON);
         callback(httpError);
-
     };
 
     /**
