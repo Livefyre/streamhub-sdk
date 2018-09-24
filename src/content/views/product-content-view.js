@@ -72,7 +72,7 @@ ProductContentView.prototype.modalSelector = '.hub-modal';
 ProductContentView.prototype._addInitialChildViews = function (opts, shouldRender) {
     var renderOpts = {render: !!shouldRender};
 
-    if (!opts.isInstagramVideo) {
+    if (!opts.isInstagram) {
         this._headerView = opts.headerView || new ContentHeaderView(
             this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
         this.add(this._headerView, renderOpts);
@@ -191,8 +191,8 @@ ProductContentView.prototype.render = function () {
 
     CompositeView.prototype.render.call(this);
 
-    if (this.opts.isInstagramVideo) {
-        this.$el.closest(this.modalSelector).addClass('instagram-video');
+    if (this.opts.isInstagram) {
+        this.$el.closest(this.modalSelector).addClass('instagram-content');
         this.el.insertAdjacentHTML('afterbegin', this.content.attachments[0].html);
 
         var placeholder = this.$el.find('blockquote');

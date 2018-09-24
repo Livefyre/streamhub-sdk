@@ -1,6 +1,6 @@
 {
   "name": "streamhub-sdk",
-  "version": "2.34.0",
+  "version": "2.35.0",
   "main": [
     "./src/main.js"
   ],
@@ -41,6 +41,7 @@
     "mout": "0.11.1",
     "streamhub-ui": "0.4.6",
     "view": "1.4.1",
-    "streamhub-sdk": "~2.31.3"
+    "streamhub-sdk": "~2.31.3",
+    "streamhub-share": "0.5.2"
   }
 }
