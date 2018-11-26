@@ -200,7 +200,7 @@ ProductContentView.prototype.render = function () {
             if (!window.instgrm) {
                 var script = document.createElement('script');
                 script.src = '//instagram.com/embed.js';
-                this.el.append(script);
+                this.el.appendChild(script);
             } else {
                 window.instgrm.Embeds.process();
             }
