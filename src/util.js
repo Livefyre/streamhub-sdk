@@ -63,38 +63,25 @@ define([
             return opts.prop ? get(val, opts.prop) : val;
         }
 
-        function _binaryInsert(array, value, startVal, endVal) {
-            var length = array.length;
-            var start = typeof(startVal) !== 'undefined' ? startVal : 0;
-            var end = typeof(endVal) !== 'undefined' ? endVal : length - 1;
-            var m = start + Math.floor((end - start) / 2);
-            var val = getValue(value);
+        var guess;
+        var max = opts.array.length - 1;
+        var min = 0;
+        var val = getValue(opts.value);
 
-            if (length === 0) {
-                array.push(value);
-                return;
+        while (min <= max) {
+            guess = (min + max) / 2 | 0;
+
+            if (getValue(opts.array[guess]) > val) {
+                max = guess - 1;
+                continue;
             }
-            if (val < getValue(array[end])) {
-                array.splice(end + 1, 0, value);
-                return;
-            }
-            if (val > getValue(array[start])) {
-                array.splice(start, 0, value);
-                return;
-            }
-            if (start >= end) {
-                return;
-            }
-            if (val > getValue(array[m])) {
-                _binaryInsert(array, value, start, m - 1);
-                return;
-            }
-            if (val < getValue(array[m])) {
-                _binaryInsert(array, value, m + 1, end);
+            min = guess + 1;
+
+            if (getValue(opts.array[guess]) === val) {
+                break; // replace with return if no duplicates are desired
             }
         }
-
-        _binaryInsert(opts.array, opts.value, opts.start, opts.end);
+        opts.array.splice(min, 0, opts.value);
     };
 
     /**
