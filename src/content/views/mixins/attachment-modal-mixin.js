@@ -2,6 +2,7 @@ var AttachmentGalleryModal = require('streamhub-sdk/modal/views/attachment-galle
 var CarouselContentView = require('streamhub-sdk/content/views/carousel-content-view');
 var GalleryAttachmentListView = require('streamhub-sdk/content/views/gallery-attachment-list-view');
 var get = require('mout/object/get');
+var merge = require('mout/object/merge');
 var ModalView = require('streamhub-sdk/modal');
 
 'use strict';
@@ -18,22 +19,26 @@ function hasAttachmentModal(view, opts) {
         modal = new (opts.useNewModal ? ModalView : AttachmentGalleryModal)();
     }
 
+    // Updating the modal options. This allows the options to be modified from
+    // other locations and isn't blocked by the anonymous function.
+    modal.opts = merge(modal.opts, opts);
+
     view.events = view.events.extended({
         'focusContent.hub': function (e, context) {
             if (!modal) {
                 if (typeof get(view, 'attachmentsView.focus') === 'function') {
                     view.attachmentsView.focus(context.attachmentToFocus);
                 }
-            } else if (opts.useNewModal) {
+            } else if (modal.opts.useNewModal) {
                 modal.show(new CarouselContentView({
                     collection: (this._collection || {}).internalCollection,
                     content: context.content,
-                    doNotTrack: opts.doNotTrack,
-                    hideSocialBrandingWithRights: opts.hideSocialBrandingWithRights,
+                    doNotTrack: modal.opts.doNotTrack,
+                    hideSocialBrandingWithRights: modal.opts.hideSocialBrandingWithRights,
                     listView: this,
                     modal: true,
-                    productOptions: opts.productOptions || {},
-                    showCTA: opts.showCTA
+                    productOptions: modal.opts.productOptions || {},
+                    showCTA: modal.opts.showCTA
                 }));
             } else {
                 modal.show(new GalleryAttachmentListView(context));
