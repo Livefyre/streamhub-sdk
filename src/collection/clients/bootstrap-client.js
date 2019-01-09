@@ -51,7 +51,7 @@ function (LivefyreHttpClient, inherits, base64) {
             base64.url.btoa(opts.articleId.toString()),
             '/',
             typeof opts.page !== 'undefined' ? opts.page + '.json' : 'init',
-            '?transform=true'
+            '?transform=true&fetchEmbeds=false'
         ].join('');
     };
 
