@@ -21,6 +21,8 @@ var util = require('streamhub-sdk/util');
 var hasInnerHtmlBug = null;
 var log = debug('streamhub-sdk/content/views/content-view');
 
+var IG_HTML_REGEX = /<blockquote class=\\"instagram-media\\"/g;
+
 /**
  * Defines the base class for all content-views. Handles updates to attachments
  * and loading of images.
@@ -225,7 +227,7 @@ ProductContentView.prototype.render = function () {
 
         this.renderMediaMask(attachment, true, function () {
             // The attachment contains the html property already, render.
-            if (attachment.html) {
+            if (attachment.html && IG_HTML_REGEX.test(attachment.html)) {
                 return this.renderInstagramNative();
             }
             // The attachment does not contain the html property yet. Fetch the
