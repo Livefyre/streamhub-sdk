@@ -4,6 +4,7 @@ var GalleryAttachmentListView = require('streamhub-sdk/content/views/gallery-att
 var get = require('mout/object/get');
 var merge = require('mout/object/merge');
 var ModalView = require('streamhub-sdk/modal');
+var omit = require('mout/object/omit');
 
 'use strict';
 
@@ -21,7 +22,7 @@ function hasAttachmentModal(view, opts) {
 
     // Updating the modal options. This allows the options to be modified from
     // other locations and isn't blocked by the anonymous function.
-    modal.opts = merge(modal.opts, opts);
+    modal.opts = merge(modal.opts, omit(opts, 'modal'));
 
     view.events = view.events.extended({
         'focusContent.hub': function (e, context) {
