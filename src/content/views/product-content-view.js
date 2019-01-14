@@ -179,8 +179,11 @@ ProductContentView.prototype.destroy = function () {
  */
 ProductContentView.prototype.renderInstagramNative = function () {
     var attachment = this.content.attachments[0];
-    if (!attachment.html) {
-        return;
+    // Ensure the attachment html is available and matches the native embed
+    // regex. It's possible the content is very old and has `html` field but
+    // contains embedly code to play the video (won't work).
+    if (!attachment.html || !IG_HTML_REGEX.test(attachment.html)) {
+        return false;
     }
     this.$el.closest(this.modalSelector).addClass('instagram-content');
     this.el.insertAdjacentHTML('afterbegin', attachment.html);
@@ -197,6 +200,7 @@ ProductContentView.prototype.renderInstagramNative = function () {
         clearInterval(this.iframeInterval);
     }
     setInterval(this.removeIframeStyles.bind(this), 500);
+    return true;
 };
 
 /**
@@ -226,9 +230,10 @@ ProductContentView.prototype.render = function () {
         var placeholder = this.$el.find('blockquote');
 
         this.renderMediaMask(attachment, true, function () {
-            // The attachment contains the html property already, render.
-            if (attachment.html && IG_HTML_REGEX.test(attachment.html)) {
-                return this.renderInstagramNative();
+            // If rendering the native embed worked, don't need to fetch the
+            // embed data.
+            if (this.renderInstagramNative()) {
+                return;
             }
             // The attachment does not contain the html property yet. Fetch the
             // oembed data from Instagram and assign the html property.
