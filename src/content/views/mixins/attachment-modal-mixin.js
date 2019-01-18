@@ -16,6 +16,12 @@ function hasAttachmentModal(view, opts) {
     opts = opts || {};
     var modal = opts.modal;
 
+    // If modal is false, it is disabled. There is no reason to do any more
+    // modal related processing.
+    if (modal === false) {
+        return;
+    }
+
     if (modal === undefined || modal === true) {
         modal = new (opts.useNewModal ? ModalView : AttachmentGalleryModal)();
     }
@@ -38,7 +44,7 @@ function hasAttachmentModal(view, opts) {
                     hideSocialBrandingWithRights: opts.hideSocialBrandingWithRights,
                     listView: this,
                     modal: true,
-                    productOptions: modal.opts.productOptions || {},
+                    productOptions: modal.opts.productOptions || opts.productOptions || {},
                     showCTA: opts.showCTA
                 }));
             } else {
