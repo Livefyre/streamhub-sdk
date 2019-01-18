@@ -101,6 +101,7 @@ CarouselContentView.prototype.hideSocialBrandingWithRightsClassName = 'fyr-hide-
 CarouselContentView.prototype.arrowLeftSelector = '.hub-modal-arrow-left';
 CarouselContentView.prototype.arrowRightSelector = '.hub-modal-arrow-right';
 CarouselContentView.prototype.containerSelector = '.content-container';
+CarouselContentView.prototype.modalSelector = '.hub-modal';
 
 /** @override */
 CarouselContentView.prototype.events = View.prototype.events.extended({}, function (events) {
@@ -127,6 +128,11 @@ CarouselContentView.prototype.addContentToDOM = function (content) {
     this.repositionView();
     this.view.onInsert();
 
+    // Clean up the modal element by removing the instagram class if the content
+    // is not an instagram video. This keeps the modal orientation correct.
+    if (!this.isInstagramVideo(content)) {
+        this.$el.closest(this.modalSelector).removeClass('instagram-content');
+    }
 };
 
 /** @override */
@@ -170,6 +176,14 @@ CarouselContentView.prototype.hasMore = function () {
         return false;
     }
     return this.listView.showMoreButton.isHolding() || false;
+};
+
+/**
+ * Whether content is an Instagram video or not.
+ * @return {boolean} If the content is an Instagram video.
+ */
+CarouselContentView.prototype.isInstagramVideo = function (content) {
+    return content.source === 'instagram' && content.attachments.length > 0 && content.attachments[0].type === 'video';
 };
 
 /**
