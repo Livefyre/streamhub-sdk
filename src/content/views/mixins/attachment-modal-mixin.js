@@ -28,7 +28,8 @@ function hasAttachmentModal(view, opts) {
 
     // Updating the modal options. This allows the options to be modified from
     // other locations and isn't blocked by the anonymous function.
-    modal.opts = merge(modal.opts, omit(opts, 'modal'));
+    modal.opts = merge(modal.opts, omit(opts, 'collection', 'modal'));
+    modal.opts.collection = opts.collection;
 
     view.events = view.events.extended({
         'focusContent.hub': function (e, context) {

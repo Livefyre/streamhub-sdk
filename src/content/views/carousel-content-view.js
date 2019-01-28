@@ -108,6 +108,7 @@ CarouselContentView.prototype.events = View.prototype.events.extended({}, functi
     events['click .hub-modal-arrow-left'] = this.navigate.bind(this, 0);
     events['click .hub-modal-arrow-right'] = this.navigate.bind(this, 1);
     events['click'] = this.handleClick.bind(this);
+    events['imageError.hub'] = this.navigate.bind(this, 1);
 });
 
 /**
