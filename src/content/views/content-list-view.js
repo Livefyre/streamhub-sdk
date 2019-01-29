@@ -98,7 +98,7 @@ ContentListView.prototype.events = ListView.prototype.events.extended({
         }
 
         var idx = collection.contents.indexOf(args.contentView.content);
-        collection && idx > -1 && collection.contents.splice(idx, 1);
+        idx > -1 && collection.contents.splice(idx, 1);
     }
 });
 
