@@ -93,6 +93,8 @@ ContentListView.prototype.events = ListView.prototype.events.extended({
             collection = this.modal.opts.collection.internalCollection;
         } else if (this.opts.collection && this.opts.collection.internalCollection) { 
             collection = this.opts.collection.internalCollection;
+        } else {
+            return;
         }
 
         var idx = collection.contents.indexOf(args.contentView.content);
