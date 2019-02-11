@@ -109,6 +109,7 @@ CarouselContentView.prototype.events = View.prototype.events.extended({}, functi
     events['click .hub-modal-arrow-right'] = this.navigate.bind(this, 1);
     events['click'] = this.handleClick.bind(this);
     events['imageError.hub'] = this.navigate.bind(this, 1);
+    events['igNativeLoaded.hub'] = this.repositionView.bind(this);
 });
 
 /**
@@ -131,7 +132,7 @@ CarouselContentView.prototype.addContentToDOM = function (content) {
 
     // Clean up the modal element by removing the instagram class if the content
     // is not an instagram video. This keeps the modal orientation correct.
-    if (!this.isInstagramVideo(content)) {
+    if (!this.isInstagram(content)) {
         this.$el.closest(this.modalSelector).removeClass('instagram-content');
     }
 };
@@ -180,11 +181,11 @@ CarouselContentView.prototype.hasMore = function () {
 };
 
 /**
- * Whether content is an Instagram video or not.
- * @return {boolean} If the content is an Instagram video.
+ * Whether content is Instagram content or not.
+ * @return {boolean} If the content is from Instagram.
  */
-CarouselContentView.prototype.isInstagramVideo = function (content) {
-    return content.source === 'instagram' && content.attachments.length > 0 && content.attachments[0].type === 'video';
+CarouselContentView.prototype.isInstagram = function (content) {
+    return content.source === 'instagram';
 };
 
 /**

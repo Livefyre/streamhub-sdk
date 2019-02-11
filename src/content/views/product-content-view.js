@@ -1,6 +1,5 @@
 var $ = require('streamhub-sdk/jquery');
 var asLivefyreContentView = require('streamhub-sdk/content/views/mixins/livefyre-content-view-mixin');
-var asMediaMaskMixin = require('streamhub-sdk/content/views/mixins/media-mask-mixin');
 var asTwitterContentView = require('streamhub-sdk/content/views/mixins/twitter-content-view-mixin');
 var CompositeView = require('view/composite-view');
 var ContentBodyView = require('streamhub-sdk/content/views/spectrum/content-body-view');
@@ -12,7 +11,6 @@ var CTABarView = require('streamhub-sdk/content/views/call-to-action-bar-view');
 var debug = require('debug');
 var get = require('mout/object/get');
 var inherits = require('inherits');
-var InstagramClient = require('streamhub-sdk/content/clients/instagram-client');
 var ProductCarouselView = require('streamhub-sdk/content/views/product-carousel-view');
 var util = require('streamhub-sdk/util');
 
@@ -20,8 +18,6 @@ var util = require('streamhub-sdk/util');
 
 var hasInnerHtmlBug = null;
 var log = debug('streamhub-sdk/content/views/content-view');
-
-var IG_HTML_REGEX = /<blockquote class=\"instagram-media\"/;
 
 /**
  * Defines the base class for all content-views. Handles updates to attachments
@@ -38,7 +34,7 @@ var IG_HTML_REGEX = /<blockquote class=\"instagram-media\"/;
  * @exports streamhub-sdk/content/views/content-view
  * @constructor
  */
-var ProductContentView = function (opts) {
+function ProductContentView(opts) {
     opts = opts || {};
 
     this.content = opts.content;
@@ -50,14 +46,11 @@ var ProductContentView = function (opts) {
 
     this._addInitialChildViews(opts);
     this._applyMixin(opts);
-    asMediaMaskMixin(this, opts);
 
     if (this.content) {
-        this.content.on("change:body", function (newVal, oldVal) {
-            this._handleBodyChange();
-        }.bind(this));
+        this.content.on('change:body', this._handleBodyChange.bind(this));
     }
-};
+}
 inherits(ProductContentView, CompositeView);
 
 ProductContentView.prototype.elTag = 'article';
@@ -75,17 +68,15 @@ ProductContentView.prototype.modalSelector = '.hub-modal';
 ProductContentView.prototype._addInitialChildViews = function (opts, shouldRender) {
     var renderOpts = {render: !!shouldRender};
 
-    if (!opts.isInstagram) {
-        this._headerView = opts.headerView || new ContentHeaderView(
-            this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
-        this.add(this._headerView, renderOpts);
+    this._headerView = opts.headerView || new ContentHeaderView(
+        this._headerViewFactory.getHeaderViewOptsForContent(opts.content));
+    this.add(this._headerView, renderOpts);
 
-        this._bodyView = opts.bodyView || new ContentBodyView({
-            content: opts.content,
-            showMoreEnabled: true
-        });
-        this.add(this._bodyView, renderOpts);
-    }
+    this._bodyView = opts.bodyView || new ContentBodyView({
+        content: opts.content,
+        showMoreEnabled: true
+    });
+    this.add(this._bodyView, renderOpts);
 
     this._footerView = opts.footerView || new ContentFooterView(opts);
     this.add(this._footerView, renderOpts);
@@ -173,37 +164,6 @@ ProductContentView.prototype.destroy = function () {
 };
 
 /**
- * Render native Instagram embed from the first attachment, as long as it has
- * the html property. Loads the instagram embed javascript necessary to load
- * the native embed, if it doesn't already exist.
- */
-ProductContentView.prototype.renderInstagramNative = function () {
-    var attachment = this.content.attachments[0];
-    // Ensure the attachment html is available and matches the native embed
-    // regex. It's possible the content is very old and has `html` field but
-    // contains embedly code to play the video (won't work).
-    if (!attachment.html || !IG_HTML_REGEX.test(attachment.html)) {
-        return false;
-    }
-    this.$el.closest(this.modalSelector).addClass('instagram-content');
-    this.el.insertAdjacentHTML('afterbegin', attachment.html);
-
-    if (!window.instgrm) {
-        var script = document.createElement('script');
-        script.src = '//instagram.com/embed.js';
-        this.el.appendChild(script);
-    } else {
-        window.instgrm.Embeds.process();
-    }
-
-    if (this.iframeInterval) {
-        clearInterval(this.iframeInterval);
-    }
-    setInterval(this.removeIframeStyles.bind(this), 500);
-    return true;
-};
-
-/**
  * Render the content inside of the ProductContentView's element.
  * @returns {ProductContentView}
  */
@@ -224,52 +184,7 @@ ProductContentView.prototype.render = function () {
     }
 
     CompositeView.prototype.render.call(this);
-
-    if (this.opts.isInstagram) {
-        var attachment = this.content.attachments[0];
-        var placeholder = this.$el.find('blockquote');
-
-        this.renderMediaMask(attachment, true, function () {
-            // If rendering the native embed worked, don't need to fetch the
-            // embed data.
-            if (this.renderInstagramNative()) {
-                return;
-            }
-            // The attachment does not contain the html property yet. Fetch the
-            // oembed data from Instagram and assign the html property.
-            (new InstagramClient()).getOembed(attachment.link, function (err, oembed) {
-                if (err) {
-                    return;
-                }
-                attachment.html = oembed.html;
-                this.renderInstagramNative();
-            }.bind(this));
-
-        }.bind(this), placeholder);
-    }
-
-    var self = this;
-    setTimeout(function () {
-        util.raf(function () {
-            if (!self._productView) {
-                return;
-            }
-            var productHeight = self._productView.$el.height() + 20;
-            if (productHeight) {
-                self.$el.css('paddingBottom', productHeight + 'px');
-            }
-        });
-    }, 0);
-
     return this;
-};
-
-ProductContentView.prototype.removeIframeStyles = function () {
-    var iframe = this.$el.find('iframe');
-    if (iframe.length > 0) {
-        iframe.removeAttr('style');
-    }
-    clearInterval(this.iframeInterval);
 };
 
 ProductContentView.prototype.onInsert = function () {

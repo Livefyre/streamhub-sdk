@@ -1,4 +1,7 @@
 @import (reference) "./mixins/content-default.less";
+@import "./loader.less";
+
+@arrow-width: 50px;
 
 .content-with-audio() {
     margin: auto;
@@ -73,7 +76,7 @@
             }
         }
     }
-    
+
 
     .hub-modal-content {
         article.content {
@@ -96,7 +99,7 @@
                 height: 100%;
                 position: absolute;
                 top: 0;
-                width: 5%;
+                width: @arrow-width;
                 .user-select(none);
 
                 &.hub-modal-arrow-disable {
@@ -112,7 +115,7 @@
 
             .hub-modal-arrow-left {
                 .fycon-arrow-left;
-                left: -5%;
+                left: -@arrow-width;
 
                 &:before {
                     left: calc(~"50% - 8px");
@@ -120,7 +123,7 @@
             }
             .hub-modal-arrow-right {
                 .fycon-arrow-right;
-                right: -5%;
+                right: -@arrow-width;
 
                 &:before {
                     right: calc(~"50% - 8px");
@@ -178,12 +181,12 @@
 }
 
 // Extremely specific override to default style above for instagram video share button alignment
-.hub-modal.modal-content-card.instagram-content .hub-modal-content .content-container > .content article.content.spectrum-content .content-footer{ 
+.hub-modal.modal-content-card.instagram-content .hub-modal-content .content-container > .content article.content.spectrum-content .content-footer{
     padding-top: 0px;
     padding-left: 10px;
 }
 
-.hub-modal.modal-content-card:not(.instagram-content) { 
+.hub-modal.modal-content-card:not(.instagram-content) {
 
     @media (min-width: 1260px) {
         //For desktop
@@ -245,50 +248,43 @@
             }
         }
     }
-}
 
-.hub-modal.modal-content-card {
-    &.instagram-content {
-        blockquote.instagram-media { 
-            margin-left: 0px!important;
-        }
-        @media (min-width: 810px) {
-            .hub-modal-content-view {
-                margin: 70px auto 0px;
-                max-width: 500px;
-                min-height: auto!important;
-                padding: 0px;
-                width: 90% !important;
-    
-                > .content-container {
-                    > .content {
-                        > .attachment-carousel {
-                            vertical-align: middle;
-                            width: 100%;
-                        }
+    @media (max-width: 810px) {
+        .hub-modal-content-view {
+            margin: 70px auto 0px;
+            max-width: 500px;
+            min-height: auto!important;
+            padding: 0px;
+            width: 90% !important;
 
-                        &.content-with-audio {
-                            .content-with-audio();
-                        }                       
-    
-                        .content {
-                            vertical-align: top;
-                            width: 100%;
-    
-                            div[class*="content-attachment-"] {
-                                box-shadow: none !important;
-                            }
+            > .content-container {
+                > .content {
+                    > .attachment-carousel {
+                        vertical-align: middle;
+                        width: 100%;
+                    }
+
+                    &.content-with-audio {
+                        .content-with-audio();
+                    }
+
+                    .content {
+                        vertical-align: top;
+                        width: 100%;
+
+                        div[class*="content-attachment-"] {
+                            box-shadow: none !important;
                         }
-    
-                        .product-carousel {
-                            position: relative !important;
-                        }
+                    }
+
+                    .product-carousel {
+                        position: relative !important;
                     }
                 }
             }
-            .hub-modal-close {
-                right: 5% !important;
-            }
+        }
+        .hub-modal-close {
+            right: 5% !important;
         }
     }
 
@@ -361,7 +357,7 @@
                 padding-top: 10px;
             }
 
-            .content-body-main { 
+            .content-body-main {
                 margin-top: 0px;
 
                 p {
@@ -370,7 +366,168 @@
                 }
             }
 
-            article.content { 
+            article.content {
+                padding-bottom: 0px;
+            }
+        }
+    }
+}
+
+.hub-modal.instagram-content {
+    .instagram-media {
+        margin: 0 !important;
+    }
+
+    .content-container {
+        border: none;
+
+        .content {
+            background-color: transparent;
+            margin: 0;
+            padding: 0;
+
+            .product-cta-callout {
+                bottom: auto;
+                box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+                display: block;
+                text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+                top: 70px;
+
+                > span.product-shop-button {
+                    border-color: white;
+                    color: white;
+                }
+            }
+
+            .instagram-native {
+                iframe {
+                    margin: 0 !important;
+                }
+                .fyr-loader {
+                    display: none;
+                }
+            }
+        }
+    }
+
+    @media (min-width: 810px) {
+        .hub-modal-content-view {
+            margin: 70px auto 0px;
+            max-width: 500px;
+            min-height: auto!important;
+            padding: 0px;
+            width: 90% !important;
+
+            > .content-container {
+                > .content {
+                    > .attachment-carousel {
+                        vertical-align: middle;
+                        width: 100%;
+                    }
+
+                    &.content-with-audio {
+                        .content-with-audio();
+                    }
+
+                    .content {
+                        vertical-align: top;
+                        width: 100%;
+
+                        div[class*="content-attachment-"] {
+                            box-shadow: none !important;
+                        }
+                    }
+
+                    .product-carousel {
+                        position: relative !important;
+                    }
+                }
+            }
+        }
+        .hub-modal-close {
+            right: 5% !important;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .hub-modal-content-view {
+            width: calc(~"100% - 40px") !important;
+
+            .hub-modal-arrow-left, .hub-modal-arrow-right {
+                width: 16px !important;
+            }
+            .hub-modal-arrow-left {
+                left: -20px !important;
+            }
+            .hub-modal-arrow-right {
+                right: -20px !important;
+            }
+        }
+    }
+
+    @media not screen and (min-width: 810px) {
+        //For desktop
+        .hub-modal-content-view {
+            margin: 0 auto !important;
+            max-width: 500px;
+            min-height: calc(~"100%") !important;
+            padding: 0px;
+            width: 90% !important;
+
+            > .content-container {
+                > .content {
+                    > .attachment-carousel {
+                        vertical-align: middle;
+                        width: 100%;
+                    }
+
+                    &.content-with-audio {
+                        .content-with-audio();
+                    }
+
+                    .content {
+                        vertical-align: top;
+                        width: 100%;
+
+                        div[class*="content-attachment-"] {
+                            box-shadow: none !important;
+                        }
+                    }
+
+                    .product-carousel {
+                        position: relative !important;
+                    }
+                }
+            }
+        }
+        .hub-modal-close {
+            right: 5% !important;
+        }
+    }
+
+    @media (max-height: 600px) {
+        .hub-modal-content > .hub-modal-content-view {
+            margin-top: 0px;
+            margin-bottom: 0px;
+
+            .product-carousel {
+                margin-top: 5px;
+            }
+
+            .content-header-inner {
+                padding-top: 10px;
+            }
+
+            .content-body-main {
+                margin-top: 0px;
+
+                p {
+                    margin-top: 0px;
+                    margin-bottom: 0px;
+                }
+            }
+
+            article.content {
                 padding-bottom: 0px;
             }
         }

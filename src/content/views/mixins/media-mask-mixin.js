@@ -20,17 +20,14 @@ module.exports = function (view, opts) {
      * @param {function} callback
      */
     view.renderMediaMask = function (oembed, canShow, callback, el) {
-        var doNotTrack = opts.doNotTrack || {};
-        canShow = canShow && doNotTrack.browser;
-        if (!MediaMask.shouldShowMask(oembed, canShow, doNotTrack.whitelist)) {
+        if (!view.willShowMask(oembed, canShow)) {
             callback && callback();
             return;
         }
-
         view._mask && view._mask.destroy();
         view._mask = new MediaMask({
             callback: callback,
-            delegate: doNotTrack.delegate,
+            delegate: (opts.doNotTrack || {}).delegate,
             oembed: oembed
         });
         if (el) {
@@ -39,5 +36,11 @@ module.exports = function (view, opts) {
             view.$el.find('.content-attachments-tiled').append(view._mask.render().$el);
         }
 
+    };
+
+    view.willShowMask = function (oembed, canShow) {
+        var doNotTrack = opts.doNotTrack || {};
+        canShow = canShow && doNotTrack.browser;
+        return MediaMask.shouldShowMask(oembed, canShow, doNotTrack.whitelist);
     };
 };

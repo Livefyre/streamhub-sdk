@@ -1,10 +1,7 @@
 var $ = require('streamhub-sdk/jquery');
-var actionTemplate = require('hgn!streamhub-sdk/content/templates/call-to-action');
-var debug = require('debug');
 var get = require('mout/object/get');
 var inherits = require('inherits');
 var template = require('hgn!streamhub-sdk/content/templates/call-to-action-bar');
-var util = require('streamhub-sdk/util');
 var View = require('streamhub-sdk/view');
 
 'use strict';

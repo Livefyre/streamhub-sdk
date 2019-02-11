@@ -41,6 +41,9 @@ var I18N_MAP = {
     shareButtonText: ['shareButtonText'],
     showMoreButtonText: ['showMoreButtonText'],
 
+    // CTAs
+    ctaIndicationText: ['ctaIndicationText'],
+
     // Products
     productButtonText: ['productButtonText'],
     productCarouselTitleText: ['productCarouselTitleText'],

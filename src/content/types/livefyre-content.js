@@ -2,9 +2,9 @@ define([
     'streamhub-sdk/jquery',
     'streamhub-sdk/content',
     'streamhub-sdk/content/annotator',
-    'streamhub-sdk/content/types/livefyre-opine',
+    'mout/object/get',
     'inherits'],
-function($, Content, Annotator, LivefyreOpine, inherits) {
+function($, Content, Annotator, get, inherits) {
     'use strict';
 
     /**
@@ -258,11 +258,19 @@ function($, Content, Annotator, LivefyreOpine, inherits) {
     };
 
     /**
+     * Return whether this Content has CTAs or not.
+     * @return {boolean}
+     */
+    LivefyreContent.prototype.hasCTAs = function () {
+        return (get(this, 'links.cta') || []).length > 0;
+    };
+
+    /**
      * Return whether this Content has products or not.
      * @return {boolean}
      */
     LivefyreContent.prototype.hasProducts = function () {
-        return ((this.links || {}).product || []).length > 0;
+        return (get(this, 'links.product') || []).length > 0;
     };
 
     /**

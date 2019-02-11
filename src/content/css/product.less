@@ -8,11 +8,12 @@
 
 
 // Default to invisible since it's created by default in all content views now
-.product-callout { 
+.product-callout,
+.product-cta-callout {
   display: none;
 }
 
-.readable-content-timestamp { 
+.readable-content-timestamp {
   display: none;
 }
 
@@ -43,7 +44,7 @@
   }
 
   .product-carousel-header {
-    color: #364855; 
+    color: #364855;
     font-size: 12px;
     font-weight: bold;
     line-height: 14px;
@@ -165,7 +166,9 @@
   }
 }
 
-.lf-product-popover, ._lf-product-popover {
+.lf-cta-popover,
+.lf-product-popover,
+._lf-product-popover {
   &:extend(.lf-popover);
   .border-radius(3px);
   background-color: #ffffff;
@@ -214,7 +217,7 @@
       text-align: left;
     }
 
-    .product-carousel-body, {
+    .product-carousel-body {
       display: block;
       margin-left: 20px;
       overflow: hidden;
@@ -314,36 +317,46 @@
   }
 }
 
-.lf-product-popover.lf-pos-right .lf-popover-arrow, ._lf-product-popover.lf-pos-right .lf-popover-arrow  {
-  &:extend(.lf-popover.right .lf-arrow);
-  position: absolute;
-  border-right-color: white;
-  margin-top: 0px;
-  left: -5px;
-  top: -6px;
-  border-style: solid;
+.lf-cta-popover {
+  width: 172px !important;
 }
 
-.lf-product-popover.lf-pos-top .lf-popover-arrow, ._lf-product-popover.lf-pos-top .lf-popover-arrow {
-  &:extend(.lf-popover.top .lf-arrow);
-  position: absolute;
-  border-top-color: white;
-  margin-left: -6px;
-  bottom: -6px;
+.lf-cta-popover,
+.lf-product-popover {
+  &.lf-pos-right .lf-popover-arrow, ._lf-product-popover.lf-pos-right .lf-popover-arrow  {
+    &:extend(.lf-popover.right .lf-arrow);
+    position: absolute;
+    border-right-color: white;
+    margin-top: 0px;
+    left: -5px;
+    top: -6px;
+    border-style: solid;
+  }
+
+  &.lf-pos-top .lf-popover-arrow, ._lf-product-popover.lf-pos-top .lf-popover-arrow {
+    &:extend(.lf-popover.top .lf-arrow);
+    position: absolute;
+    border-top-color: white;
+    margin-left: -6px;
+    bottom: -6px;
+  }
+
+  &.lf-pos-smart_top .lf-popover-arrow, ._lf-product-popover.lf-pos-smart_top .lf-popover-arrow {
+    &:extend(.lf-popover.bottom .lf-arrow);
+    position: absolute;
+    border-bottom-color: white;
+    margin-left: -6px;
+    top: -6px;
+  }
 }
 
-.lf-product-popover.lf-pos-smart_top .lf-popover-arrow, ._lf-product-popover.lf-pos-smart_top .lf-popover-arrow {
-  &:extend(.lf-popover.bottom .lf-arrow);
-  position: absolute;
-  border-bottom-color: white;
-  margin-left: -6px;
-  top: -6px;
-}
-
-.product-callout, ._product-callout {
+.product-callout,
+._product-callout,
+.product-cta-callout {
   cursor: pointer;
   .user-select(none);
 
+  > span.cta-shop-button,
   > span.product-shop-button {
     .border-radius(3px);
     border: 2px solid #999;
@@ -353,5 +366,79 @@
     font-weight: bold;
     line-height: 16px;
     padding: 0 4px;
+  }
+}
+
+.product-cta-callout {
+  .border-radius(3px);
+  border: 2px solid #fff;
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.3);
+  line-height: 11px;
+  text-shadow: 0 0 2px black;
+
+  > span.product-shop-button {
+    border: none;
+  }
+
+  > span.cta-shop-button {
+    border: none;
+    color: #fff;
+    display: inline-block;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 16px;
+    padding: 0 6px 4px 6px;
+    vertical-align: super;
+  }
+}
+
+.hub-modal .lf-popover {
+  left: auto !important;
+  top: 75px !important;
+
+  &.lf-cta-popover,
+  &.lf-product-popover {
+    background: white;
+    .border-radius(3px);
+
+    > .lf-popover-content {
+      padding: 0;
+    }
+  }
+  &.lf-cta-popover {
+    right: -168px !important;
+  }
+  &.lf-product-popover {
+    right: -270px !important;
+  }
+}
+
+/**
+ * Force CTA popover to be inside the content once it doesn't fit correctly to
+ * the right of the callout button.
+ */
+@media (max-width: 840px) {
+  .hub-modal #popover-div > .lf-popover.lf-cta-popover {
+    right: 20px !important;
+    top: 100px !important;
+
+    .lf-popover-arrow {
+      display: none;
+    }
+  }
+}
+
+/**
+ * Force product popover to be inside the content once it doesn't fit correctly
+ * to the right of the callout button.
+ */
+@media (max-width: 1070px) {
+  .hub-modal #popover-div > .lf-popover.lf-product-popover {
+    right: 20px !important;
+    top: 100px !important;
+
+    .lf-popover-arrow {
+      display: none;
+    }
   }
 }

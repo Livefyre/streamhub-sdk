@@ -3,9 +3,9 @@ var AttachmentCarouselView = require('streamhub-sdk/content/views/attachment-car
 var CompositeView = require('view/composite-view');
 var debug = require('debug');
 var find = require('mout/array/find');
-var get = require('mout/object/get');
 var impressionUtil = require('streamhub-sdk/impressionUtil');
 var inherits = require('inherits');
+var InstagramModalContentView = require('streamhub-sdk/content/views/instagram-modal-content-view');
 var ProductContentView = require('streamhub-sdk/content/views/product-content-view');
 
 'use strict';
@@ -29,7 +29,7 @@ var ModalContentCardView = function (opts) {
     opts = opts || {};
 
     this.content = opts.content;
-    this._isInstagram = this.content.source === 'instagram' && this.content.attachments.length > 0 && this.content.attachments[0].type === 'video';
+    this._isInstagram = this.content.source === 'instagram';
     this.createdAt = new Date(); // store construction time to use for ordering if this.content has no dates
 
     CompositeView.call(this, opts);
@@ -96,12 +96,15 @@ ModalContentCardView.prototype.events = CompositeView.prototype.events.extended(
  */
 ModalContentCardView.prototype._addInitialChildViews = function (opts, shouldRender) {
     var renderOpts = {render: !!shouldRender};
-    opts.isInstagram = this._isInstagram;
 
-    if (!opts.isInstagram) {
-        this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
-        this.add(this._attachmentsView, renderOpts);
+    if (this._isInstagram) {
+        this._instagramModalView = opts.instagramModalView || new InstagramModalContentView(opts);
+        this.add(this._instagramModalView, renderOpts);
+        return;
     }
+
+    this._attachmentsView = opts.attachmentsView || new AttachmentCarouselView(opts);
+    this.add(this._attachmentsView, renderOpts);
 
     this._productContentView = opts.productContentView || new ProductContentView(opts);
     this.add(this._productContentView, renderOpts);
@@ -110,8 +113,9 @@ ModalContentCardView.prototype._addInitialChildViews = function (opts, shouldRen
 ModalContentCardView.prototype._removeInitialChildViews = function () {
     this._attachmentsView && this.remove(this._attachmentsView);
     this._bodyView && this.remove(this._bodyView);
-    this._productContentView && this.remove(this._productContentView);
     this._ctaView && this._ctaView.destroy();
+    this._instagramModalView && this._instagramModalView.destroy();
+    this._productContentView && this.remove(this._productContentView);
 };
 
 /**
