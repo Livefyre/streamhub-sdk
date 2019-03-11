@@ -267,18 +267,31 @@ CarouselContentView.prototype.repositionView = function () {
             var cardHeight = self.view.$el.height();
             var newPadding = '';
 
-            // The content card height is less than the min-height specified by the
-            // modal, add some padding to make it centered vertically. This resolves
-            // issues where text-only content causes the navigation arrows to bounce
-            // around during navigation.
+            // The content card height is less than the min-height specified by
+            // the modal, add some padding to make it centered vertically. This
+            // resolves issues where text-only content causes the navigation
+            // arrows to bounce around during navigation.
             if (cardHeight < minHeight) {
-                newPadding = ((minHeight - cardHeight) / 2) + 'px';
+                newPadding = (minHeight - cardHeight) / 2;
+            }
+
+            // If the window has a narrow width, make sure that there is enough
+            // padding to support the modal close button.
+            if (window.innerWidth < 660) {
+                newPadding = Math.max(newPadding, 60);
+            }
+
+            // Ensure newPadding has `px` on it, otherwise it's not valid CSS.
+            // The reason it wouldn't be a number is if neither of the if
+            // statements above are executed.
+            if (typeof newPadding === 'number') {
+                newPadding += 'px';
             }
             self.$el.find(self.containerSelector).css('paddingTop', newPadding);
 
-            // Update the min-height of the modal if it's in horizontal mode and the
-            // card height is greater than 600. This solves for the case when the screen
-            // is large and the cards are bigger.
+            // Update the min-height of the modal if it's in horizontal mode and
+            // the card height is greater than 600. This solves for the case
+            // when the screen is large and the cards are bigger.
             if (window.innerWidth < 810 || cardHeight <= 600) {
                 return;
             }
