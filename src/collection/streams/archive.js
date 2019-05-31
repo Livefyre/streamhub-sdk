@@ -258,8 +258,9 @@ inherits) {
     CollectionArchive.prototype._sortContents = function (contentList) {
         var contentListComparator;
         var sortedContentList;
+        var self = this;
         var ascendingComparator = function (contentA, contentB) {
-            return getContentSortDate(contentA) - getContentSortDate(contentB);
+            return self.getContentSortDate(contentA) - self.getContentSortDate(contentB);
         };
         if (this._comparator === CollectionArchive.comparators.CREATED_AT_ASCENDING) {
             contentListComparator = ascendingComparator
@@ -278,7 +279,7 @@ inherits) {
      * Given a Content, get a date object to use when sorting the most common
      * way, prioritizing: .content.sortOrder, .content.createdAt
      */
-    function getContentSortDate(content) {
+    CollectionArchive.prototype.getContentSortDate = function (content) {
         // if sortOrder on content, cast to date
         var sortOrder = content.sortOrder;
         if (typeof sortOrder === 'number') {
@@ -290,7 +291,7 @@ inherits) {
         }
         // if some random content, use now
         return new Date();
-    }
+    };
 
     /**
      * Create a StateToContent Transform that will have states written in,

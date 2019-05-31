@@ -79,6 +79,16 @@ QueryCollectionArchive.prototype._getBootstrapClientOptions = function () {
 };
 
 /**
+ * Overrides the CollectionArchive version to only return the sort order instead
+ * of converting it to a date first which is problematic due to the query modifier
+ * applied in the query version.
+ * @override
+ */
+QueryCollectionArchive.prototype.getContentSortDate = function (content) {
+    return content.sortOrder;
+};
+
+/**
  * Get the pagination cursor for the current request. The property in the
  * returned object is used to determine the sort order.
  * - max is descending
