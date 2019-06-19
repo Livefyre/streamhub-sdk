@@ -86,6 +86,8 @@ AttachmentCarouselView.prototype._insertMedia = function (oembedView) {
             videoEl.attr('poster', oembed.thumbnail_url);
             videoEl.css({height: '100%', width: '100%'});
         }
+        // Strip photoContent of inline styling to avoid image loading behind video
+        photoContentEl.removeAttr('style');
     }
     mediaContentEl.show();
 };
