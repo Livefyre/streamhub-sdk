@@ -37,8 +37,8 @@ define([
                 }
 
                 // Stale CDN urls use a different domain than media compatible urls
-                var isThumbnailCdn = !attachment.thumbnail_url.includes('www.instagram.com');
-                var isUrlCdn = !attachment.url.includes('www.instagram.com');
+                var isThumbnailCdn = attachment.thumbnail_url.indexOf('www.instagram.com') === -1;
+                var isUrlCdn = attachment.url.indexOf('www.instagram.com') === -1;
 
                 var splitUrl = attachment.link.split('/');
                 var linkContainsUsername = splitUrl.length === 7;
