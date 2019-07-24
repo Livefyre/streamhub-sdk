@@ -21,19 +21,27 @@ define(['streamhub-sdk/util', 'streamhub-sdk/jquery', 'base64'], function(util, 
         opts = opts || {};
         callback = callback || function() {};
 
+        var domain = 'admin.' + (opts.environment || 'livefyre.com');
+        // Handle non-livefyre.com domains by changing xxx.fyre.co to
+        // xxx.admin.fyre.co, which is the structure of https custom network
+        // domains
+        if (opts.network !== 'livefyre.com') {
+            domain = opts.network.split('.fyre.co')[0] + '.admin.fyre.co';
+        }
+
         var url = [
-            'http://admin.',
-            (opts.network === 'livefyre.com') ? opts.environment || 'livefyre.com' : opts.network,
-            "/api/v3.0/auth/?siteId=",
+            'https://',
+            domain,
+            '/api/v3.0/auth/?siteId=',
             opts.siteId,
-            "&articleId=",
+            '&articleId=',
             base64.btoa(opts.articleId)
-        ].join("");
+        ].join('');
 
         $.ajax({
-            type: "GET",
+            type: 'GET',
             url: url,
-            dataType: "json",
+            dataType: 'json',
             xhrFields: { withCredentials: true },
             success: function(data, status, jqXhr) {
                 callback(null, data);
