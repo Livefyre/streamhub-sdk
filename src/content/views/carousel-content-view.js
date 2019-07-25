@@ -291,8 +291,8 @@ CarouselContentView.prototype.repositionView = function () {
 
             // If instagram view is inside of carousel shake it so expands properly
             var $insta = self.$el.find('.instagram-modal');
-            if ($insta ) {
-                $insta .css('position', 'absolute');
+            if ($insta) {
+                $insta.css('position', 'absolute');
                 $insta.css('position', 'relative');
             }
 
