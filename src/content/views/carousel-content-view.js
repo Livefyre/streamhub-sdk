@@ -277,8 +277,8 @@ CarouselContentView.prototype.repositionView = function () {
 
             // If the window has a narrow width, make sure that there is enough
             // padding to support the modal close button.
-            if (window.innerWidth < 660) {
-                newPadding = Math.max(newPadding, 60);
+            if (window.innerWidth < 810) {
+                newPadding = 60;
             }
 
             // Ensure newPadding has `px` on it, otherwise it's not valid CSS.
