@@ -277,8 +277,8 @@ CarouselContentView.prototype.repositionView = function () {
 
             // If the window has a narrow width, make sure that there is enough
             // padding to support the modal close button.
-            if (window.innerWidth < 660) {
-                newPadding = Math.max(newPadding, 60);
+            if (window.innerWidth < 810) {
+                newPadding = 60;
             }
 
             // Ensure newPadding has `px` on it, otherwise it's not valid CSS.
@@ -289,12 +289,20 @@ CarouselContentView.prototype.repositionView = function () {
             }
             self.$el.find(self.containerSelector).css('paddingTop', newPadding);
 
+            // If instagram view is inside of carousel shake it so expands properly
+            var $insta = self.$el.find('.instagram-modal');
+            if ($insta) {
+                $insta.css('position', 'absolute');
+                $insta.css('position', 'relative');
+            }
+
             // Update the min-height of the modal if it's in horizontal mode and
             // the card height is greater than 600. This solves for the case
             // when the screen is large and the cards are bigger.
             if (window.innerWidth < 810 || cardHeight <= 600) {
                 return;
             }
+
             self.$el.css('minHeight', cardHeight + 'px');
         });
     }, 10);
