@@ -70,6 +70,7 @@ InstagramNativeView.prototype.handleIframeLoad = function () {
     // Technically this is when the iframe is loaded, but using a timeout to
     // ensure the UI is completely finished.
     setTimeout(this.$el.trigger.bind(this.$el, 'igNativeLoaded.hub'), 500);
+    setTimeout(this.$el.trigger.bind(this.$el, 'igNativeLoaded.hub'), 1000);
 };
 
 /**
