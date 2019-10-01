@@ -29,7 +29,7 @@ function asTwitterContentView(contentView, opts) {
     var oldFooterGetTemplateContext = contentView._footerView.getTemplateContext;
     contentView._footerView.getTemplateContext = function () {
         var context = oldFooterGetTemplateContext.apply(contentView._footerView, arguments);
-        context.createdAtUrl = 'https://twitter.com/statuses/'+context.tweetId;
+        context.createdAtUrl = 'https://twitter.com/' +context.author.handle + '/status/'+context.tweetId;
         return context;
     };
 
