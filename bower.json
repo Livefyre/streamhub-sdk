@@ -1,11 +1,11 @@
 {
   "name": "streamhub-sdk",
-  "version": "2.37.17",
+  "version": "2.37.18",
   "main": [
     "./src/main.js"
   ],
   "dependencies": {
-    "auth": "git://github.com/Livefyre/auth.git#~0.2.0",
+    "auth": "git://github.com/Livefyre/auth.git#~0.4.2",
     "base64": "git://github.com/ross-pfahler/Base64.js#~0.4.0",
     "cajon": "git://github.com/requirejs/cajon.git#~0.1.11",
     "debug": "visionmedia/debug#~0.7.4",
@@ -13,16 +13,16 @@
     "hogan": "3.0.0",
     "inherits": "git://github.com/Livefyre/inherits.git",
     "jquery": "~1.10.2",
-    "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#~1.5.5",
+    "livefyre-bootstrap": "git://github.com/Livefyre/livefyre-bootstrap.git#~1.5.7",
     "mout": "0.11.1",
     "requirejs": "~2.1.5",
     "requirejs-hogan-plugin": "git://github.com/millermedeiros/requirejs-hogan-plugin.git#~0.2.1",
     "requirejs-plugins": "~1.0.2",
     "requirejs-text": "~2.0.5",
     "stream": "git://github.com/Livefyre/stream.git#~0.1",
-    "streamhub-input": "Livefyre/streamhub-input#~0.12.0",
-    "streamhub-share": "git://github.com/Livefyre/streamhub-share.git#0.5.2",
-    "streamhub-ui": "git://github.com/Livefyre/streamhub-ui.git#0.4.6",
+    "streamhub-input": "Livefyre/streamhub-input#~0.12.1",
+    "streamhub-share": "git://github.com/Livefyre/streamhub-share.git#0.5.3",
+    "streamhub-ui": "git://github.com/Livefyre/streamhub-ui.git#0.4.7",
     "urnlib.js": "git://github.com/Livefyre/urnlib.js.git#0.0.4",
     "view": "git://github.com/Livefyre/view.git#1.4.1"
   },
@@ -33,14 +33,14 @@
     "livefyre-auth": "git://github.com/livefyre/livefyre-auth.git"
   },
   "resolutions": {
-    "auth": "~0.2.0",
+    "auth": "~0.4.2",
     "base64": "~0.4.0",
     "cajon": "0.1.12",
     "event-emitter": "0.1",
-    "livefyre-bootstrap": "~1.5.5",
+    "livefyre-bootstrap": "~1.5.7",
     "mout": "0.11.1",
-    "streamhub-ui": "0.4.6",
+    "streamhub-ui": "0.4.7",
     "view": "1.4.1",
-    "streamhub-sdk": "~2.31.3"
+    "streamhub-sdk": "~2.37.18"
   }
 }
